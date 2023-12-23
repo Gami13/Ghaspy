@@ -18,6 +18,12 @@ func getExamples(c *gin.Context) {
 }
 
 func main() {
+
+	var snowflake = newSnowflake("000")
+	var snowflake2 = newSnowflake("001")
+
+	println(snowflake.ID, snowflake.IDType.String(), snowflake.Date.String(), snowflake.Age, snowflake.NumberInBatch, "\n")
+	println(snowflake2.ID, snowflake2.IDType.String(), snowflake2.Date.String(), snowflake2.Age, snowflake2.NumberInBatch)
 	router := gin.Default()
 	router.GET("/examples", getExamples)
 
