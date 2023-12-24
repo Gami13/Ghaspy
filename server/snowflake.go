@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -57,21 +58,51 @@ func newSnowflakeType(input string) SnowflakeType {
 type Snowflake struct {
 	ID            int64
 	Date          time.Time
-	Age           int64
 	NumberInBatch int64
 	IDType        SnowflakeType
 }
 
+func (s Snowflake) String() string {
+	return strconv.FormatInt(s.ID, 2)
+}
+
+// 42 bits for timestamp, 10 bits for batch, 3 bits for type, 8 bits for random
 func newSnowflake(idType string) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 	var IDType = newSnowflakeType(idType)
-	var ID = (currentDate-epoch)<<22 | numberInBatch<<14 | IDType.Int()<<11 | rand.Int63n(2048)
+	println("GENERATING: ", strconv.FormatInt(currentDate-epoch, 2))
+	// var ID = ((((((currentDate - epoch) << 10) | numberInBatch) << 3) | IDType.Int()) << 8) | rand.Int63n(255)
+	var ID = currentDate - epoch
+	ID = ID << 10
+	ID = ID | numberInBatch
+	ID = ID << 3
+	ID = ID | IDType.Int()
+	ID = ID << 8
+	ID = ID | rand.Int63n(255)
+
 	var snowflake = Snowflake{ID: ID,
-		Date:          time.UnixMilli(currentDate),
-		Age:           (currentDate - epoch) / (1000 * 60 * 60 * 24),
+		Date: time.UnixMilli(currentDate),
+
 		NumberInBatch: numberInBatch,
 		IDType:        IDType}
+
+	if numberInBatch == 1023 {
+		numberInBatch = 0
+	}
 	numberInBatch++
+	println("GENERATED: ", snowflake.String())
 	return snowflake
 
+}
+
+func snowflakeFromInt(input int64) Snowflake {
+	var IDType = newSnowflakeType(strconv.FormatInt(input>>8&7, 2))
+	var numberInBatch = input >> 11 & 1023
+	var date = input >> 21
+	date = date + epoch
+	var snowflake = Snowflake{ID: input,
+		Date:          time.UnixMilli(date),
+		NumberInBatch: numberInBatch,
+		IDType:        IDType}
+	return snowflake
 }
