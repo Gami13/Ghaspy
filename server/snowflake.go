@@ -71,7 +71,6 @@ func newSnowflake(idType string) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 	var IDType = newSnowflakeType(idType)
 	println("GENERATING: ", strconv.FormatInt(currentDate-epoch, 2))
-	// var ID = ((((((currentDate - epoch) << 10) | numberInBatch) << 3) | IDType.Int()) << 8) | rand.Int63n(255)
 	var ID = currentDate - epoch
 	ID = ID << 10
 	ID = ID | numberInBatch

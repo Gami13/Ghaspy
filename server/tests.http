@@ -1,0 +1,9 @@
+@apiURL = http://localhost:8080
+
+#EXAMPLES
+GET {{apiURL}}/examples
+Content-Type: application/json
+
+
+
+### 
