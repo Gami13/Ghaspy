@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math/rand"
 	"strconv"
 	"time"
 )
@@ -9,6 +8,10 @@ import (
 // epoch is int64 1638316800000, which is 2021-12-01 00:00:00 UTC
 // time.Date(2022, 0, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
 const epoch = 1638316800000
+const TYPE_BITS = 4
+const MAX_TYPE = 15
+const BATCH_BITS = 17
+const MAX_BATCH = 131071
 
 var numberInBatch int64 = 0
 
@@ -21,37 +24,61 @@ const (
 	LIKE
 	FOLLOW
 	MESSAGE
-	RESERVED
+	ATTACHMENT
 	BOOKMARK
+	CHAT
+	OTHER
 )
 
 func (s SnowflakeType) String() string {
-	return [...]string{"USER", "VERIFICATION", "POST", "LIKE", "FOLLOW", "MESSAGE", "RESERVED", "BOOKMARK"}[s]
+	return [...]string{"USER", "VERIFICATION", "POST", "LIKE", "FOLLOW", "MESSAGE", "ATTACHMENT", "BOOKMARK", "CHAT", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER"}[s]
 }
 func (s SnowflakeType) Int() int64 {
-	return [...]int64{0, 1, 2, 3, 4, 5, 6, 7}[s]
+	return [...]int64{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}[s]
 }
 
 func newSnowflakeType(input string) SnowflakeType {
+
+	for len(input) < TYPE_BITS {
+		input = "0" + input
+	}
+
 	switch input {
-	case "000":
+	case "0000":
 		return USER
-	case "001":
+	case "0001":
 		return VERIFICATION
-	case "010":
+	case "0010":
 		return POST
-	case "011":
+	case "0011":
 		return LIKE
-	case "100":
+	case "0100":
 		return FOLLOW
-	case "101":
+	case "0101":
 		return MESSAGE
-	case "110":
-		return RESERVED
-	case "111":
+	case "0110":
+		return ATTACHMENT
+	case "0111":
 		return BOOKMARK
+	case "1000":
+		return CHAT
+	case "1001":
+		return OTHER
+	case "1010":
+		return OTHER
+	case "1011":
+		return OTHER
+	case "1100":
+		return OTHER
+	case "1101":
+		return OTHER
+	case "1110":
+		return OTHER
+	case "1111":
+		return OTHER
 	default:
-		return USER
+		return OTHER
+
 	}
 }
 
@@ -66,18 +93,10 @@ func (s Snowflake) String() string {
 	return strconv.FormatInt(s.ID, 2)
 }
 
-// 42 bits for timestamp, 10 bits for batch, 3 bits for type, 8 bits for random
 func newSnowflake(idType string) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 	var IDType = newSnowflakeType(idType)
-	println("GENERATING: ", strconv.FormatInt(currentDate-epoch, 2))
-	var ID = currentDate - epoch
-	ID = ID << 10
-	ID = ID | numberInBatch
-	ID = ID << 3
-	ID = ID | IDType.Int()
-	ID = ID << 8
-	ID = ID | rand.Int63n(255)
+	var ID = ((((currentDate - epoch) << BATCH_BITS) | numberInBatch) << TYPE_BITS) | IDType.Int()
 
 	var snowflake = Snowflake{ID: ID,
 		Date: time.UnixMilli(currentDate),
@@ -85,23 +104,18 @@ func newSnowflake(idType string) Snowflake {
 		NumberInBatch: numberInBatch,
 		IDType:        IDType}
 
-	if numberInBatch == 1023 {
+	numberInBatch++
+	if numberInBatch == MAX_BATCH+1 {
 		numberInBatch = 0
 	}
-	numberInBatch++
 	println("GENERATED: ", snowflake.String())
 	return snowflake
 
 }
 
 func snowflakeFromInt(input int64) Snowflake {
-	var IDType = newSnowflakeType(strconv.FormatInt(input>>8&7, 2))
-	var numberInBatch = input >> 11 & 1023
-	var date = input >> 21
-	date = date + epoch
-	var snowflake = Snowflake{ID: input,
-		Date:          time.UnixMilli(date),
-		NumberInBatch: numberInBatch,
-		IDType:        IDType}
-	return snowflake
+	return Snowflake{ID: input,
+		Date:          time.UnixMilli((input >> (TYPE_BITS + BATCH_BITS)) + epoch),
+		NumberInBatch: input >> TYPE_BITS & MAX_BATCH,
+		IDType:        newSnowflakeType(strconv.FormatInt(input&MAX_TYPE, 2))}
 }

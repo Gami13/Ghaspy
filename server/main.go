@@ -30,7 +30,7 @@ func validateUser(c *gin.Context) {
 
 func main() {
 
-	var snowflake = newSnowflake("000")
+	var snowflake = newSnowflake("1")
 	var snowflake2 = snowflakeFromInt(snowflake.ID)
 	var snowflake3 = newSnowflake("101")
 	var snowflake4 = snowflakeFromInt(snowflake3.ID)
