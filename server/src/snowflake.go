@@ -27,11 +27,17 @@ const (
 	ATTACHMENT
 	BOOKMARK
 	CHAT
+	TOKEN
+	ELEVEN
+	TWELVE
+	THIRTEEN
+	FOURTEEN
+	FIFTEEN
 	OTHER
 )
 
 func (s SnowflakeType) String() string {
-	return [...]string{"USER", "VERIFICATION", "POST", "LIKE", "FOLLOW", "MESSAGE", "ATTACHMENT", "BOOKMARK", "CHAT", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER"}[s]
+	return [...]string{"USER", "VERIFICATION", "POST", "LIKE", "FOLLOW", "MESSAGE", "ATTACHMENT", "BOOKMARK", "CHAT", "TOKEN", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER"}[s]
 }
 func (s SnowflakeType) Int() int64 {
 	return [...]int64{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}[s]
@@ -61,7 +67,7 @@ func newSnowflakeType(input string) SnowflakeType {
 	case "0111":
 		return BOOKMARK
 	case "1000":
-		return CHAT
+		return TOKEN
 	case "1001":
 		return OTHER
 	case "1010":

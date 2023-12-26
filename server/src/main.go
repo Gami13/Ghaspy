@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"regexp"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,6 +32,23 @@ func setBio(c *gin.Context) {
 }
 
 func main() {
+
+	println("TEST", regexp.MustCompile(`[a-zA-Z]`).MatchString("1234567"))
+	//TESTING PASSWORD VALIDATION
+	logger.Println("INVALID", isPasswordValid("12345678"))
+	logger.Println("INVALID", isPasswordValid("1234567a"))
+	logger.Println("INVALID", isPasswordValid("1234567A"))
+	logger.Println("VALID", isPasswordValid("1234567Aa"))
+
+	//TESTING USERNAME VALIDATION
+	logger.Println("VALID", isUsernameValid("12345678"))
+	logger.Println("VALID", isUsernameValid("1234567a"))
+	logger.Println("VALID", isUsernameValid("1234567A"))
+	logger.Println("VALID", isUsernameValid("1234567Aa"))
+	logger.Println("VALID", isUsernameValid("1234567Aa.,"))
+	logger.Println("INVALID", isUsernameValid("12345 67Aa., "))
+	logger.Println("INVALID", isUsernameValid("12345 67Aa.,!-_"))
+	logger.Println("VALID", isUsernameValid("1234567Aa.,-_"))
 
 	router := gin.Default()
 	router.GET("/examples", getExamples)
