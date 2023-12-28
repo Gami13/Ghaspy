@@ -2,12 +2,11 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
 	"regexp"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 var logger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
@@ -19,16 +18,24 @@ var examples = []struct {
 	{TEXT: "GAMI LUBI PLACKI"},
 }
 
-func getExamples(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, examples)
+func getExamples(c *fiber.Ctx) error {
+	return c.Status(200).JSON(examples)
+
 }
 
-func setDisplayName(c *gin.Context) {
+func setDisplayName(c *fiber.Ctx) error {
 	// var token = c.Request.Header.Get("Authorization")
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+
 }
 
-func setBio(c *gin.Context) {
+func setBio(c *fiber.Ctx) error {
 	// var token = c.Request.Header.Get("Authorization")
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
 }
 
 func main() {
@@ -50,14 +57,14 @@ func main() {
 	logger.Println("INVALID", isUsernameValid("12345 67Aa.,!-_"))
 	logger.Println("VALID", isUsernameValid("1234567Aa.,-_"))
 
-	router := gin.Default()
-	router.GET("/examples", getExamples)
-	router.POST("/login", loginUser)
-	router.POST("/register", registerUser)
-	router.GET("/validate/:valId", validateUser)
-	router.POST("/setDisplayName", setDisplayName)
-	router.POST("/setBio", setBio)
+	app := fiber.New()
+	app.Get("/examples", getExamples)
+	app.Post("/login", loginUser)
+	app.Post("/register", registerUser)
+	app.Get("/validate/:valId", validateUser)
+	app.Post("/setDisplayName", setDisplayName)
+	app.Post("/setBio", setBio)
 
-	router.Run("localhost:8080")
+	app.Listen("localhost:8080")
 
 }

@@ -1,10 +1,10 @@
 package main
 
-type setDisplayNameRequestBody struct {
+type SetDisplayNameRequestBody struct {
 	UserId      int64  `json:"userId"`
 	DisplayName string `json:"displayName"`
 }
-type setBioRequestBody struct {
+type SetBioRequestBody struct {
 	UserId int64  `json:"userId"`
 	Bio    string `json:"bio"`
 }

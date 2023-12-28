@@ -1,9 +1,26 @@
 @apiURL = http://localhost:8080
 
-#EXAMPLES
-GET {{apiURL}}/examples
-Content-Type: application/json
+###REMEMBER TO NOT PUT TRAILING COMMAS IN JSON REQUESTS
+GET {{apiURL}}/examples HTTP/2.0
+# curl -X POST -H "Content-Type: application/json" --data "{\"username\":\"john\",\"password\":\"doe\", \"email\":\"email\"}" localhost:8080/register
+###FAILED REGISTER
+POST {{apiURL}}/register
+Content-Type: "application/json"
+
+{
+	"username": "test",
+	"password": "TestTest123",
+	"email": "email"
+}
 
 
 
-### 
+###SUCCESSFUL REGISTER
+POST {{apiURL}}/register
+Content-Type: "application/json"
+
+{
+	"username": "test",
+	"password": "TestTest123",
+	"email": "test@test.com"
+}

@@ -1,15 +1,18 @@
 package main
 
 import (
-	"net/http"
+	"encoding/json"
 	"regexp"
 
 	"net/mail"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func loginUser(c *gin.Context) {
+func loginUser(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "UNDER CONSTRUCTION",
+	})
 }
 
 // PASSWORD REQUIREMENTS
@@ -60,37 +63,50 @@ func isUsernameValid(username string) []string {
 	return errors
 }
 
-func registerUser(c *gin.Context) {
-	var requestBody RegisterRequestBody
+func registerUser(c *fiber.Ctx) error {
+	requestBody := new(RegisterRequestBody)
 
-	if err := c.BindJSON(&requestBody); err != nil {
-		// DO SOMETHING WITH THE ERROR
-		logger.Println(err)
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
+	//DOESNT WORK
+	// if err := c.BodyParser(requestBody); err != nil {
+	// 	logger.Println("ERROR: ", err)
+	// 	return err
+	// }
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
 	}
-
 	logger.Println("REGISTERING: ", requestBody.Email)
 
 	passwordErrors := isPasswordValid(requestBody.Password)
 	usernameErrors := isUsernameValid(requestBody.Nickname)
 	var emailErrors []string
-	_, err := mail.ParseAddress(requestBody.Email)
-	if err != nil {
+
+	if _, err := mail.ParseAddress(requestBody.Email); err != nil {
 
 		emailErrors = append(emailErrors, "Invalid email address")
 	}
 
 	if len(passwordErrors) > 0 || len(usernameErrors) > 0 || len(emailErrors) > 0 {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"passwordErrors": passwordErrors, "usernameErrors": usernameErrors, "emailErrors": emailErrors})
-		return
-	}
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"passwordErrors": passwordErrors,
+			"usernameErrors": usernameErrors,
+			"emailErrors":    emailErrors,
+		})
 
+	}
+	//TODO: CHECK IF USERNAME IS TAKEN
+	//TODO: CHECK IF EMAIL IS TAKEN
 	//TODO: REGISTER USER HERE
 
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+	return c.Status(200).JSON(fiber.Map{
+		"message": "UNDER CONSTRUCTION",
+	})
 
 }
-func validateUser(c *gin.Context) {
-	valId := c.Param("valId")
+func validateUser(c *fiber.Ctx) error {
+	valId := c.Params("valId")
 	logger.Println("Validating: " + valId)
+	return c.Status(200).JSON(fiber.Map{
+		"message": "UNDER CONSTRUCTION",
+	})
 }
