@@ -115,6 +115,7 @@ func newSnowflake(idType string) Snowflake {
 		numberInBatch = 0
 	}
 	println("GENERATED: ", snowflake.String())
+
 	return snowflake
 
 }
