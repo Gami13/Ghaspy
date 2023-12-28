@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
 	password VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL,
 	salt VARCHAR(255) NOT NULL,
-	token VARCHAR(255) NOT NULL,
 	isValidated BOOLEAN NOT NULL DEFAULT '0',
 	isBanned BOOLEAN NOT NULL DEFAULT '0',
 	displayName VARCHAR(255),
@@ -67,3 +66,12 @@ CREATE TABLE IF NOT EXISTS tokens (
 	device VARCHAR(255) NOT NULL
 
 );
+
+CREATE TABLE IF NOT EXISTS verifications (
+	id bigint NOT NULL,
+	userId bigint NOT NULL,
+	code
+	 VARCHAR(255) NOT NULL,
+	validUntil timestamp NOT NULL
+);
+

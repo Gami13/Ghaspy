@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"regexp"
 
 	"net/mail"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func loginUser(c *fiber.Ctx) error {
@@ -94,9 +96,36 @@ func registerUser(c *fiber.Ctx) error {
 		})
 
 	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
 	//TODO: CHECK IF USERNAME IS TAKEN
+	var rowAmount int
+	err := dbpool.QueryRow(context.Background(), "SELECT COUNT(id) FROM users WHERE username = $1", requestBody.Nickname).Scan(&rowAmount)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	if rowAmount != 0 {
+		//TODO: IF USERNAME IS TAKEN BUT ISNT VERIFIED, AND THE VERIFICATION CODE IS NO LONGER VALID, DELETE THE USER AND REGISTER A NEW ONE
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"usernameErrors": []string{"Username is already taken"},
+		})
+	}
 	//TODO: CHECK IF EMAIL IS TAKEN
+	err = dbpool.QueryRow(context.Background(), "SELECT COUNT(id) FROM users WHERE email = $1", requestBody.Email).Scan(&rowAmount)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	if rowAmount != 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"emailErrors": []string{"Email is already taken"},
+		})
+	}
 	//TODO: REGISTER USER HERE
+	//TODO:INSERT INTO users (username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5)
+	//TODO:INSERT INTO verifications (userId, code, validUntil) VALUES ($1, $2, $3)
+	//TODO:SEND EMAIL WITH VERIFICATION CODE
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "UNDER CONSTRUCTION",

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
-	"regexp"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 var logger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
@@ -37,10 +38,31 @@ func setBio(c *fiber.Ctx) error {
 		"message": "OK",
 	})
 }
-
+func SetLocal[T any](c *fiber.Ctx, key string, value T) {
+	c.Locals(key, value)
+}
+func GetLocal[T any](c *fiber.Ctx, key string) T {
+	return c.Locals(key).(T)
+}
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logger.Fatalf("Error loading .env file: %s", err)
+	}
+	app := fiber.New()
+	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	logger.Println("Connecting to database...", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		logger.Println("Unable to connect to database: ", err)
+		os.Exit(1)
+	}
+	defer dbpool.Close()
+	app.Use(func(c *fiber.Ctx) error {
+		SetLocal[*pgxpool.Pool](c, "dbpool", dbpool)
+		// Go to next middleware:
+		return c.Next()
+	})
 
-	println("TEST", regexp.MustCompile(`[a-zA-Z]`).MatchString("1234567"))
 	//TESTING PASSWORD VALIDATION
 	logger.Println("INVALID", isPasswordValid("12345678"))
 	logger.Println("INVALID", isPasswordValid("1234567a"))
@@ -57,7 +79,6 @@ func main() {
 	logger.Println("INVALID", isUsernameValid("12345 67Aa.,!-_"))
 	logger.Println("VALID", isUsernameValid("1234567Aa.,-_"))
 
-	app := fiber.New()
 	app.Get("/examples", getExamples)
 	app.Post("/login", loginUser)
 	app.Post("/register", registerUser)
