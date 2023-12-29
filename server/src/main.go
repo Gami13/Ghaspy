@@ -80,7 +80,8 @@ func main() {
 	logger.Println("VALID", isUsernameValid("1234567Aa.,-_"))
 
 	app.Get("/examples", getExamples)
-	app.Post("/login", loginUser)
+	app.Post("/login", logInUser)
+	app.Post("/logout", logOutUser)
 	app.Post("/register", registerUser)
 	app.Get("/validate/:valId", validateUser)
 	app.Post("/setDisplayName", setDisplayName)

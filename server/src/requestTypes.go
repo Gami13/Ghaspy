@@ -13,3 +13,9 @@ type RegisterRequestBody struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
+
+type LoginRequestBody struct {
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	DeviceName string `json:"deviceName"`
+}

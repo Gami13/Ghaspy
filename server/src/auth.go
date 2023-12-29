@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/base64"
 	"net/mail"
 
@@ -16,9 +18,64 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-func loginUser(c *fiber.Ctx) error {
+func logInUser(c *fiber.Ctx) error {
+	requestBody := new(LoginRequestBody)
+
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	logger.Println("LOGGING IN: ", requestBody.Email)
+
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	//GET USERID SALT AND PASSWORD HASH
+	var userId int64
+	var salt string
+	var hash string
+	var isValidated bool
+
+	err := dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid email or password",
+		})
+	}
+	if !isValidated {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "User is not validated",
+		})
+	}
+	//CHECK IF PASSWORD IS CORRECT
+	match, err := comparePasswordAndHash(requestBody.Password, hash, salt)
+	logger.Println("MATCH: ", match)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	if !match {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid email or password",
+		})
+	}
+
+	token, snowflake, err := generateToken()
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	logger.Println("TOKEN: ", token)
+	logger.Println("SNOWFLAKE: ", snowflake.ID)
+
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake.ID, userId, token, requestBody.DeviceName)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "UNDER CONSTRUCTION",
+		"token":   token,
+		"message": "User logged in successfully",
 	})
 }
 
@@ -127,16 +184,15 @@ func registerUser(c *fiber.Ctx) error {
 			"emailErrors": []string{"Email is already taken"},
 		})
 	}
-	//TODO: REGISTER USER HERE
+	// REGISTER USER HERE
 
 	//PREPARE PASSWORD
-	hash, salt, err := preparePassword(requestBody.Password, 16*1024, 4, 1, 16, 164)
+	hash, salt, err := preparePassword(requestBody.Password)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return err
 	}
 	logger.Println("HASH: ", hash, "SALT: ", salt)
-	//TODO:INSERT INTO users (username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5)
 
 	userId := newSnowflake("0000")
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId.ID, requestBody.Nickname, requestBody.Email, hash, salt, false)
@@ -144,8 +200,6 @@ func registerUser(c *fiber.Ctx) error {
 		logger.Println("ERROR: ", err)
 		return err
 	}
-
-	//TODO:INSERT INTO verifications (userId, code, validUntil) VALUES ($1, $2, $3)
 	err = addVerificationCode(c, userId.ID)
 	if err != nil {
 		logger.Println("ERROR: ", err)
@@ -159,11 +213,36 @@ func registerUser(c *fiber.Ctx) error {
 	})
 
 }
+func logOutUser(c *fiber.Ctx) error {
+
+	var token = c.GetReqHeaders()["Authorization"][0]
+
+	logger.Println("LOGGING OUT: ", token)
+
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
+	res, err := dbpool.Exec(context.Background(), "DELETE FROM tokens WHERE token = $1", token)
+	println("ROWS AFFECTED: ", res.RowsAffected(), res.Delete(), res.String())
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Unknown error",
+		})
+	}
+	if res.RowsAffected() == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid token",
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "Logged out successfully",
+	})
+}
 func validateUser(c *fiber.Ctx) error {
 	valCode := c.Params("valId")
 	logger.Println("Validating: " + valCode)
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	//TODO: CHECK IF VALIDATION CODE IS still VALID
 
 	row := dbpool.QueryRow(context.Background(), "SELECT id, userId, code, validUntil  FROM verifications WHERE code LIKE $1", valCode)
 
@@ -224,22 +303,6 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-func preparePassword(password string, memory uint32, iterations uint32, parallelism uint8, saltLength uint32, keyLength uint32) (hashR string, saltR string, errR error) {
-	salt, err := generateRandomBytes(saltLength)
-	if err != nil {
-		return "", "", err
-	}
-	password = "4m0N6U51Sl0V3" + password
-
-	hash := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
-
-	// Base64 encode the salt and hashed password.
-	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
-
-	return b64Hash, b64Salt, nil
-}
-
 func base64URL(data []byte) string {
 	result := base64.StdEncoding.EncodeToString(data)
 	result = strings.Replace(result, "+", "-", -1) // 62nd char of encoding
@@ -271,4 +334,61 @@ func addVerificationCode(c *fiber.Ctx, userId int64) error {
 		return err
 	}
 	return nil
+}
+
+const memory = 16 * 1024
+const iterations = 4
+const parallelism = 1
+const saltLength = 16
+const keyLength = 164
+const pepper = "4m0N6U51Sl0V3"
+
+func preparePassword(password string) (hashR string, saltR string, errR error) {
+	salt, err := generateRandomBytes(saltLength)
+	if err != nil {
+		return "", "", err
+	}
+	password = pepper + password
+
+	hash := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+
+	// Base64 encode the salt and hashed password.
+	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+
+	return b64Hash, b64Salt, nil
+}
+
+func comparePasswordAndHash(password string, hash string, salt string) (match bool, err error) {
+	// Extract the parameters, salt and derived key from the encoded password
+	// hash.
+	password = pepper + password
+	saltBytes, _ := base64.RawStdEncoding.DecodeString(salt)
+
+	hashBytes, _ := base64.RawStdEncoding.DecodeString(hash)
+	println("HASH: ", hashBytes)
+
+	// Derive the key from the other password using the same parameters.
+	otherHash := argon2.IDKey([]byte(password), saltBytes, iterations, memory, parallelism, keyLength)
+	println("OTHER HASH: ", otherHash)
+
+	// Check that the contents of the hashed passwords are identical. Note
+	// that we are using the subtle.ConstantTimeCompare() function for this
+	// to help prevent timing attacks.
+	if subtle.ConstantTimeCompare(hashBytes, otherHash) == 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func generateToken() (token string, snowflake Snowflake, err error) {
+	snowflake = newSnowflake("1000")
+
+	tokenBytes, err := generateRandomBytes(128)
+	if err != nil {
+		return "", snowflake, err
+	}
+	token = base64URL(tokenBytes)
+	finalToken := strconv.FormatInt(snowflake.ID, 10) + "." + token
+	return finalToken, snowflake, nil
 }

@@ -62,7 +62,6 @@ CREATE TABLE IF NOT EXISTS tokens (
 	id bigint NOT NULL,
 	userId bigint NOT NULL,
 	token VARCHAR(255) NOT NULL,
-	validUntil timestamp NOT NULL,
 	device VARCHAR(255) NOT NULL
 
 );
