@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/subtle"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"net/mail"
+	"net/smtp"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"crypto/rand"
-	"crypto/subtle"
-	"encoding/base64"
-	"net/mail"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -200,13 +202,14 @@ func registerUser(c *fiber.Ctx) error {
 		logger.Println("ERROR: ", err)
 		return err
 	}
-	err = addVerificationCode(c, userId.ID)
+	verificationCode, err := addVerificationCode(c, userId.ID)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return err
 	}
 
-	//TODO:SEND EMAIL WITH VERIFICATION CODE
+	//SEND EMAIL WITH VERIFICATION CODE
+	sendMail(requestBody.Email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "User registered successfully",
@@ -264,8 +267,22 @@ func validateUser(c *fiber.Ctx) error {
 		return err
 	}
 	if time.Now().After(validUntil) {
-		addVerificationCode(c, userId)
+		verificationCode, err := addVerificationCode(c, userId)
+		if err != nil {
+			logger.Println("ERROR 3: ", err)
+			return err
+		}
+		//GET EMAIL
+		row := dbpool.QueryRow(context.Background(), "SELECT email FROM users WHERE id = $1", userId)
+		var email string
+		err = row.Scan(&email)
+		if err != nil {
+			logger.Println("ERROR 4: ", err)
+			return err
+		}
+		sendMail(email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
 		//TODO:Send email
+
 		return c.Status(400).JSON(fiber.Map{
 			"message": "Verification code is no longer valid, a new one has been sent to your email",
 		})
@@ -312,14 +329,14 @@ func base64URL(data []byte) string {
 	return result
 }
 
-func addVerificationCode(c *fiber.Ctx, userId int64) error {
+func addVerificationCode(c *fiber.Ctx, userId int64) (string, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
 	verificationId := newSnowflake("0001")
 	verificationBytes, err := generateRandomBytes(96)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+		return "", err
 	}
 	var verificationCode = base64URL(verificationBytes)
 	logger.Println("VERIFICATION CODE: ", verificationCode)
@@ -331,9 +348,10 @@ func addVerificationCode(c *fiber.Ctx, userId int64) error {
 
 	if err != nil {
 		logger.Println("VERIFICATION ERROR: ", err)
-		return err
+		return "", err
 	}
-	return nil
+
+	return verificationCode, nil
 }
 
 const memory = 16 * 1024
@@ -391,4 +409,49 @@ func generateToken() (token string, snowflake Snowflake, err error) {
 	token = base64URL(tokenBytes)
 	finalToken := strconv.FormatInt(snowflake.ID, 10) + "." + token
 	return finalToken, snowflake, nil
+}
+
+func sendMail(address string, subject string, body string) error {
+	email := os.Getenv("EMAIL_USERNAME")
+	password := os.Getenv("EMAIL_PASSWORD")
+	host := os.Getenv("EMAIL_HOST")
+	auth := LoginAuth(email, password)
+	to := []string{address}
+	msg := []byte(
+		"To: " + address + "\r\n" +
+			"Subject: " + subject + "\r\n" +
+			"\r\n" +
+			body + "\r\n")
+	err := smtp.SendMail(host+":587", auth, email, to, msg)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	return nil
+}
+
+type loginAuth struct {
+	username, password string
+}
+
+func LoginAuth(username, password string) smtp.Auth {
+	return &loginAuth{username, password}
+}
+
+func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+	return "LOGIN", []byte{}, nil
+}
+
+func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+	if more {
+		switch string(fromServer) {
+		case "Username:":
+			return []byte(a.username), nil
+		case "Password:":
+			return []byte(a.password), nil
+		default:
+			return nil, errors.New("Unkown fromServer")
+		}
+	}
+	return nil, nil
 }

@@ -20,9 +20,9 @@ POST {{apiURL}}/register
 Content-Type: "application/json"
 
 {
-	"username": "test1",
-	"password": "TestTest123",
-	"email": "test@test.com"
+	"username": "Gami",
+	"password": "Haslo123",
+	"email": "gamiofficial0@gmail.com"
 }
 
 ###FAILED LOGIN

@@ -62,7 +62,6 @@ func main() {
 		// Go to next middleware:
 		return c.Next()
 	})
-
 	//TESTING PASSWORD VALIDATION
 	logger.Println("INVALID", isPasswordValid("12345678"))
 	logger.Println("INVALID", isPasswordValid("1234567a"))

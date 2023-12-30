@@ -2,86 +2,58 @@
 	display: flex;
 	height: 100vh;
 	width: 100vw;
-
+	max-width: 1500px;
 	position: relative;
 	background-color: var(--bg0);
 }
-.main nav {
-	width: 25%;
-	display: flex;
-	flex-direction: column;
-	padding: 1% 5%;
-	gap: 0.5em;
-}
-.logo {
-	height: 64px;
-	width: 64px;
-	margin-left: 1em;
-	background-image: url(./assets/logo.png);
-	background-size: cover;
-	background-repeat: no-repeat;
-}
 
-.main > nav a {
-	padding: 0.5em 1em;
-	border-radius: 3em;
-	text-decoration: none;
-	color: white;
-	transition: all 0.5s ease-in-out;
+.navbar {
+	width: 25%;
+	height: 100%;
+	padding: 1em 2em;
 }
-.main > nav a:hover {
-	background-color: var(--bg1);
-	transition: all 0.25s;
-}
-.post {
-	background-color: var(--secondary);
-	text-align: center;
-	font-weight: bolder;
-	font-size: 1.1em;
-	padding: 0.75em 1.1em !important;
-	margin-top: 0.5em;
-	width: 100% !important;
-}
-.post:hover {
-	background-color: var(--primary) !important;
-}
-.main .content {
+.postbar {
 	width: 50%;
 	height: 100%;
-
-	display: flex;
-	justify-content: center;
-
-	position: relative;
-	outline: 2px var(--bg2) solid;
 }
-.content_header {
-	width: 100%;
-	height: 3em;
-
-	display: grid;
-	grid-template-columns: 1fr 1fr 3em;
-	grid-template-rows: 1fr;
-
-	outline: 1px var(--secondary) solid;
-}
-.content_header button {
-	height: 100%;
-	width: 100%;
-
-	font-size: 1em;
-	font-weight: bold;
-	background-color: var(--bg0);
-	outline: none;
-	border: none;
-	cursor: pointer;
-	transition: all 0.5s ease-in-out;
-}
-.content_header button:hover {
-	background-color: var(--bg1);
-	transition: all 0.25s;
-}
-.banner {
+.trendbar {
 	width: 25%;
 	height: 100%;
+}
+
+/* FOR SCREENS UNDER 1000px */
+@media screen and (max-width: 1000px) {
+	.trendbar {
+		display: none;
+	}
+	.postbar {
+		width: 70%;
+	}
+	.navbar {
+		width: 30%;
+
+		padding: 1em 1em;
+	}
+}
+
+/* FOR SCREENS UNDER 500 */
+@media screen and (max-width: 550px) {
+	.trendbar {
+		display: none;
+	}
+	.postbar {
+		width: 100%;
+	}
+	.navbar h3 {
+		display: none !important;
+	}
+	.navbar > div > a {
+		width: 100% !important;
+		display: flex;
+		justify-content: center;
+	}
+
+	.post {
+		margin-left: 0 !important;
+	}
 }
