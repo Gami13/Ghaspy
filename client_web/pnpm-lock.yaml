@@ -17,6 +17,9 @@ dependencies:
   autoprefixer:
     specifier: ^10.4.16
     version: 10.4.16(postcss@8.4.32)
+  lucide-solid:
+    specifier: ^0.303.0
+    version: 0.303.0(solid-js@1.8.7)
   solid-js:
     specifier: ^1.8.7
     version: 1.8.7
@@ -2130,6 +2133,14 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-solid@0.303.0(solid-js@1.8.7):
+    resolution: {integrity: sha512-KRL32q7JbZrmGefDMpLtKR5rsYz7f7jA6Vza+gNfluFUC1AGTjPge8N7jRT9611nC/wG0paHWB0t4jLOo581NQ==}
+    peerDependencies:
+      solid-js: ^1.4.7
+    dependencies:
+      solid-js: 1.8.7
+    dev: false
 
   /magic-string@0.30.5:
     resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}
