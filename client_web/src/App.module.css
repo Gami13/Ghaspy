@@ -18,7 +18,8 @@
 	width: 64px;
 	margin-left: 1em;
 	background-image: url(./assets/logo.png);
-	background-size: contain;
+	background-size: cover;
+	background-repeat: no-repeat;
 }
 
 .main > nav a {
@@ -26,9 +27,11 @@
 	border-radius: 3em;
 	text-decoration: none;
 	color: white;
+	transition: all 0.5s ease-in-out;
 }
 .main > nav a:hover {
 	background-color: var(--bg1);
+	transition: all 0.25s;
 }
 .post {
 	background-color: var(--secondary);
@@ -37,6 +40,7 @@
 	font-size: 1.1em;
 	padding: 0.75em 1.1em !important;
 	margin-top: 0.5em;
+	width: 100% !important;
 }
 .post:hover {
 	background-color: var(--primary) !important;
@@ -71,9 +75,11 @@
 	outline: none;
 	border: none;
 	cursor: pointer;
+	transition: all 0.5s ease-in-out;
 }
 .content_header button:hover {
 	background-color: var(--bg1);
+	transition: all 0.25s;
 }
 .banner {
 	width: 25%;
