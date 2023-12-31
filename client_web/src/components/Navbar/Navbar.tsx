@@ -12,7 +12,7 @@ import {
 	IconPin,
 } from '@tabler/icons-solidjs';
 import style from './Navbar.module.css';
-
+import { t } from '@/Translation';
 export default function Navbar(props: { className?: string }) {
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
@@ -22,36 +22,36 @@ export default function Navbar(props: { className?: string }) {
 			<div>
 				<a href="">
 					<IconHome />
-					<h3>Home</h3>
+					<h3>{t.nav.home()}</h3>
 				</a>
 				<a href="">
 					<IconSearch />
-					<h3>Explore</h3>
+					<h3>{t.nav.explore()}</h3>
 				</a>
 				<a href="">
 					<IconBell />
-					<h3>Alerts</h3>
+					<h3>{t.nav.alerts()}</h3>
 				</a>
 				<a href="">
 					<IconMail />
-					<h3>Inbox</h3>
+					<h3>{t.nav.inbox()}</h3>
 				</a>
 				<a href="">
 					<IconList />
-					<h3>Lists</h3>
+					<h3>{t.nav.lists()}</h3>
 				</a>
 				<a href="">
 					<IconPin />
 
-					<h3>Pins</h3>
+					<h3>{t.nav.pins()}</h3>
 				</a>
 				<a href="">
 					<IconUser />
-					<h3>Profile</h3>
+					<h3>{t.nav.profile()}</h3>
 				</a>
 				<a href="">
 					<IconDotsCircleHorizontal />
-					<h3>More</h3>
+					<h3>{t.nav.more()}</h3>
 				</a>
 				<button class={style.post}>Post</button>
 			</div>

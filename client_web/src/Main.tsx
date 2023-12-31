@@ -1,10 +1,10 @@
-import style from './App.module.css';
+import style from './Main.module.css';
 
 import './assets/logo.png';
 import TrendBar from './components/TrendBar/TrendBar';
 import Navbar from './components/Navbar/Navbar';
 import PostBar from './components/PostBar/PostBar';
-function App() {
+function Main() {
 	return (
 		<div class={style.main}>
 			<Navbar className={style.navbar} />
@@ -14,4 +14,4 @@ function App() {
 	);
 }
 
-export default App;
+export default Main;

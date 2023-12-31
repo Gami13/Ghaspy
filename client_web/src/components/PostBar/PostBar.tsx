@@ -6,7 +6,6 @@ export default function PostBar(props: { className?: string }) {
 			<div class={style.content_header}>
 				<button>For You</button>
 				<button>Following</button>
-				<button>.</button>
 			</div>
 		</main>
 	);

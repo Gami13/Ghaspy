@@ -99,7 +99,6 @@
 		display: none;
 	}
 	.nav > div a {
-		background-color: var(--bg1);
 	}
 	.logo,
 	.logo:hover {
