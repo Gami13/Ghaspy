@@ -1,4 +1,5 @@
 export default {
+	appName: 'Beeper',
 	hello: 'hello {{ name }}, how are you?',
 	nav: {
 		home: 'Home',
@@ -9,5 +10,7 @@ export default {
 		pins: 'Pins',
 		profile: 'Profile',
 		more: 'More',
+		logIn: 'Log in',
+		signUp: 'Sign up',
 	},
 };

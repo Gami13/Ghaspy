@@ -4,55 +4,73 @@ import {
 	IconSearch,
 	IconHome,
 	IconList,
-	IconBookmark,
 	IconUser,
 	IconUsers,
-	IconDotsCircleHorizontal,
 	IconDotsVertical,
 	IconPin,
 } from '@tabler/icons-solidjs';
 import style from './Navbar.module.css';
 import { t } from '@/Translation';
+import { useAppState } from '@/AppState';
+import { Show } from 'solid-js';
+import { A } from '@solidjs/router';
+
 export default function Navbar(props: { className?: string }) {
+	const AppState = useAppState();
+
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
-			<a href="" class={style.logo}>
-				<img src="" alt="" />
-			</a>
 			<div>
-				<a href="">
+				<A href="/" class={style.logo}>
+					<img src="logo_nobg.png" alt="" />
+				</A>
+				<A href="/">
 					<IconHome />
 					<h3>{t.nav.home()}</h3>
-				</a>
-				<a href="">
+				</A>
+				<A href="/">
 					<IconSearch />
 					<h3>{t.nav.explore()}</h3>
-				</a>
-				<a href="">
-					<IconBell />
-					<h3>{t.nav.alerts()}</h3>
-				</a>
-				<a href="">
-					<IconMail />
-					<h3>{t.nav.inbox()}</h3>
-				</a>
-				<a href="">
-					<IconList />
-					<h3>{t.nav.lists()}</h3>
-				</a>
-				<a href="">
-					<IconPin />
+				</A>
 
-					<h3>{t.nav.pins()}</h3>
-				</a>
-				<a href="">
-					<IconUser />
-					<h3>{t.nav.profile()}</h3>
-				</a>
-				<a href="">
-					<IconDotsCircleHorizontal />
-					<h3>{t.nav.more()}</h3>
-				</a>
+				<Show
+					when={AppState.isLoggedIn()}
+					fallback={
+						<>
+							<A href="/login">
+								<IconUsers />
+								<h3>{t.nav.logIn()}</h3>
+							</A>
+							<A href="/signup">
+								<IconUsers />
+								<h3>{t.nav.signUp()}</h3>
+							</A>
+						</>
+					}
+				>
+					<A href="">
+						<IconBell />
+						<h3>{t.nav.alerts()}</h3>
+					</A>
+					<A href="">
+						<IconMail />
+						<h3>{t.nav.inbox()}</h3>
+					</A>
+					<A href="">
+						<IconList />
+						<h3>{t.nav.lists()}</h3>
+					</A>
+					<A href="">
+						<IconPin />
+
+						<h3>{t.nav.pins()}</h3>
+					</A>
+					<A href="">
+						<IconUser />
+						<h3>{t.nav.profile()}</h3>
+					</A>
+				</Show>
+
 				<button class={style.post}>Post</button>
 			</div>
 			<div class={style.user}>

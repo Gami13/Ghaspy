@@ -14,6 +14,8 @@ function App() {
 		<AppStateProvider>
 			<Router>
 				<Route path="/" component={Main} />
+				<Route path="login" component={Main} />
+				<Route path="signup" component={Main} />
 			</Router>
 		</AppStateProvider>
 	);
