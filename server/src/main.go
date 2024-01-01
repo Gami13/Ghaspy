@@ -19,25 +19,6 @@ var examples = []struct {
 	{TEXT: "GAMI LUBI PLACKI"},
 }
 
-func getExamples(c *fiber.Ctx) error {
-	return c.Status(200).JSON(examples)
-
-}
-
-func setDisplayName(c *fiber.Ctx) error {
-	// var token = c.Request.Header.Get("Authorization")
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-
-}
-
-func setBio(c *fiber.Ctx) error {
-	// var token = c.Request.Header.Get("Authorization")
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
 func SetLocal[T any](c *fiber.Ctx, key string, value T) {
 	c.Locals(key, value)
 }
