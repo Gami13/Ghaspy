@@ -74,7 +74,7 @@ export default function Navbar(props: { className?: string }) {
 				<button class={style.post}>Post</button>
 			</div>
 			<div class={style.user}>
-				<img class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
+				<img alt="" class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
 				<div class={style.user_data}>
 					<h3>Username</h3>
 					<p>@username</p>

@@ -2,6 +2,7 @@
 import { render } from 'solid-js/web';
 import 'solid-devtools';
 import { Route, Router } from '@solidjs/router';
+import Signup from './SignUp';
 
 import './index.css';
 
@@ -14,6 +15,8 @@ function App() {
 		<AppStateProvider>
 			<Router>
 				<Route path="/" component={Main} />
+				<Route path="register" component={Signup} />
+
 				<Route path="login" component={Main} />
 				<Route path="signup" component={Main} />
 			</Router>
