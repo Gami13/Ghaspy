@@ -18,6 +18,7 @@ const Signup = () => {
 	const [validationErrors, setValidationErrors] = createSignal<Array<AuthTransKeysT>>([
 		'usernameNoSpaces',
 		'passwordNoSpaces',
+		'usernameNoSpecials',
 	]);
 	const [err, setErr] = createSignal(false);
 	const handleSubmit = async (e: any) => {
@@ -41,10 +42,21 @@ const Signup = () => {
 			}
 		});
 	};
+	function validateUsername(username: string) {
+		let validators = [];
+		if (username.length >= 3) validators.push('usernameTooShort');
+		if (username.length < 64) validators.push('usernameTooLong');
+		// special characters
+		if (username.match(/[^a-zA-Z0-9,._-]/)) validators.filter((item) => item !== 'usernameNoSpecials');
+		else validators.push('usernameNoSpecials');
+		if (username.match(/\s/)) validators = validators.filter((item) => item !== 'usernameNoSpaces');
+		else validators.push('usernameNoSpaces');
+		console.log(validators);
+		setValidationErrors(validators as Array<AuthTransKeysT>);
+	}
 	function validatePassword(password: string) {
 		let validators = [];
-		// setValidationErrors((prev) => [...prev, 'passwordTooShort']);
-		if (password.length > 8) validators.push('passwordTooShort');
+		if (password.length >= 8) validators.push('passwordTooShort');
 		if (password.match(/[A-Z]/)) validators.push('passwordCapitalLetter');
 		if (password.match(/[a-z]/)) validators.push('passwordLetter');
 		if (password.match(/[0-9]/)) validators.push('passwordNumber');
@@ -65,6 +77,7 @@ const Signup = () => {
 							value={username()}
 							oninput={(e) => {
 								setUsername(e.target.value);
+								validateUsername(e.currentTarget.value);
 							}}
 							onFocus={() => setPanel('Username')}
 						/>
