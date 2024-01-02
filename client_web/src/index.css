@@ -9,14 +9,19 @@
 	/* Colors */
 	--primary: #ff8c00;
 	--secondary: #ffa500;
-
 	--accent: #ffd700;
+	--error: #ff0000;
+	--success: #00ff00;
+	--warning: #ffff00;
 
 	--bg0: #000000;
 	--bg1: #131313;
 	--bg2: #1b1b1b;
+	--bg3: #262626;
+	--bg4: #303030;
+	--bg5: #3a3a3a;
 
-	--primary_gradient: 
+	--primary_gradient:     
 ;
 }
 * {

@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
 	isBanned BOOLEAN NOT NULL DEFAULT '0',
 	displayName VARCHAR(255),
 	bio TEXT
-	avatar bigint,
-	banner bigint,
+	avatar varchar,
+	banner varchar,
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	replyTo bigint,
 	quoteOf bigint,
 	score integer NOT NULL DEFAULT '0',
-	attachments integer []
+	attachments varchar[]
 );
 
 CREATE TABLE IF NOT EXISTS likes (
@@ -39,21 +39,15 @@ CREATE TABLE IF NOT EXISTS messages (
 	senderId bigint NOT NULL,
 	chatId bigint NOT NULL,
 	content TEXT,
-	attachments bigint []
+	attachments varchar[] 
 );
 
 CREATE TABLE IF NOT EXISTS chats (
 	id bigint NOT NULL PRIMARY KEY,
 	members bigint [],
-	coverImage bigint
+	coverImage varchar
 );
 
-CREATE TABLE IF NOT EXISTS attachments (
-	id bigint NOT NULL PRIMARY KEY,
-	userId bigint NOT NULL,
-	type VARCHAR(255) NOT NULL,
-	url VARCHAR(255) NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS bookmarks (
 	id bigint NOT NULL PRIMARY KEY,

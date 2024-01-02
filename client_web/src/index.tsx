@@ -2,12 +2,13 @@
 import { render } from 'solid-js/web';
 import 'solid-devtools';
 import { Route, Router } from '@solidjs/router';
-import Signup from './SignUp';
+import Signup from './components/SignUp/SignUp';
 
 import './index.css';
 
 import Main from './Main';
 import { AppStateProvider } from './AppState';
+import UploadTest from './components/UploadTest/UploadTest';
 
 const root = document.getElementById('root');
 function App() {
@@ -15,10 +16,10 @@ function App() {
 		<AppStateProvider>
 			<Router>
 				<Route path="/" component={Main} />
-				<Route path="register" component={Signup} />
 
 				<Route path="login" component={Main} />
-				<Route path="signup" component={Main} />
+				<Route path="signup" component={Signup} />
+				<Route path="uploadTest" component={UploadTest} />
 			</Router>
 		</AppStateProvider>
 	);
