@@ -14,18 +14,27 @@ export default {
 		signUp: 'Sign up',
 	},
 	auth:{
-		usernameTooShort: 'Username must be at least 3 characters long',
-		usernameTooLong:'Username must be at most 64 characters long',
-		usernameNoSpecials: "Username must not contain special characters other than: , . - _",
+		usernameTooShort: 'At least 3 characters long',
+		usernameTooLong:'At most 64 characters long',
+		usernameNoSpecials: "Only: , . - _ special characters allowed",
 		usernameNoSpaces:'Username must not contain spaces',
 
-		passwordTooShort: 'Password must be at least 8 characters long',
-		passwordCapitalLetter: 'Password must contain at least one capital letter',
-		passwordLetter: 'Password must contain at least one letter',
-		passwordNumber: 'Password must contain at least one number',
-		passwordNoSpaces: 'Password can`t contain spaces',
+		passwordTooShort: 'At least 8 characters long',
+		passwordCapitalLetter: 'At least one capital letter',
+		passwordLetter: 'At least one letter',
+		passwordNumber: 'At least one number',
+		passwordNoSpaces: 'No spaces',
 
-		emailTooShort: 'Email must be at least 5 characters long',
+		repeatPassord: 'Passwords must match',	
+
+		emailTooShort: 'At least 5 characters long',
+		emailNoSpaces: 'No spaces',
+		emailNoSpecials: "No special characters other than @ and .",
+		emailNotTaken: 'Email available',
+		emailAt: 'Has @',
+		emailDot: 'Has .',
+		emailPattern: 'Has valid pattern',
+
 
 
 	}

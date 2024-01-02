@@ -6,7 +6,7 @@ import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
-	type Panel = 'Username' | 'Email' | 'Password' | 'none';
+	type Panel = 'Username' | 'Email' | 'Password' | 'Repeat' | 'none';
 	const [panel, setPanel] = createSignal<Panel>('none');
 	const navigate = useNavigate();
 	const [loading, setLoading] = createSignal(false);
@@ -18,6 +18,7 @@ const Signup = () => {
 	const [validationErrors, setValidationErrors] = createSignal<Array<AuthTransKeysT>>([
 		'usernameNoSpaces',
 		'passwordNoSpaces',
+		'emailNoSpaces',
 		'usernameNoSpecials',
 	]);
 	const [err, setErr] = createSignal(false);
@@ -65,6 +66,21 @@ const Signup = () => {
 		console.log(validators);
 		setValidationErrors(validators as Array<AuthTransKeysT>);
 	}
+	function validateEmail(email: string) {
+		let validators = [];
+		if (email.length >= 5) validators.push('emailTooShort');
+		if (email.match(/\s/)) validators = validators.filter((item) => item !== 'emailNoSpaces');
+		else validators.push('emailNoSpaces');
+		if (email.match(/[^a-zA-Z0-9@.]/)) validators.filter((item) => item !== 'emailNoSpecials');
+		else validators.push('emailNoSpecials');
+		if (email.match(/@/)) validators.push('emailAt');
+		if (email.match(/\./)) validators.push('emailDot');
+		// if email is valid pattern
+		if (email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) validators.push('emailPattern');
+		else validators = validators.filter((item) => item !== 'emailPattern');
+		console.log(validators);
+		setValidationErrors(validators as Array<AuthTransKeysT>);
+	}
 	return (
 		<div class={style.Signup}>
 			<div class={style.magicBorder}>
@@ -79,7 +95,10 @@ const Signup = () => {
 								setUsername(e.target.value);
 								validateUsername(e.currentTarget.value);
 							}}
-							onFocus={() => setPanel('Username')}
+							onFocus={() => {
+								setPanel('Username');
+								validateUsername(username());
+							}}
 						/>
 						<input
 							type="text"
@@ -88,6 +107,11 @@ const Signup = () => {
 							onFocus={() => setPanel('Email')}
 							oninput={(e) => {
 								setEmail(e.currentTarget.value);
+								validateEmail(e.currentTarget.value);
+							}}
+							onfocus={() => {
+								validateEmail(email());
+								setPanel('Email');
 							}}
 						/>
 
@@ -100,15 +124,24 @@ const Signup = () => {
 								console.log(e.currentTarget.value);
 								validatePassword(e.currentTarget.value);
 							}}
-							onFocus={() => setPanel('Password')}
+							onFocus={() => {
+								validatePassword(password());
+								setPanel('Password');
+							}}
 						/>
 						<input
 							type="password"
 							placeholder="Repeat password"
 							value={password2()}
-							onChange={(e) => {
+							oninput={(e) => {
 								setPassword2(e.target.value);
+								let validators = [];
+								if (password2() == password()) validators.push('passwordsMatch');
+
+								console.log(validators);
+								setValidationErrors(validators as Array<AuthTransKeysT>);
 							}}
+							onFocus={() => setPanel('Repeat')}
 						/>
 
 						<button type="submit">Register</button>
@@ -155,6 +188,22 @@ const Signup = () => {
 								</Show>
 							</Match>
 							<Match when={panel() === 'Password' && item.startsWith('password')}>
+								<Show
+									when={validationErrors().includes(item)}
+									fallback={
+										<div class={style.error}>
+											<IconAlertCircle />
+											<h3>{t.auth[item]()}</h3>
+										</div>
+									}
+								>
+									<div class={[style.valid, style.error].join(' ')}>
+										<IconCircleCheck />
+										<h3>{t.auth[item]()}</h3>
+									</div>
+								</Show>
+							</Match>
+							<Match when={panel() === 'Repeat' && item.startsWith('repeat')}>
 								<Show
 									when={validationErrors().includes(item)}
 									fallback={
