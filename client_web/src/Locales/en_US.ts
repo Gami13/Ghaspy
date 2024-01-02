@@ -25,5 +25,7 @@ export default {
 		passwordNumber: 'Password must contain at least one number',
 		passwordNoSpaces: 'Password can`t contain spaces',
 
+
+
 	}
 };

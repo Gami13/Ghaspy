@@ -1,9 +1,9 @@
 import { useNavigate } from '@solidjs/router';
 
-import { For, Show, Switch, Match, createEffect, createSignal } from 'solid-js';
+import { For, Show, Switch, Match, createSignal } from 'solid-js';
 import style from './SignUp.module.css';
 import { API_URL } from '../../constants';
-import { IconAlertHexagon, IconLock, IconLockOpen } from '@tabler/icons-solidjs';
+import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
 	type Panel = 'Username' | 'Email' | 'Password' | 'none';
@@ -38,19 +38,17 @@ const Signup = () => {
 			}
 		});
 	};
-	function validate(password: string) {
-		console.log('chuj');
-
-		let errors = [];
+	function validatePassword(password: string) {
+		let validators = [];
 		// setValidationErrors((prev) => [...prev, 'passwordTooShort']);
-		if (password.length > 8) errors.push('passwordTooShort');
-		if (password.match(/[A-Z]/)) errors.push('passwordCapitalLetter');
-		if (password.match(/[a-z]/)) errors.push('passwordLetter');
-		if (password.match(/[0-9]/)) errors.push('passwordNumber');
-		if (password.match(/ /)) errors.push('passwordNoSpaces');
+		if (password.length > 8) validators.push('passwordTooShort');
+		if (password.match(/[A-Z]/)) validators.push('passwordCapitalLetter');
+		if (password.match(/[a-z]/)) validators.push('passwordLetter');
+		if (password.match(/[0-9]/)) validators.push('passwordNumber');
+		if (password.match(/ /)) validators.push('passwordNoSpaces');
 
-		console.log(errors);
-		setValidationErrors(errors as Array<AuthTransKeysT>);
+		console.log(validators);
+		setValidationErrors(validators as Array<AuthTransKeysT>);
 	}
 	return (
 		<div class={style.Signup}>
@@ -62,7 +60,7 @@ const Signup = () => {
 							type="text"
 							placeholder="username"
 							value={username()}
-							onChange={(e) => {
+							oninput={(e) => {
 								setUsername(e.target.value);
 							}}
 							onFocus={() => setPanel('Username')}
@@ -72,7 +70,7 @@ const Signup = () => {
 							placeholder="email"
 							value={email()}
 							onFocus={() => setPanel('Email')}
-							onChange={(e) => {
+							oninput={(e) => {
 								setEmail(e.currentTarget.value);
 							}}
 						/>
@@ -81,9 +79,10 @@ const Signup = () => {
 							type="password"
 							placeholder="password"
 							value={password()}
-							onkeydown={(e) => validate(e.currentTarget.value + e.key)}
-							onChange={(e) => {
+							oninput={(e) => {
 								setPassword(e.currentTarget.value);
+								console.log(e.currentTarget.value);
+								validatePassword(e.currentTarget.value);
 							}}
 							onFocus={() => setPanel('Password')}
 						/>
@@ -112,13 +111,13 @@ const Signup = () => {
 									when={validationErrors().includes(item)}
 									fallback={
 										<div class={style.error}>
-											<IconLock />
+											<IconAlertCircle />
 											<h3>{t.auth[item]()}</h3>
 										</div>
 									}
 								>
 									<div class={[style.valid, style.error].join(' ')}>
-										<IconLockOpen />
+										<IconCircleCheck />
 										<h3>{t.auth[item]()}</h3>
 									</div>
 								</Show>
@@ -128,13 +127,13 @@ const Signup = () => {
 									when={validationErrors().includes(item)}
 									fallback={
 										<div class={style.error}>
-											<IconLock />
+											<IconAlertCircle />
 											<h3>{t.auth[item]()}</h3>
 										</div>
 									}
 								>
 									<div class={[style.valid, style.error].join(' ')}>
-										<IconLockOpen />
+										<IconCircleCheck />
 										<h3>{t.auth[item]()}</h3>
 									</div>
 								</Show>
@@ -144,13 +143,13 @@ const Signup = () => {
 									when={validationErrors().includes(item)}
 									fallback={
 										<div class={style.error}>
-											<IconLock />
+											<IconAlertCircle />
 											<h3>{t.auth[item]()}</h3>
 										</div>
 									}
 								>
 									<div class={[style.valid, style.error].join(' ')}>
-										<IconLockOpen />
+										<IconCircleCheck />
 										<h3>{t.auth[item]()}</h3>
 									</div>
 								</Show>
