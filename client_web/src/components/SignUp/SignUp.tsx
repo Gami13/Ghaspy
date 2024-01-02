@@ -15,7 +15,10 @@ const Signup = () => {
 	const [password2, setPassword2] = createSignal('');
 	const [email, setEmail] = createSignal('');
 
-	const [validationErrors, setValidationErrors] = createSignal<Array<AuthTransKeysT>>([]);
+	const [validationErrors, setValidationErrors] = createSignal<Array<AuthTransKeysT>>([
+		'usernameNoSpaces',
+		'passwordNoSpaces',
+	]);
 	const [err, setErr] = createSignal(false);
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
@@ -45,8 +48,8 @@ const Signup = () => {
 		if (password.match(/[A-Z]/)) validators.push('passwordCapitalLetter');
 		if (password.match(/[a-z]/)) validators.push('passwordLetter');
 		if (password.match(/[0-9]/)) validators.push('passwordNumber');
-		if (password.match(/ /)) validators.push('passwordNoSpaces');
-
+		if (password.match(/\s/)) validators = validators.filter((item) => item !== 'passwordNoSpaces');
+		else validators.push('passwordNoSpaces');
 		console.log(validators);
 		setValidationErrors(validators as Array<AuthTransKeysT>);
 	}
