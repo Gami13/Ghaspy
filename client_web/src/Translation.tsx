@@ -10,6 +10,9 @@ export const dictionaries = {
 } as const;
 
 export type Locale = keyof typeof dictionaries;
+export type AuthTransKeysT = keyof (typeof dictionaries)[Locale]['auth'];
+export const AuthTransKeys = Object.keys(dictionaries.en_US.auth) as AuthTransKeysT[];
+
 const AppState = useAppState();
 const dict = createMemo(() => i18n.flatten(dictionaries[AppState.locale()]));
 export const t = i18n.chainedTranslator(dictionaries[AppState.locale()], i18n.translator(dict, i18n.resolveTemplate));
