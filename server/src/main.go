@@ -88,7 +88,7 @@ func main() {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
+		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
 		AllowOrigins:     "*",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
@@ -117,6 +117,13 @@ func main() {
 	app.Post("/setDisplayName", setDisplayName)
 	app.Post("/setBio", setBio)
 	app.Post("/fileTest", uploadTest)
+	app.Post("/setDisplayName", setDisplayName)
+	app.Post("/toggleIsFollowingPublic", toggleIsFollowingPublic)
+	app.Post("/toggleIsFollowersPublic", toggleIsFollowersPublic)
+	app.Post("/toggleIsPostsPublic", toggleIsPostsPublic)
+	app.Post("/toggleIsLikesPublic", toggleIsLikesPublic)
+	app.Post("/setAvatar", setAvatar)
+	app.Post("/setBanner", setBanner)
 
 	app.Static("/attachment", "C:\\uploads")
 

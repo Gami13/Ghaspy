@@ -40,8 +40,8 @@ POST {{apiURL}}/login
 Content-Type: "application/json"
 
 {
-	"email": "test@test.com",
-	"password": "TestTest123",
+	"email": "gamiofficial0@gmail.com",
+	"password": "Haslo123",
 	"deviceName": "testDevice"
 }
 
@@ -51,3 +51,39 @@ Content-Type: "application/json"
 POST {{apiURL}}/logout
 Authorization: yesss
 
+
+@token = 138314401219346473.JMis-MzbM3JfGeJaKX5pllYX2LH2ovO0XznClTArSs67ZQidSohesmvZtms3jkVfdXkEVWMlCwICsOMykV-vvGITa6tRD8glPs1_D9bQFsOV-tZDTCm6xYBzrmZmNegknAQb0uYUhbECr-MzGFmBbMJPixL10aJQoO8xYPjN1GU
+
+###setDisplayName test
+POST {{apiURL}}/setDisplayName
+Authorization: {{token}}
+Content-Type: "application/json"
+
+{
+	"displayName": "Gami"
+}
+
+###setBio test
+POST {{apiURL}}/setBio
+Authorization: {{token}}
+Content-Type: "application/json"
+
+{
+	"bio": "Im just a silly little dude :3"
+}
+
+###ToggleIsFollowersPublic test
+POST {{apiURL}}/toggleIsFollowersPublic
+Authorization: {{token}}
+
+###ToggleIsFollowingPublic test
+POST {{apiURL}}/toggleIsFollowingPublic
+Authorization: {{token}}
+
+###ToggleIsPostsPublic test
+POST {{apiURL}}/toggleIsPostsPublic
+Authorization: {{token}}
+
+###ToggleIsLikesPublic test
+POST {{apiURL}}/toggleIsLikesPublic
+Authorization: {{token}}

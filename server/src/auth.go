@@ -132,16 +132,16 @@ func isUsernameValid(username string) []string {
 
 func registerUser(c *fiber.Ctx) error {
 	requestBody := new(RegisterRequestBody)
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
 
 	//DOESNT WORK
 	// if err := c.BodyParser(requestBody); err != nil {
 	// 	logger.Println("ERROR: ", err)
 	// 	return err
 	// }
-	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
-		logger.Println("ERROR: ", err)
-		return err
-	}
 	logger.Println("REGISTERING: ", requestBody.Email)
 
 	passwordErrors := isPasswordValid(requestBody.Password)
