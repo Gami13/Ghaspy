@@ -6,7 +6,7 @@ import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
-	type Panel = 'Username' | 'Email' | 'Password' | 'Repeat' | 'none';
+	type Panel = 'username' | 'email' | 'password' | 'repeat' | 'none';
 	const [panel, setPanel] = createSignal<Panel>('none');
 	const navigate = useNavigate();
 	const [loading, setLoading] = createSignal(false);
@@ -96,7 +96,7 @@ const Signup = () => {
 								validateUsername(e.currentTarget.value);
 							}}
 							onFocus={() => {
-								setPanel('Username');
+								setPanel('username');
 								validateUsername(username());
 							}}
 						/>
@@ -104,14 +104,13 @@ const Signup = () => {
 							type="text"
 							placeholder="email"
 							value={email()}
-							onFocus={() => setPanel('Email')}
 							oninput={(e) => {
 								setEmail(e.currentTarget.value);
 								validateEmail(e.currentTarget.value);
 							}}
 							onfocus={() => {
 								validateEmail(email());
-								setPanel('Email');
+								setPanel('email');
 							}}
 						/>
 
@@ -126,7 +125,7 @@ const Signup = () => {
 							}}
 							onFocus={() => {
 								validatePassword(password());
-								setPanel('Password');
+								setPanel('password');
 							}}
 						/>
 						<input
@@ -141,7 +140,7 @@ const Signup = () => {
 								console.log(validators);
 								setValidationErrors(validators as Array<AuthTransKeysT>);
 							}}
-							onFocus={() => setPanel('Repeat')}
+							onFocus={() => setPanel('repeat')}
 						/>
 
 						<button type="submit">Register</button>
@@ -149,80 +148,32 @@ const Signup = () => {
 				</form>
 			</div>
 
-			<div class={style.validators}>
-				<h3>{panel()} requairements:</h3>
+			<Show when={panel() != 'none'}>
+				<div class={style.validators}>
+					<h3>{panel()}:</h3>
 
-				<For each={AuthTransKeys}>
-					{(item) => (
-						<Switch fallback="">
-							<Match when={panel() === 'Username' && item.startsWith('username')}>
-								<Show
-									when={validationErrors().includes(item)}
-									fallback={
-										<div class={style.error}>
-											<IconAlertCircle />
-											<h3>{t.auth[item]()}</h3>
-										</div>
-									}
-								>
-									<div class={[style.valid, style.error].join(' ')}>
-										<IconCircleCheck />
+					<For each={AuthTransKeys}>
+						{(item) => (
+							<Switch fallback="">
+								<Match when={item.startsWith(panel())}>
+									<div
+										class={style.error}
+										classList={{
+											[style.valid]: validationErrors().includes(item),
+										}}
+									>
+										<Show when={validationErrors().includes(item)} fallback={<IconAlertCircle />}>
+											<IconCircleCheck />
+										</Show>
+
 										<h3>{t.auth[item]()}</h3>
 									</div>
-								</Show>
-							</Match>
-							<Match when={panel() === 'Email' && item.startsWith('email')}>
-								<Show
-									when={validationErrors().includes(item)}
-									fallback={
-										<div class={style.error}>
-											<IconAlertCircle />
-											<h3>{t.auth[item]()}</h3>
-										</div>
-									}
-								>
-									<div class={[style.valid, style.error].join(' ')}>
-										<IconCircleCheck />
-										<h3>{t.auth[item]()}</h3>
-									</div>
-								</Show>
-							</Match>
-							<Match when={panel() === 'Password' && item.startsWith('password')}>
-								<Show
-									when={validationErrors().includes(item)}
-									fallback={
-										<div class={style.error}>
-											<IconAlertCircle />
-											<h3>{t.auth[item]()}</h3>
-										</div>
-									}
-								>
-									<div class={[style.valid, style.error].join(' ')}>
-										<IconCircleCheck />
-										<h3>{t.auth[item]()}</h3>
-									</div>
-								</Show>
-							</Match>
-							<Match when={panel() === 'Repeat' && item.startsWith('repeat')}>
-								<Show
-									when={validationErrors().includes(item)}
-									fallback={
-										<div class={style.error}>
-											<IconAlertCircle />
-											<h3>{t.auth[item]()}</h3>
-										</div>
-									}
-								>
-									<div class={[style.valid, style.error].join(' ')}>
-										<IconCircleCheck />
-										<h3>{t.auth[item]()}</h3>
-									</div>
-								</Show>
-							</Match>
-						</Switch>
-					)}
-				</For>
-			</div>
+								</Match>
+							</Switch>
+						)}
+					</For>
+				</div>
+			</Show>
 		</div>
 	);
 };

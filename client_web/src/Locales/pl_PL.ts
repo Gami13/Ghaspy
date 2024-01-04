@@ -14,22 +14,22 @@ export default {
 		signUp: 'Zarejestruj się',
 	},
 	auth:{
-		usernameTooShort: 'Minimalnie 3 znaki',
-		usernameTooLong:'Maksymalnie 64 znaki',
-		usernameNoSpecials: "Tylko: , . - _ znaki specjalne dozwolone",
-		usernameNoSpaces:'Brak spacji',
-		usernameTaken: 'Nazwa zajęta',
+		usernameTooShort: 'Musi mieć minimalnie 3 znaki',
+		usernameTooLong:'Może mieć maksymalnie 64 znaki',
+		usernameNoSpecials: "Może zawierać tylko: , . - _ jako znaki specjalne",
+		usernameNoSpaces:'Nie może zawierać spacji',
+		usernameTaken: 'Nazwa jest zajęta',
 
-		passwordTooShort: 'Minimalnie 8 znaków',
-		passwordCapitalLetter: 'Jedna wielka litera',
-		passwordLetter: 'Jedna mala litera',
-		passwordNumber: 'Jedna cyfra',
-		passwordNoSpaces: 'Brak spacji',	
+		passwordTooShort: 'Musi mieć minimalnie 8 znaków',
+		passwordCapitalLetter: 'Musi zawierać mininimalnie 1 wielką literę',
+		passwordLetter: 'Musi zawierać minimalnie 1 mala literę',
+		passwordNumber: 'Musi zawierać minimalnie 1 cyfrę',
+		passwordNoSpaces: 'Nie może zawierać spacji',	
 
 		repeatPassord: 'Hasła muszą być takie same',
 
 		emailInvalid: 'Niepoprawny adres email',
-		emailTooShort: 'Minimalnie 5 znaków',
+		emailTooShort: 'Musi mieć minimalnie 5 znaków',
 		emailNoSpecials: "Brak znaków specjalnych poza @ i .",
 
 		emailTaken: 'Email wolny',
