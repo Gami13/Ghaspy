@@ -24,6 +24,7 @@
 	flex-basis: 1;
 	gap: 0.5em;
 	height: 3em;
+	width: -moz-fit-content;
 	width: fit-content;
 }
 .nav > div > .logo {
@@ -75,7 +76,20 @@
 	width: 2.5em;
 	border-radius: 50%;
 }
-
+.nav > .user > svg {
+	height: 1.5em;
+	width: 1.5em;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.25s;
+	box-sizing: content-box;
+	padding: 0.25em;
+}
+.nav > .user > svg:hover {
+	background-color: var(--bg2);
+	transition: all 0.25s;
+	border-radius: 50%;
+}
 .nav > div > .post {
 	background-color: var(--primary);
 	text-align: center;

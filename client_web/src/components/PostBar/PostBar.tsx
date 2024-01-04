@@ -1,3 +1,4 @@
+import { IconSettings } from '@tabler/icons-solidjs';
 import style from './PostBar.module.css';
 
 export default function PostBar(props: { className?: string }) {
@@ -6,6 +7,7 @@ export default function PostBar(props: { className?: string }) {
 			<div class={style.content_header}>
 				<button>For You</button>
 				<button>Following</button>
+				<IconSettings />
 			</div>
 		</main>
 	);

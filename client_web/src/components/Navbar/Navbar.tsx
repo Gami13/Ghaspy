@@ -12,19 +12,18 @@ import {
 import style from './Navbar.module.css';
 import { t } from '@/Translation';
 import { useAppState } from '@/AppState';
-import { Show } from 'solid-js';
+import { Show, createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
-
 export default function Navbar(props: { className?: string }) {
 	const AppState = useAppState();
 
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
 			<div>
-				<A href="/" class={style.logo}>
+				<A href="/" class={style.logo} onClick={() => setActiveComponent('postbar')}>
 					<img src="logo_nobg.png" alt="" />
 				</A>
-				<A href="/">
+				<A href="/" onClick={() => setActiveComponent('postbar')}>
 					<IconHome />
 					<h3>{t.nav.home()}</h3>
 				</A>
@@ -79,8 +78,10 @@ export default function Navbar(props: { className?: string }) {
 					<h3>Username</h3>
 					<p>@username</p>
 				</div>
-				<IconDotsVertical />
+				<IconDotsVertical onClick={() => setActiveComponent('settings')} />
 			</div>
 		</nav>
 	);
 }
+
+export const [activeComponent, setActiveComponent] = createSignal('postbar');

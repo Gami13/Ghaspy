@@ -12,7 +12,7 @@
 	height: 100%;
 	padding: 1em 2em;
 }
-.postbar {
+.pageContent {
 	width: 50%;
 	height: 100%;
 }
@@ -26,7 +26,7 @@
 	.trendbar {
 		display: none;
 	}
-	.postbar {
+	.pageContent {
 		width: 70%;
 	}
 	.navbar {
@@ -41,7 +41,7 @@
 	.trendbar {
 		display: none;
 	}
-	.postbar {
+	.pageContent {
 		width: 100%;
 	}
 	.navbar h3 {
