@@ -17,4 +17,7 @@ export default defineConfig({
 			plugins: [autoprefixer, postcss_nested],
 		},
 	},
+	server: {
+		port: 3000,
+	},
 });

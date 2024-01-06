@@ -2,6 +2,7 @@ import { JSXElement, createContext, createSignal, useContext } from 'solid-js';
 import { Locale } from './Translation';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);
+const [userToken, setUserToken] = createSignal<string | undefined>(undefined); // TODO: [userToken, setUserToken] = [null, null
 const [locale, setLocale] = createSignal<Locale>('pl_PL');
 
 const localeJsFromat = () => {
@@ -15,6 +16,8 @@ const ContextValue = {
 	locale,
 	setLocale,
 	localeJsFromat,
+	userToken,
+	setUserToken,
 };
 const AppState = createContext(ContextValue);
 export function AppStateProvider(props: { children: JSXElement[] | JSXElement }) {

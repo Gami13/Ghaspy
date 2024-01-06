@@ -1,0 +1,61 @@
+.post:hover {
+	background-color: var(--primary) !important;
+}
+.main {
+	width: 100%;
+	height: 100%;
+}
+.header {
+	width: 100%;
+	height: 3em;
+
+	display: grid;
+	grid-template-columns: 3em 1fr;
+	grid-template-rows: 1fr;
+	gap: 2em;
+	border: 1px var(--secondary) solid;
+	border-top: none;
+}
+.header > button {
+	height: 100%;
+	width: 100%;
+
+	font-size: 1em;
+	font-weight: bold;
+	background-color: var(--bg0);
+	outline: none;
+	border: none;
+	cursor: pointer;
+	transition: all 0.5s ease-in-out;
+}
+.header > button:hover {
+	background-color: var(--bg1);
+	transition: all 0.25s;
+}
+.header > h1 {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+
+	font-weight: 600;
+	font-size: 1.5em;
+	vertical-align: middle;
+}
+.profile {
+	.banner {
+		width: 100%;
+		aspect-ratio: 3/1;
+	}
+	.avatarContainer {
+		padding: 1em;
+		.avatar {
+			border-radius: 100px;
+			border: 5px var(--bg0) solid;
+			width: 30%;
+			aspect-ratio: 1/1;
+
+			margin-top: -17%;
+		}
+	}
+}

@@ -1,6 +1,6 @@
 :root {
-	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
+	font-family: 'Inter', system-ui, 'Avenir', Helvetica, Arial, sans-serif;
+	line-height: 1;
 	font-weight: 400;
 
 	color-scheme: light dark;
@@ -21,8 +21,8 @@
 	--bg4: #303030;
 	--bg5: #3a3a3a;
 
-	--primary_gradient:     
-;
+	--default-border: 2px var(--bg2) solid;
+	//--primary_gradient:;
 }
 * {
 	margin: 0;

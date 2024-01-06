@@ -12,10 +12,13 @@
 	height: 100%;
 	padding: 1em 2em;
 }
-.postbar {
+.mainBar {
 	width: 50%;
 	height: 100%;
+	border-left: var(--default-border);
+	border-right: var(--default-border);
 }
+
 .trendbar {
 	width: 25%;
 	height: 100%;
@@ -26,7 +29,7 @@
 	.trendbar {
 		display: none;
 	}
-	.postbar {
+	.mainBar {
 		width: 70%;
 	}
 	.navbar {
@@ -41,7 +44,7 @@
 	.trendbar {
 		display: none;
 	}
-	.postbar {
+	.mainBar {
 		width: 100%;
 	}
 	.navbar h3 {

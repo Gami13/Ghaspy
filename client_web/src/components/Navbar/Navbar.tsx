@@ -22,7 +22,7 @@ export default function Navbar(props: { className?: string }) {
 		<nav class={[style.nav, props.className].join(' ')}>
 			<div>
 				<A href="/" class={style.logo}>
-					<img src="logo_nobg.png" alt="" />
+					<img src="logo.png" alt="TEMP" />
 				</A>
 				<A href="/">
 					<IconHome />

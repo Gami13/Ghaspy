@@ -124,6 +124,8 @@ func main() {
 	app.Post("/toggleIsLikesPublic", toggleIsLikesPublic)
 	app.Post("/setAvatar", setAvatar)
 	app.Post("/setBanner", setBanner)
+	app.Get("/profileId/:id", getProfileId)
+	app.Get("/profile/:name", getProfileUserName)
 
 	app.Static("/attachment", "C:\\uploads")
 

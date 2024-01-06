@@ -6,8 +6,6 @@
 	justify-content: center;
 
 	position: relative;
-	border-left: 2px var(--bg2) solid;
-	border-right: 2px var(--bg2) solid;
 }
 .content_header {
 	width: 100%;

@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS users (
 	id bigint NOT NULL PRIMARY KEY,
 	username VARCHAR(255) NOT NULL,
@@ -8,12 +9,14 @@ CREATE TABLE IF NOT EXISTS users (
 	isBanned BOOLEAN NOT NULL DEFAULT '0',
 	displayName VARCHAR(255),
 	bio TEXT,
-	avatar varchar,
-	banner varchar,
-	isFollowersPublic BOOLEAN NOT NULL DEFAULT '1',
+	avatar VARCHAR(255),
+	banner bigint,
+	prefferedLanguage VARCHAR(255) NOT NULL DEFAULT 'en',
 	isFollowingPublic BOOLEAN NOT NULL DEFAULT '1',
+	isFollowersPublic BOOLEAN NOT NULL DEFAULT '1',
 	isPostsPublic BOOLEAN NOT NULL DEFAULT '1',
 	isLikesPublic BOOLEAN NOT NULL DEFAULT '1'
+	
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -23,7 +26,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	replyTo bigint,
 	quoteOf bigint,
 	score integer NOT NULL DEFAULT '0',
-	attachments varchar []
+	attachments  VARCHAR[]
 );
 
 CREATE TABLE IF NOT EXISTS likes (
@@ -43,14 +46,15 @@ CREATE TABLE IF NOT EXISTS messages (
 	senderId bigint NOT NULL,
 	chatId bigint NOT NULL,
 	content TEXT,
-	attachments varchar []
+	attachments VARCHAR[]
 );
 
 CREATE TABLE IF NOT EXISTS chats (
 	id bigint NOT NULL PRIMARY KEY,
 	members bigint [],
-	coverImage varchar
+	coverImage VARCHAR(255)
 );
+
 
 CREATE TABLE IF NOT EXISTS bookmarks (
 	id bigint NOT NULL PRIMARY KEY,
@@ -63,6 +67,7 @@ CREATE TABLE IF NOT EXISTS tokens (
 	userId bigint NOT NULL,
 	token VARCHAR(255) NOT NULL,
 	device VARCHAR(255) NOT NULL
+
 );
 
 CREATE TABLE IF NOT EXISTS verifications (
@@ -71,3 +76,8 @@ CREATE TABLE IF NOT EXISTS verifications (
 	code VARCHAR(255) NOT NULL,
 	validUntil timestamp NOT NULL
 );
+
+
+
+
+
