@@ -1,86 +1,90 @@
 import { useNavigate } from '@solidjs/router';
 
-import { For, Show, Switch, Match, createSignal } from 'solid-js';
+import { For, Show, Switch, Match, createSignal, onMount } from 'solid-js';
 import style from './SignUp.module.css';
 import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
-	type Panel = 'username' | 'email' | 'password' | 'repeat' | 'none';
-	const [panel, setPanel] = createSignal<Panel>('none');
+	type Panel = 'Username' | 'Email' | 'Password' | 'Repeat' | 'none';
 	const navigate = useNavigate();
 	const [loading, setLoading] = createSignal(false);
 	const [username, setUsername] = createSignal('');
 	const [password, setPassword] = createSignal('');
-	const [password2, setPassword2] = createSignal('');
+	const [passwordRepeat, setPasswordRepeat] = createSignal('');
 	const [email, setEmail] = createSignal('');
 
-	const [validationErrors, setValidationErrors] = createSignal<Array<AuthTransKeysT>>([
-		'usernameNoSpaces',
-		'passwordNoSpaces',
-		'emailNoSpaces',
-		'usernameNoSpecials',
-	]);
+	const [filledRequirements, setFilledRequirements] = createSignal<Array<AuthTransKeysT>>([]);
+	const [backendErrors, setBackendErrors] = createSignal<Array<AuthTransKeysT>>([]);
 	const [err, setErr] = createSignal(false);
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
+		if (filledRequirements().length != AuthTransKeys.length - 2) return;
 		setLoading(true);
-
 		console.log(username, password);
 		fetch(API_URL + '/signup', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				username,
-				password,
+				username: username(),
+				password: password(),
+				email: email(),
 			}),
-		}).then((res) => {
-			if (res.ok) {
-				navigate('/login');
-			} else {
+		})
+			.then((res) => {
+				if (res.status == 200) {
+					alert('Account created');
+					setLoading(false);
+					// navigate('/login');
+				} else {
+					res.json().then((data) => {
+						const backErr = [];
+						console.log(data);
+						if (data.emailErrors) {
+							backErr.push(...data.emailErrors);
+						}
+						if (data.usernameErrors) {
+							backErr.push(...data.usernameErrors);
+						}
+						if (data.passwordErrors) {
+							backErr.push(...data.passwordErrors);
+						}
+						console.log(backErr);
+						setBackendErrors(backErr);
+
+						setLoading(false);
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
 				setErr(true);
-				setLoading(false);
-			}
-		});
+			});
 	};
-	function validateUsername(username: string) {
+	function validate() {
 		let validators = [];
-		if (username.length >= 3) validators.push('usernameTooShort');
-		if (username.length < 64) validators.push('usernameTooLong');
+		if (username().length >= 3) validators.push('usernameTooShort');
+		if (username().length <= 64) validators.push('usernameTooLong');
 		// special characters
-		if (username.match(/[^a-zA-Z0-9,._-]/)) validators.filter((item) => item !== 'usernameNoSpecials');
-		else validators.push('usernameNoSpecials');
-		if (username.match(/\s/)) validators = validators.filter((item) => item !== 'usernameNoSpaces');
-		else validators.push('usernameNoSpaces');
+		if (!username().match(/[^a-zA-Z0-9,._-]/) || username().length == 0) validators.push('usernameNoSpecials');
+
+		if (!username().match(/\s/)) validators.push('usernameNoSpaces');
+		if (password().length >= 8) validators.push('passwordTooShort');
+		if (password().match(/[A-Z]/)) validators.push('passwordCapital');
+		if (password().match(/[a-z]/)) validators.push('passwordLetter');
+		if (password().match(/[0-9]/)) validators.push('passwordNumber');
+		if (!password().match(/\s/)) validators.push('passwordNoSpaces');
+		if (email().length >= 3 && email()[0] != '@' && email()[email().length - 1] != '@' && email().includes('@'))
+			validators.push('emailInvalid');
+		if (passwordRepeat() == password()) validators.push('passwordRepeat');
+
 		console.log(validators);
-		setValidationErrors(validators as Array<AuthTransKeysT>);
+		setFilledRequirements(validators as Array<AuthTransKeysT>);
 	}
-	function validatePassword(password: string) {
-		let validators = [];
-		if (password.length >= 8) validators.push('passwordTooShort');
-		if (password.match(/[A-Z]/)) validators.push('passwordCapitalLetter');
-		if (password.match(/[a-z]/)) validators.push('passwordLetter');
-		if (password.match(/[0-9]/)) validators.push('passwordNumber');
-		if (password.match(/\s/)) validators = validators.filter((item) => item !== 'passwordNoSpaces');
-		else validators.push('passwordNoSpaces');
-		console.log(validators);
-		setValidationErrors(validators as Array<AuthTransKeysT>);
-	}
-	function validateEmail(email: string) {
-		let validators = [];
-		if (email.length >= 5) validators.push('emailTooShort');
-		if (email.match(/\s/)) validators = validators.filter((item) => item !== 'emailNoSpaces');
-		else validators.push('emailNoSpaces');
-		if (email.match(/[^a-zA-Z0-9@.]/)) validators.filter((item) => item !== 'emailNoSpecials');
-		else validators.push('emailNoSpecials');
-		if (email.match(/@/)) validators.push('emailAt');
-		if (email.match(/\./)) validators.push('emailDot');
-		// if email is valid pattern
-		if (email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) validators.push('emailPattern');
-		else validators = validators.filter((item) => item !== 'emailPattern');
-		console.log(validators);
-		setValidationErrors(validators as Array<AuthTransKeysT>);
-	}
+
+	onMount(() => {
+		validate();
+	});
 	return (
 		<div class={style.Signup}>
 			<div class={style.magicBorder}>
@@ -90,57 +94,37 @@ const Signup = () => {
 						<input
 							type="text"
 							placeholder="username"
-							value={username()}
 							oninput={(e) => {
 								setUsername(e.target.value);
-								validateUsername(e.currentTarget.value);
-							}}
-							onFocus={() => {
-								setPanel('username');
-								validateUsername(username());
+								validate();
 							}}
 						/>
 						<input
 							type="text"
 							placeholder="email"
-							value={email()}
 							oninput={(e) => {
 								setEmail(e.currentTarget.value);
-								validateEmail(e.currentTarget.value);
-							}}
-							onfocus={() => {
-								validateEmail(email());
-								setPanel('email');
+								validate();
 							}}
 						/>
 
 						<input
 							type="password"
 							placeholder="password"
-							value={password()}
 							oninput={(e) => {
 								setPassword(e.currentTarget.value);
-								console.log(e.currentTarget.value);
-								validatePassword(e.currentTarget.value);
-							}}
-							onFocus={() => {
-								validatePassword(password());
-								setPanel('password');
+
+								validate();
 							}}
 						/>
 						<input
 							type="password"
 							placeholder="Repeat password"
-							value={password2()}
 							oninput={(e) => {
-								setPassword2(e.target.value);
-								let validators = [];
-								if (password2() == password()) validators.push('passwordsMatch');
+								setPasswordRepeat(e.target.value);
 
-								console.log(validators);
-								setValidationErrors(validators as Array<AuthTransKeysT>);
+								validate();
 							}}
-							onFocus={() => setPanel('repeat')}
 						/>
 
 						<button type="submit">Register</button>
@@ -148,32 +132,27 @@ const Signup = () => {
 				</form>
 			</div>
 
-			<Show when={panel() != 'none'}>
-				<div class={style.validators}>
-					<h3>{panel()}:</h3>
+			<div class={style.validators}>
+				<h3>Sign Up requirements:</h3>
 
-					<For each={AuthTransKeys}>
-						{(item) => (
-							<Switch fallback="">
-								<Match when={item.startsWith(panel())}>
-									<div
-										class={style.error}
-										classList={{
-											[style.valid]: validationErrors().includes(item),
-										}}
-									>
-										<Show when={validationErrors().includes(item)} fallback={<IconAlertCircle />}>
-											<IconCircleCheck />
-										</Show>
-
-										<h3>{t.auth[item]()}</h3>
-									</div>
-								</Match>
-							</Switch>
-						)}
-					</For>
-				</div>
-			</Show>
+				<For each={AuthTransKeys}>
+					{(item) => {
+						console.log('item', item);
+						return (
+							<Show
+								when={
+									!filledRequirements().includes(item) && (!item.includes('Taken') || backendErrors().includes(item))
+								}
+							>
+								<div classList={{ [style.error]: true, [style.backendError]: backendErrors().includes(item) }}>
+									<IconAlertCircle />
+									<h3>{t.auth[item]()}</h3>
+								</div>
+							</Show>
+						);
+					}}
+				</For>
+			</div>
 		</div>
 	);
 };

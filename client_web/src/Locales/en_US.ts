@@ -13,31 +13,25 @@ export default {
 		logIn: 'Log in',
 		signUp: 'Sign up',
 	},
-	auth:{
-		usernameTooShort: 'At least 3 characters long',
-		usernameTooLong:'At most 64 characters long',
-		usernameNoSpecials: "Only: , . - _ special characters allowed",
-		usernameNoSpaces:'Username must not contain spaces',
+	auth: {
+		usernameTooShort: 'Username must be at least 3 characters long',
+		usernameTooLong: 'Username cannot be longer than 64 characters',
+		usernameNoSpecials: 'Only these special characters: , . - _ are allowed',
+		usernameNoSpaces: 'Username cannot contain spaces',
+		usernameTaken: 'This username is already taken',
 
-		passwordTooShort: 'At least 8 characters long',
-		passwordCapitalLetter: 'At least one capital letter',
-		passwordLetter: 'At least one letter',
-		passwordNumber: 'At least one number',
-		passwordNoSpaces: 'No spaces',
+		passwordTooShort: 'Password must be at least 8 characters long',
+		passwordCapital: 'Password must contain a capital letter',
+		passwordLetter: 'Password must contain a letter',
+		passwordNumber: 'Password must contain a number',
+		passwordNoSpaces: 'Password cannot contain spaces',
 
-		repeatPassord: 'Passwords must match',	
+		passwordRepeat: 'Passwords must match',
 
-		emailTooShort: 'At least 5 characters long',
-		emailNoSpaces: 'No spaces',
-		emailNoSpecials: "No special characters other than @ and .",
-		emailNotTaken: 'Email available',
-		emailAt: 'Has @',
-		emailDot: 'Has .',
-		emailPattern: 'Has valid pattern',
-
+		emailInvalid: 'Invalid email address',
+		emailTaken: 'This email address is already taken',
+	},
 		// login
 		emailOrPasswordIncorrect: 'Email or password incorrect',
 		emailOrPasswordEmpty: 'Email or password empty',
-
-	}
 };

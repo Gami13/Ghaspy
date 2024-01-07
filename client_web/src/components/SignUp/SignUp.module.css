@@ -79,45 +79,7 @@
 .registerForm input[type='file'] {
 	display: none;
 }
-.customUpload {
-	display: grid;
-	grid-template-columns: 2em 1fr;
-	grid-template-rows: 1fr;
-	grid-template-areas: 'icon text';
-	place-items: center;
 
-	width: 100%;
-	height: 100%;
-
-	font-size: 1rem;
-	font-weight: bold;
-	cursor: pointer;
-	background-color: var(--bg0);
-	padding: 5px;
-	border-radius: 10px;
-}
-/* input[type="file"]has value */
-
-.customUpload svg {
-	grid-area: icon;
-	height: 1.75em;
-	width: 1.75em;
-
-	aspect-ratio: 1/1;
-	border-radius: 50%;
-}
-.fileValid svg {
-	fill: var(--primary);
-}
-.fileInvalid svg {
-	fill: var(--secondary);
-}
-.customUpload p {
-	grid-area: text;
-	align-self: center;
-	text-align: center;
-	color: var(--text);
-}
 .registerForm button {
 	background-color: var(--primary);
 	background-size: 100%;
@@ -136,11 +98,7 @@
 .registerForm button:hover {
 	background-color: var(--secondary);
 }
-.uploadImg {
-	width: 100%;
-	max-width: 10em;
-	font-size: 1.1rem;
-}
+
 input[type='text'],
 input[type='password'] {
 	width: 100%;
