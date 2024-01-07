@@ -40,7 +40,8 @@ export default {
 		emailDot: 'Zawiera .',
 		emailPattern: 'Ma poprawny wzór',
 	
-		
+		emailOrPasswordIncorrect: 'Email lub hasło niepoprawne',
+		emailOrPasswordEmpty: 'Email lub hasło puste',
 	}
 		
 

@@ -35,7 +35,9 @@ export default {
 		emailDot: 'Has .',
 		emailPattern: 'Has valid pattern',
 
-
+		// login
+		emailOrPasswordIncorrect: 'Email or password incorrect',
+		emailOrPasswordEmpty: 'Email or password empty',
 
 	}
 };

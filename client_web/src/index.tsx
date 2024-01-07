@@ -10,6 +10,7 @@ import Main from './Main';
 import { AppStateProvider } from './AppState';
 import UploadTest from './components/Tests/UploadTest';
 import AvatarTest from './components/Tests/AvatarTest';
+import Login from './components/Login/Login';
 
 const root = document.getElementById('root');
 function App() {
@@ -18,7 +19,7 @@ function App() {
 			<Router>
 				<Route path="/" component={Main} />
 
-				<Route path="login" component={Main} />
+				<Route path="login" component={Login} />
 				<Route path="signup" component={Signup} />
 				<Route path="uploadTest" component={UploadTest} />
 				<Route path="avatarTest" component={AvatarTest} />

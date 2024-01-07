@@ -21,7 +21,12 @@
 	--bg4: #303030;
 	--bg5: #3a3a3a;
 
-	--primary_gradient:     
+	--text0: #ffffff;
+	--text1: #cdcdcd;
+	--text2: rgb(152, 152, 152);
+	--text3: rgb(116, 116, 116);
+
+	--primary_gradient:          
 ;
 }
 * {

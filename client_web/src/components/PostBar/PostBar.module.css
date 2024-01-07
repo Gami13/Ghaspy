@@ -1,9 +1,6 @@
-.post:hover {
-	background-color: var(--primary) !important;
-}
 .content {
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
 
 	position: relative;
 	border-left: 2px var(--bg2) solid;
@@ -34,5 +31,85 @@
 }
 .content_header button:hover {
 	background-color: var(--bg1);
+	transition: all 0.25s;
+}
+
+.postTemplate {
+	width: 100%;
+	height: fit-content;
+	border: 1px var(--secondary) solid;
+	padding: 0.5em 1em;
+	display: grid;
+	gap: 0.5em;
+	grid-template-columns: 3em 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: 'img post';
+}
+.postTemplate hr {
+	grid-area: hr;
+	width: 100%;
+	height: 1px;
+	border: none;
+	background-color: var(--accent);
+}
+.postTemplate img {
+	width: 2.5em;
+	height: 2.5em;
+	object-fit: contain;
+	border-radius: 50%;
+}
+.postTemplate .post {
+	grid-area: post;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+.postTemplate .post .post_text {
+	width: 100%;
+	height: 2em;
+	font-size: 1.25em;
+	overflow: hidden;
+	resize: none;
+	background-color: var(--bg0);
+	border: none;
+	outline: none;
+	padding-top: 0.5em;
+	justify-content: flex-start;
+	color: var(--text3);
+}
+
+.post_buttons {
+	grid-area: buttons;
+	display: flex;
+	flex-direction: row;
+	gap: 0.5em;
+	justify-content: flex-end;
+	align-items: center;
+}
+.post_buttons svg {
+	width: 1.3em;
+	height: 1.3em;
+	cursor: pointer;
+	transition: all 0.5s ease-in-out;
+}
+.postTemplate .post div svg:hover {
+	transform: scale(1.25);
+	transition: all 0.25s;
+}
+.postButton {
+	width: 4em;
+	height: 2em;
+	font-size: 1em;
+	font-weight: bold;
+	background-color: var(--primary);
+	outline: none;
+	border: none;
+	border-radius: 5em;
+	cursor: pointer;
+	transition: all 0.5s ease-in-out;
+	margin-left: auto;
+}
+.postButton:hover {
+	background-color: var(--secondary);
 	transition: all 0.25s;
 }
