@@ -1,4 +1,4 @@
-import { IconArrowBack, IconStackBack } from '@tabler/icons-solidjs';
+import { IconArrowBack, IconLink, IconMail, IconStackBack } from '@tabler/icons-solidjs';
 import style from './UserProfile.module.css';
 import { useParams, useSearchParams } from '@solidjs/router';
 import { Match, ResourceActions, Show, Switch, createResource, createSignal, onMount } from 'solid-js';
@@ -62,54 +62,83 @@ export default function UserProfile() {
 					<object class={style.banner} data="http://fakeimg.pl/1080x360?text=PLACEHOLDER&font=museo" type="image/png">
 						<img src={`${CDN_URL}${userData().banner}`} alt="" />
 					</object>
-					<div class={style.avatarContainer}>
-						<object class={style.avatar} data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar" type="image/png">
-							<img src={`${CDN_URL}${userData().avatar}`} alt="" />
-						</object>
-					</div>
-					<h1>{userData().displayName || userData().userName || params.username || 'user'}</h1>
-					<Switch>
-						<Match when={userData().isYourProfile}>
-							<span>You</span>
-						</Match>
-						<Match when={userData().areYouFollowing && userData()?.areYouFollowedBy}>
-							<button>Mutual</button>
-						</Match>
-						<Match when={userData().areYouFollowedBy}>
-							<button>Follows you</button>
-						</Match>
-					</Switch>
-					<h2>@{userData().userName || params.username || 'user'}</h2>
-					<p>{userData().bio}</p>
-					<span>Joined on {localizeTime(userData().joinedAt)}</span>
-					<Show when={userData().isLikesPublic}>
-						<span>Likes: {userData().likeCount || 0}</span>
-					</Show>
-					<Show when={userData().isPostsPublic && !userData().areYouFollowing}>
-						<span>Posts: {userData().postCount || 0}</span>
-					</Show>
-					<Show when={userData().isFollowersPublic}>
-						<span>Followers: {userData().followerCount || 0}</span>
-					</Show>
+					<div class={style.actions}>
+						<div class={style.avatarContainer}>
+							<object
+								class={style.avatar}
+								data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar"
+								type="image/png"
+							>
+								<img src={`${CDN_URL}${userData().avatar}`} alt="" />
+							</object>
+						</div>
+						<div class={style.buttons}>
+							<button type="button">
+								<IconLink />
+							</button>
 
-					<Show when={userData().isFollowingPublic}>
-						<span>Following: {userData().followingCount || 0}</span>
-					</Show>
-					<Switch>
-						<Match when={userData().isYourProfile && AppState.isLoggedIn()}>
-							<button>Edit Profile</button>
-						</Match>
-						<Match when={userData().areYouFollowing && AppState.isLoggedIn()}>
-							<button>Unfollow</button>
-						</Match>
-						<Match when={!userData().areYouFollowing && AppState.isLoggedIn()}>
-							<button>Follow</button>
-						</Match>
-					</Switch>
-					<Show when={userData().areYouFollowing}>
-						<button>Message</button>
-					</Show>
-					<button>Copy link to profile</button>
+							{/* <Show when={userData().areYouFollowing}> */}
+							<button>
+								<IconMail />
+							</button>
+							{/* </Show> */}
+							<button class={style.primaryAction}>Follow</button>
+
+							<Switch>
+								<Match when={userData().isYourProfile && AppState.isLoggedIn()}>
+									<button class={style.secondaryAction}>Edit Profile</button>
+								</Match>
+								<Match when={userData().areYouFollowing && AppState.isLoggedIn()}>
+									<button class={style.secondaryAction}>Unfollow</button>
+								</Match>
+								{/* <Match when={!userData().areYouFollowing && AppState.isLoggedIn()}> */}
+								{/* </Match> */}
+							</Switch>
+						</div>
+					</div>
+					<div class={style.names}>
+						<h3>{userData().displayName || userData().userName || params.username || 'user'}</h3>
+						<div class={style.username}>
+							<h4>@{userData().userName || params.username || 'user'}</h4>
+							<span class={style.tag}>You</span>
+							<Switch>
+								{/* <Match when={userData().isYourProfile}></Match> */}
+								<Match when={userData().areYouFollowing && userData()?.areYouFollowedBy}>
+									<button class={style.tag}>Mutual</button>
+								</Match>
+								<Match when={userData().areYouFollowedBy}>
+									<button class={style.tag}>Follows you</button>
+								</Match>
+							</Switch>
+						</div>
+					</div>
+
+					<p>{userData().bio}</p>
+
+					<span>Joined: {localizeTime(userData().joinedAt)}</span>
+					<div class={style.data}>
+						<Show when={userData().isLikesPublic}>
+							<span>
+								<mark>{userData().likeCount || 0}</mark> Likes
+							</span>
+						</Show>
+						<Show when={userData().isPostsPublic && !userData().areYouFollowing}>
+							<span>
+								<mark>{userData().postCount || 0}</mark> Posts
+							</span>
+						</Show>
+						<Show when={userData().isFollowersPublic}>
+							<span>
+								<mark>{userData().followerCount || 0}</mark> Followers
+							</span>
+						</Show>
+
+						<Show when={userData().isFollowingPublic}>
+							<span>
+								<mark>{userData().followingCount || 0}</mark> Following
+							</span>
+						</Show>
+					</div>
 				</section>
 			</div>
 		</Show>
