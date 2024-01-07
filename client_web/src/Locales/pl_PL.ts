@@ -13,35 +13,22 @@ export default {
 		logIn: 'Zaloguj się',
 		signUp: 'Zarejestruj się',
 	},
-	auth:{
-		usernameTooShort: 'Minimalnie 3 znaki',
-		usernameTooLong:'Maksymalnie 64 znaki',
-		usernameNoSpecials: "Tylko: , . - _ znaki specjalne dozwolone",
-		usernameNoSpaces:'Brak spacji',
-		usernameTaken: 'Nazwa zajęta',
+	auth: {
+		usernameTooShort: 'Nazwa użytkownika musi mieć minimum 3 znaki',
+		usernameTooLong: 'Nazwa użytkownika nie może być dłuższa niż 64 znaki',
+		usernameNoSpecials: 'Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika',
+		usernameNoSpaces: 'Nazwa użytkownika nie może zawierać spacji',
+		usernameTaken: 'Ta nazwa użytkownika jest już zajęta',
 
-		passwordTooShort: 'Minimalnie 8 znaków',
-		passwordCapitalLetter: 'Jedna wielka litera',
-		passwordLetter: 'Jedna mala litera',
-		passwordNumber: 'Jedna cyfra',
-		passwordNoSpaces: 'Brak spacji',	
+		passwordTooShort: 'Hasło musi mieć minimum 8 znaków',
+		passwordCapital: 'Hasło musi zawierać wielką literę',
+		passwordLetter: 'Hasło musi zawierać literę',
+		passwordNumber: 'Hasło musi zawierać cyfrę',
+		passwordNoSpaces: 'Hasło nie może zawierać spacji',
 
-		repeatPassord: 'Hasła muszą być takie same',
+		passwordRepeat: 'Hasła muszą być takie same',
 
 		emailInvalid: 'Niepoprawny adres email',
-		emailTooShort: 'Minimalnie 5 znaków',
-		emailNoSpecials: "Brak znaków specjalnych poza @ i .",
-
-		emailTaken: 'Email wolny',
-		emailHasNoAt: 'Zawiera @',
-		emailNoSpaces: 'Brak spacji',
-		emailNotTaken: 'Email dostępny',
-		emailAt: 'Zawiera @',
-		emailDot: 'Zawiera .',
-		emailPattern: 'Ma poprawny wzór',
-	
-		
-	}
-		
-
+		emailTaken: 'Ten adres email jest już zajęty',
+	},
 };

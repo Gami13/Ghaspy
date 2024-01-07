@@ -112,7 +112,7 @@ func main() {
 	app.Get("/examples", getExamples)
 	app.Post("/login", logInUser)
 	app.Post("/logout", logOutUser)
-	app.Post("/register", registerUser)
+	app.Post("/signup", signUpUser)
 	app.Get("/validate/:valId", validateUser)
 	app.Post("/setDisplayName", setDisplayName)
 	app.Post("/setBio", setBio)

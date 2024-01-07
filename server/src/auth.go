@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"net/mail"
 	"net/smtp"
 	"os"
 	"regexp"
@@ -90,19 +89,19 @@ func logInUser(c *fiber.Ctx) error {
 func isPasswordValid(password string) []string {
 	var errors []string
 	if len(password) < 8 {
-		errors = append(errors, "Password must be at least 8 characters long")
+		errors = append(errors, "passwordTooShort")
 	}
 	if regexp.MustCompile(`\s`).MatchString(password) {
-		errors = append(errors, "Password cant contain spaces")
+		errors = append(errors, "passwordNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-z]`).MatchString(password) {
-		errors = append(errors, "Password must contain at least one lowercase letter")
+		errors = append(errors, "passwordLetter")
 	}
 	if !regexp.MustCompile(`[0-9]`).MatchString(password) {
-		errors = append(errors, "Password must contain at least one number")
+		errors = append(errors, "passwordNumber")
 	}
 	if !regexp.MustCompile(`[A-Z]`).MatchString(password) {
-		errors = append(errors, "Password must contain at least one uppercase letter")
+		errors = append(errors, "passwordCapital")
 	}
 	return errors
 }
@@ -116,26 +115,27 @@ func isPasswordValid(password string) []string {
 func isUsernameValid(username string) []string {
 	var errors []string
 	if len(username) < 3 {
-		errors = append(errors, "Username must be at least 3 characters long")
+		errors = append(errors, "usernameTooShort")
 	}
 	if len(username) > 64 {
-		errors = append(errors, "Username must be at most 64 characters long")
+		errors = append(errors, "usernameTooLong")
 	}
 	if regexp.MustCompile(`\s`).MatchString(username) {
-		errors = append(errors, "Username must not contain spaces")
+		errors = append(errors, "usernameNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-zA-Z0-9_.,-]`).MatchString(username) {
-		errors = append(errors, "Username must not contain special characters")
+		errors = append(errors, "usernameNoSpecials")
 	}
 	return errors
 }
 
-func registerUser(c *fiber.Ctx) error {
+func signUpUser(c *fiber.Ctx) error {
 	requestBody := new(RegisterRequestBody)
 	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
 		logger.Println("ERROR: ", err)
 		return err
 	}
+	logger.Println("REGISTERING: ", requestBody.Email, requestBody.Nickname, requestBody.Password)
 
 	//DOESNT WORK
 	// if err := c.BodyParser(requestBody); err != nil {
@@ -148,9 +148,9 @@ func registerUser(c *fiber.Ctx) error {
 	usernameErrors := isUsernameValid(requestBody.Nickname)
 	var emailErrors []string
 
-	if _, err := mail.ParseAddress(requestBody.Email); err != nil {
-
-		emailErrors = append(emailErrors, "Invalid email address")
+	if requestBody.Email == "" || requestBody.Email[0] == '@' || requestBody.Email[len(requestBody.Email)-1] == '@' || !strings.Contains(requestBody.Email, "@") {
+		logger.Println("EMAIL INVALID", !strings.Contains(requestBody.Email, "@"), requestBody.Email)
+		emailErrors = append(emailErrors, "emailInvalid")
 	}
 
 	if len(passwordErrors) > 0 || len(usernameErrors) > 0 || len(emailErrors) > 0 {
@@ -173,7 +173,7 @@ func registerUser(c *fiber.Ctx) error {
 	if rowAmount != 0 {
 		//TODO: IF USERNAME IS TAKEN BUT ISNT VERIFIED, AND THE VERIFICATION CODE IS NO LONGER VALID, DELETE THE USER AND REGISTER A NEW ONE
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"usernameErrors": []string{"Username is already taken"},
+			"usernameErrors": []string{"usernameTaken"},
 		})
 	}
 	//CHECK IF EMAIL IS TAKEN
@@ -184,7 +184,7 @@ func registerUser(c *fiber.Ctx) error {
 	}
 	if rowAmount != 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"emailErrors": []string{"Email is already taken"},
+			"emailErrors": []string{"emailTaken"},
 		})
 	}
 	// REGISTER USER HERE
@@ -451,7 +451,7 @@ func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 		case "Password:":
 			return []byte(a.password), nil
 		default:
-			return nil, errors.New("Unkown fromServer")
+			return nil, errors.New("unkown fromServer")
 		}
 	}
 	return nil, nil
