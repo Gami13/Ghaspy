@@ -137,7 +137,7 @@ export default function PostWriter(props: PostWriterProps) {
 										X
 									</button>
 
-									<img style="width: 50px; height:50px" src={URL.createObjectURL(file)} alt="lol" />
+									<img src={URL.createObjectURL(file)} alt="lol" />
 								</li>
 							);
 						} else if (file.type.startsWith('video')) {
