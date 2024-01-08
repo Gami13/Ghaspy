@@ -5,6 +5,7 @@
 	max-width: 1500px;
 	position: relative;
 	background-color: var(--bg0);
+	overflow: auto;
 }
 
 .navbar {
