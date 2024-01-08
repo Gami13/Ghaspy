@@ -12,6 +12,8 @@ export const dictionaries = {
 export type Locale = keyof typeof dictionaries;
 export type AuthTransKeysT = keyof (typeof dictionaries)[Locale]['auth'];
 export const AuthTransKeys = Object.keys(dictionaries.en_US.auth) as AuthTransKeysT[];
+export type LoginTransKeysT = keyof (typeof dictionaries)[Locale]['login'];
+export const LoginTransKeys = Object.keys(dictionaries.en_US.login) as LoginTransKeysT[];
 
 const AppState = useAppState();
 const dict = createMemo(() => i18n.flatten(dictionaries[AppState.locale()]));

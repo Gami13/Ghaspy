@@ -3,7 +3,7 @@ import { Locale } from './Translation';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 const [locale, setLocale] = createSignal<Locale>('pl_PL');
-
+const [userToken, setUserToken] = createSignal<string | undefined>(undefined); // TODO: [userToken, setUserToken] = [null, null
 const localeJsFromat = () => {
 	const locale = useAppState().locale();
 	return locale.replace('_', '-');
@@ -15,6 +15,8 @@ const ContextValue = {
 	locale,
 	setLocale,
 	localeJsFromat,
+	userToken,
+	setUserToken,
 };
 const AppState = createContext(ContextValue);
 export function AppStateProvider(props: { children: JSXElement[] | JSXElement }) {

@@ -52,7 +52,7 @@ POST {{apiURL}}/logout
 Authorization: yesss
 
 
-@token = 138314401219346473.JMis-MzbM3JfGeJaKX5pllYX2LH2ovO0XznClTArSs67ZQidSohesmvZtms3jkVfdXkEVWMlCwICsOMykV-vvGITa6tRD8glPs1_D9bQFsOV-tZDTCm6xYBzrmZmNegknAQb0uYUhbECr-MzGFmBbMJPixL10aJQoO8xYPjN1GU
+@token = 138904788392738857.9f_EUa2oOFlaWXt4zj0J_fI1MAUzl5CZ-xawdCFITErW4PY9RVacd8VLxiai-7i2CV7HU3nwPaLDlGt2O7uvjPNSu1olRg-QHDnegVNdTIk3tw0MHrnJn8yoyt32_nwL53Cs28dQZ89Co42nww7bJrD-J8-zlM4cZYjSq-61SkY
 
 ###setDisplayName test
 POST {{apiURL}}/setDisplayName
@@ -60,7 +60,7 @@ Authorization: {{token}}
 Content-Type: "application/json"
 
 {
-	"displayName": "Gami"
+	"displayName": "Gami The Creator"
 }
 
 ###setBio test
@@ -86,4 +86,18 @@ Authorization: {{token}}
 
 ###ToggleIsLikesPublic test
 POST {{apiURL}}/toggleIsLikesPublic
+Authorization: {{token}}
+
+###Get Profile test
+GET {{apiURL}}/profileId/138904712213692416
+
+###Get Profile test + token
+GET {{apiURL}}/profileId/138904712213692416
+Authorization: {{token}}
+
+###Get Profile by username test
+GET {{apiURL}}/profile/Gami
+
+###Get Profile by username test + token
+GET {{apiURL}}/profile/Gami
 Authorization: {{token}}

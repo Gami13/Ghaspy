@@ -15,11 +15,10 @@ export default function PostBar(props: { className?: string }) {
 	const [text, setText] = createSignal('');
 
 	return (
-		<main class={[style.content, props.className].join(' ')}>
+		<>
 			<div class={style.content_header}>
 				<button>For You</button>
 				<button>Following</button>
-				<IconSettings />
 			</div>
 			<div class={style.postTemplate}>
 				<A href="">
@@ -64,6 +63,6 @@ export default function PostBar(props: { className?: string }) {
 					</div>
 				</div>
 			</div>
-		</main>
+		</>
 	);
 }

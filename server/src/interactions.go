@@ -336,10 +336,93 @@ func toggleFollowing(c *fiber.Ctx) error {
 	})
 }
 
-func getProfile(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
+func getProfileId(c *fiber.Ctx) error {
+	var token = "0"
+
+	if len(c.GetReqHeaders()["Authorization"]) != 0 {
+		token = c.GetReqHeaders()["Authorization"][0]
+	}
+	var userID = c.Params("id")
+	if userID == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, no user id provided",
+		})
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	row := dbpool.QueryRow(c.Context(), "SELECT users.id,users.username, users.displayName, users.bio,users.avatar,users.banner, users.isFollowersPublic,users.isFollowingPublic,users.isPostsPublic,users.isLikesPublic,(SELECT COUNT(likes.id) FROM likes WHERE likes.userId = $1) AS likeCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.authorID = $1) AS postCount, (SELECT COUNT(follows.id) FROM follows WHERE follows.followerid = $1) AS countFollows, (SELECT COUNT(follows.id) FROM follows WHERE follows.followedid = $1) AS countFollowers, (SELECT CASE WHEN COUNT(follows.id) > 0 THEN true ELSE false END AS isFollowed FROM follows WHERE follows.followedid = $1 AND follows.followerId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $2)) AS isFollowed, (SELECT CASE WHEN COUNT(follows.id) > 0 THEN true ELSE false END AS isFollowingYou FROM follows WHERE follows.followerId = $1 AND follows.followedid = (SELECT tokens.userId FROM tokens WHERE tokens.token = $2)) AS isFollowingYou, (SELECT CASE WHEN COUNT(tokens.id) > 0 THEN true ELSE false END AS isYou FROM tokens WHERE tokens.userId = $1 AND tokens.token = $2) AS isYou FROM users WHERE users.id = $1", userID, token)
+	var sqlBody GetProfileSQLBody
+	err := row.Scan(&sqlBody.id, &sqlBody.UserName, &sqlBody.DisplayName, &sqlBody.Bio, &sqlBody.Avatar, &sqlBody.Banner, &sqlBody.isFollowersPublic, &sqlBody.isFollowingPublic, &sqlBody.isPostsPublic, &sqlBody.isLikesPublic, &sqlBody.likeCount, &sqlBody.postCount, &sqlBody.countFollows, &sqlBody.countFollowers, &sqlBody.isFollowed, &sqlBody.isFollowingYou, &sqlBody.isYourProfile)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+	}
+	var responseBody GetProfileResponseBody
+	responseBody.UserName = sqlBody.UserName
+	responseBody.DisplayName = sqlBody.DisplayName.String
+	responseBody.Bio = sqlBody.Bio.String
+	responseBody.Avatar = sqlBody.Avatar.String
+	responseBody.Banner = sqlBody.Banner.String
+	responseBody.LikeCount = sqlBody.likeCount
+	responseBody.PostCount = sqlBody.postCount
+	responseBody.FollowerCount = sqlBody.countFollowers
+	responseBody.FollowingCount = sqlBody.countFollows
+	responseBody.AreYouFollowing = sqlBody.isFollowingYou
+	responseBody.AreYouFollowedBy = sqlBody.isFollowed
+	responseBody.JoinedAt = snowflakeFromInt(sqlBody.id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+
+	responseBody.IsFollowersPublic = sqlBody.isFollowersPublic
+	responseBody.IsFollowingPublic = sqlBody.isFollowingPublic
+	responseBody.IsPostsPublic = sqlBody.isPostsPublic
+	responseBody.IsLikesPublic = sqlBody.isLikesPublic
+	responseBody.IsYourProfile = sqlBody.isYourProfile
+	return c.Status(200).JSON(responseBody)
+
+}
+
+func getProfileUserName(c *fiber.Ctx) error {
+	var token = "0"
+
+	if len(c.GetReqHeaders()["Authorization"]) != 0 {
+		token = c.GetReqHeaders()["Authorization"][0]
+	}
+	var userName = c.Params("name")
+	if userName == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, no user name provided",
+		})
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	row := dbpool.QueryRow(c.Context(), "SELECT users.id,users.username,users.displayName,users.bio,users.avatar,users.isFollowersPublic,users.isFollowingPublic,users.isPostsPublic,users.isLikesPublic,(SELECT COUNT(likes.id) FROM likes, users WHERE likes.userId = users.id AND users.username = $1) AS likeCount,(SELECT COUNT(posts.id) FROM posts,users WHERE posts.authorID = users.id AND users.username = $1) AS postCount, (SELECT COUNT(follows.id) FROM follows,users WHERE follows.followerid = users.id AND users.username = $1) AS countFollows, (SELECT COUNT(follows.id) FROM follows,users  WHERE follows.followedid =users.id AND users.username = $1) AS countFollowers, (SELECT CASE WHEN COUNT(follows.id) > 0 THEN true ELSE false END AS isFollowed FROM follows, users WHERE follows.followedid = users.id AND users.username = $1 AND follows.followerId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $2)) AS isFollowed, (SELECT CASE WHEN COUNT(follows.id) > 0 THEN true ELSE false END AS isFollowingYou FROM follows, users WHERE follows.followerId = users.id AND users.username = $1 AND follows.followedid = (SELECT tokens.userId FROM tokens WHERE tokens.token = $2)) AS isFollowingYou, (SELECT CASE WHEN COUNT(tokens.id) > 0 THEN true ELSE false END AS isYou FROM tokens, users WHERE tokens.userId = users.id AND users.username = $1 AND tokens.token = $2) AS isYou FROM users WHERE users.username = $1", userName, token)
+	var sqlBody GetProfileSQLBody
+	err := row.Scan(&sqlBody.id, &sqlBody.UserName, &sqlBody.DisplayName, &sqlBody.Bio, &sqlBody.Avatar, &sqlBody.isFollowersPublic, &sqlBody.isFollowingPublic, &sqlBody.isPostsPublic, &sqlBody.isLikesPublic, &sqlBody.likeCount, &sqlBody.postCount, &sqlBody.countFollows, &sqlBody.countFollowers, &sqlBody.isFollowed, &sqlBody.isFollowingYou, &sqlBody.isYourProfile)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+	}
+	var responseBody GetProfileResponseBody
+	responseBody.UserName = sqlBody.UserName
+	responseBody.DisplayName = sqlBody.DisplayName.String
+	responseBody.Bio = sqlBody.Bio.String
+	responseBody.Avatar = sqlBody.Avatar.String
+	responseBody.LikeCount = sqlBody.likeCount
+	responseBody.PostCount = sqlBody.postCount
+	responseBody.FollowerCount = sqlBody.countFollowers
+	responseBody.FollowingCount = sqlBody.countFollows
+	responseBody.AreYouFollowing = sqlBody.isFollowingYou
+	responseBody.AreYouFollowedBy = sqlBody.isFollowed
+	responseBody.JoinedAt = snowflakeFromInt(sqlBody.id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+
+	responseBody.IsFollowersPublic = sqlBody.isFollowersPublic
+	responseBody.IsFollowingPublic = sqlBody.isFollowingPublic
+	responseBody.IsPostsPublic = sqlBody.isPostsPublic
+	responseBody.IsLikesPublic = sqlBody.isLikesPublic
+	responseBody.IsYourProfile = sqlBody.isYourProfile
+	return c.Status(200).JSON(responseBody)
+
 }
 
 func getProfilePosts(c *fiber.Ctx) error {
