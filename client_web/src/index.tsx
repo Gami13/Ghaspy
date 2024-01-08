@@ -13,6 +13,7 @@ import AvatarTest from './components/Tests/AvatarTest';
 import Navbar from './components/Navbar/Navbar';
 import PostBar from './components/PostBar/PostBar';
 import UserProfile from './components/UserProfile/UserProfile';
+import Login from './components/Login/Login';
 
 const root = document.getElementById('root');
 function App() {
@@ -22,11 +23,9 @@ function App() {
 				<Route path="/" component={Main}>
 					<Route path="/" component={PostBar} />
 					<Route path="/:username" component={UserProfile} />
+					<Route path="login" component={Login} />
+					<Route path="signup" component={Signup} />
 				</Route>
-
-				<Route path="login" component={Main} />
-				<Route path="signup" component={Signup} />
-
 				<Route path="uploadTest" component={UploadTest} />
 				<Route path="avatarTest" component={AvatarTest} />
 			</Router>

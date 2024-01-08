@@ -10,10 +10,12 @@ import {
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
 import { createSignal } from 'solid-js';
+import { CDN_URL } from '@/constants';
+import { useAppState } from '@/AppState';
 
-export default function PostBar(props: { className?: string }) {
+export default function PostBar() {
 	const [text, setText] = createSignal('');
-
+	const AppState = useAppState();
 	return (
 		<>
 			<div class={style.content_header}>
@@ -21,14 +23,13 @@ export default function PostBar(props: { className?: string }) {
 				<button>Following</button>
 			</div>
 			<div class={style.postTemplate}>
-				<A href="">
-					<img alt="" class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
-				</A>
+				<object class={style.avatar} data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar" type="image/png">
+					<img src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
+				</object>
 				<div class={style.post}>
 					<div
 						class={style.post_text}
 						role="textbox"
-						aria-hidden="true"
 						contentEditable="plaintext-only"
 						onfocus={(e) => {
 							if (e.currentTarget.innerText == "What's happening?") e.currentTarget.innerText = '';
@@ -54,12 +55,10 @@ export default function PostBar(props: { className?: string }) {
 					<hr />
 					<div class={style.post_buttons}>
 						<IconPhoto></IconPhoto>
-						<IconGif></IconGif>
-						<IconAdjustmentsHorizontal></IconAdjustmentsHorizontal>
-						<IconMoodSmile></IconMoodSmile>
-						<IconCalendarClock></IconCalendarClock>
-						<IconMapPin></IconMapPin>
-						<button class={style.postButton}>Post</button>
+
+						<button class={style.postButton} type="button">
+							Post
+						</button>
 					</div>
 				</div>
 			</div>

@@ -6,8 +6,6 @@ import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
-	type Panel = 'username' | 'email' | 'password' | 'repeat' | 'none';
-	const navigate = useNavigate();
 	const [loading, setLoading] = createSignal(false);
 	const [username, setUsername] = createSignal('');
 	const [password, setPassword] = createSignal('');
@@ -88,62 +86,48 @@ const Signup = () => {
 	});
 	return (
 		<div class={style.Signup}>
-			<div class={style.magicBorder}>
-				<form onSubmit={handleSubmit} class={style.registerForm}>
-					<Show when={!loading() && !err()} fallback={<p>Something went wrong</p>}>
-						<h1>Rejestracja</h1>
-						<input
-							type="text"
-							placeholder="username"
-							oninput={(e) => {
-								setUsername(e.target.value);
-								validate();
-							}}
-							onFocus={() => {
-								setPanel('username');
-							}}
-						/>
-						<input
-							type="text"
-							placeholder="email"
-							oninput={(e) => {
-								setEmail(e.currentTarget.value);
-								validate();
-							}}
-							onFocus={() => {
-								setPanel('email');
-							}}
-						/>
+			<form onSubmit={handleSubmit} class={style.registerForm}>
+				<Show when={!loading() && !err()} fallback={<p>Something went wrong</p>}>
+					<h1>Rejestracja</h1>
+					<input
+						type="text"
+						placeholder="username"
+						oninput={(e) => {
+							setUsername(e.target.value);
+							validate();
+						}}
+					/>
+					<input
+						type="text"
+						placeholder="email"
+						oninput={(e) => {
+							setEmail(e.currentTarget.value);
+							validate();
+						}}
+					/>
 
-						<input
-							type="password"
-							placeholder="password"
-							oninput={(e) => {
-								setPassword(e.currentTarget.value);
+					<input
+						type="password"
+						placeholder="password"
+						oninput={(e) => {
+							setPassword(e.currentTarget.value);
 
-								validate();
-							}}
-							onFocus={() => {
-								setPanel('password');
-							}}
-						/>
-						<input
-							type="password"
-							placeholder="Repeat password"
-							oninput={(e) => {
-								setPasswordRepeat(e.target.value);
+							validate();
+						}}
+					/>
+					<input
+						type="password"
+						placeholder="Repeat password"
+						oninput={(e) => {
+							setPasswordRepeat(e.target.value);
 
-								validate();
-							}}
-							onFocus={() => {
-								setPanel('repeat');
-							}}
-						/>
+							validate();
+						}}
+					/>
 
-						<button type="submit">Register</button>
-					</Show>
-				</form>
-			</div>
+					<button type="submit">Register</button>
+				</Show>
+			</form>
 
 			<div class={style.validators}>
 				<h3>Sign Up requirements:</h3>
