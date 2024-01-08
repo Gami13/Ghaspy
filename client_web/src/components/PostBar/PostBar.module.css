@@ -36,7 +36,7 @@
 	width: 100%;
 	height: fit-content;
 	border-bottom: var(--default-border);
-	padding: 1em 1em;
+	padding: 2em;
 	display: grid;
 	gap: 0.5em;
 	grid-template-columns: 3em 1fr;
@@ -109,4 +109,86 @@
 .postButton:hover {
 	background-color: var(--secondary);
 	transition: all 0.25s;
+}
+
+.posts {
+	grid-area: post;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	padding: 1em;
+}
+
+.posts > .post {
+	width: 100%;
+	height: fit-content;
+	display: grid;
+	grid-template-columns: 3em 1fr;
+	grid-template-rows: 1fr;
+	grid-template-areas: 'avatar post';
+	padding: 1em;
+	gap: 0.5em;
+}
+
+.post > object {
+	grid-area: avatar;
+	width: 3em;
+	height: 3em;
+	object-fit: contain;
+	border-radius: 50%;
+}
+
+.post .userData {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5em;
+}
+.post .postContent {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+	width: 100%;
+	grid-area: post;
+	align-items: center;
+}
+.post .postContent object {
+	width: 100%;
+	height: 50%;
+	object-fit: contain;
+	border-radius: 0.5em;
+	border: 3px var(--bg5) solid;
+}
+.post .userData svg {
+	width: 1.3em;
+	height: 1.3em;
+	cursor: pointer;
+	transition: all 0.5s ease-in-out;
+	align-self: center;
+	margin-left: auto;
+}
+
+.post .postButtons {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5em;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5em 0;
+}
+.post .postButtons > button {
+	font-size: 1em;
+	background-color: var(--bg0);
+	outline: none;
+	border: none;
+	border-radius: 5em;
+	cursor: pointer;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	color: var(--text3);
+}
+.post .postButtons > button > svg {
+	border-radius: 50%;
+	fill: none;
 }
