@@ -34,7 +34,9 @@ func GetLocal[T any](c *fiber.Ctx, key string) T {
 func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 	//only part after dot
-	fileExtension := strings.Split(file.Filename, ".")[1]
+	splits := strings.Split(file.Filename, ".")
+	fileExtension := splits[len(splits)-1]
+	println(fileExtension)
 
 	snowflake := newSnowflake("0110")
 
@@ -127,6 +129,7 @@ func main() {
 	app.Get("/profileId/:id", getProfileId)
 	app.Get("/profile/:name", getProfileUserName)
 	app.Get("/profile", getLoggedInUserProfile)
+	app.Post("/post", addPost)
 
 	app.Static("/attachment", "C:\\uploads")
 

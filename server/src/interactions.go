@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -244,98 +245,6 @@ func setBanner(c *fiber.Ctx) error {
 	})
 }
 
-func addPost(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func deletePost(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func toggleLikingPost(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func sendMessage(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func createChatroom(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func addToChatroom(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getPosts(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getChatrooms(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getChatroomMessages(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getBookmarks(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func toggleBookmark(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getFollowers(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getFollowing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func toggleFollowing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
 func getProfileId(c *fiber.Ctx) error {
 	var token = "0"
 
@@ -440,6 +349,71 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(sqlBody)
 }
+func addPost(c *fiber.Ctx) error {
+	logger.Println("ADD POST")
+	var token = c.GetReqHeaders()["Authorization"][0]
+	form, err := c.MultipartForm()
+	if err != nil { /* handle error */
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+
+	}
+	var content sql.NullString
+	var quoteOf sql.NullString
+	var replyTo sql.NullString
+	if len(form.Value["content"]) != 0 {
+		content.String = form.Value["content"][0]
+	}
+	if len(form.Value["quoteOf"]) != 0 {
+		quoteOf.String = form.Value["quoteOf"][0]
+	}
+	if len(form.Value["replyTo"]) != 0 {
+		replyTo.String = form.Value["replyTo"][0]
+	}
+	var fileNames []string
+	if len(form.File) == 0 && content.String == "" && quoteOf.String == "" && replyTo.String == "" {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, no content provided",
+		})
+	}
+	for _, fileHeaders := range form.File {
+		for _, fileHeader := range fileHeaders {
+			// process uploaded file here
+			fileName, err := saveFile(c, fileHeader)
+			if err != nil {
+				logger.Println(err)
+				return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Unexpected error occured",
+				})
+			}
+			fileNames = append(fileNames, fileName)
+
+		}
+	}
+	postId := newSnowflake("0010").ID
+	println("POST ID", postId)
+	println("TOKEN", token)
+	println("CONTENT", content.String)
+	println("QUOTE OF", quoteOf.String)
+	println("REPLY TO", replyTo.String)
+	for _, fileName := range fileNames {
+		println("FILE NAME", fileName)
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	_, err = dbpool.Exec(c.Context(), "INSERT INTO posts (id, authorId, content, quoteOf, replyTo, attachments) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3, $4, $5, $6)", postId, token, content, quoteOf, replyTo, fileNames)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "Post added successfully",
+	})
+}
 
 func getProfilePosts(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
@@ -471,6 +445,90 @@ func changeChatroomImage(c *fiber.Ctx) error {
 	})
 }
 func changeChatroomName(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func deletePost(c *fiber.Ctx) error {
+	// 	var token = c.GetReqHeaders()["Authorization"][0]
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func toggleLikingPost(c *fiber.Ctx) error {
+	// 	var token = c.GetReqHeaders()["Authorization"][0]
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func sendMessage(c *fiber.Ctx) error {
+	// 	var token = c.GetReqHeaders()["Authorization"][0]
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func createChatroom(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func addToChatroom(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getPosts(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getChatrooms(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getChatroomMessages(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getBookmarks(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func toggleBookmark(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getFollowers(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func getFollowing(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func toggleFollowing(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
 	})

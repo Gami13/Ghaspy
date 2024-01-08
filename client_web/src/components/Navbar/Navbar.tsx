@@ -47,10 +47,10 @@ export default function Navbar(props: { className?: string }) {
 						</>
 					}
 				>
-					<A href="">
+					{/* <A href="">
 						<IconBell />
 						<h3>{t.nav.alerts()}</h3>
-					</A>
+					</A> */}
 					<A href="">
 						<IconMail />
 						<h3>{t.nav.inbox()}</h3>
@@ -64,7 +64,7 @@ export default function Navbar(props: { className?: string }) {
 
 						<h3>{t.nav.pins()}</h3>
 					</A>
-					<A href="">
+					<A href={`/${AppState.userName()}`}>
 						<IconUser />
 						<h3>{t.nav.profile()}</h3>
 					</A>

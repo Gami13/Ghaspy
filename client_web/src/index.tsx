@@ -10,7 +10,7 @@ import Main from './components/Main/Main';
 import { AppStateProvider, useAppState } from './AppState';
 import UploadTest from './components/Tests/UploadTest';
 import AvatarTest from './components/Tests/AvatarTest';
-import Navbar from './components/Navbar/Navbar';
+
 import PostBar from './components/PostBar/PostBar';
 import UserProfile from './components/UserProfile/UserProfile';
 import Login from './components/Login/Login';
@@ -51,8 +51,6 @@ function App() {
 		})
 			.then((res) => {
 				if (res.status == 200) {
-					alert('logged in');
-
 					res.json().then((data: GetProfileResponse) => {
 						window.localStorage.setItem('userId', data.id);
 						window.localStorage.setItem('token', token);
@@ -79,7 +77,7 @@ function App() {
 			})
 			.catch((err) => {
 				console.log(err);
-				setErr('error');
+				alert("cant't connect to server");
 			});
 	});
 	return (
