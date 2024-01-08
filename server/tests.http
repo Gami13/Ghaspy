@@ -101,3 +101,9 @@ GET {{apiURL}}/profile/Gami
 ###Get Profile by username test + token
 GET {{apiURL}}/profile/Gami
 Authorization: {{token}}
+
+
+
+###TEST
+POST {{apiURL}}/post
+Authorization: {{token}}

@@ -42,3 +42,20 @@ type GetProfileSQLBody struct {
 	isFollowingYou    bool
 	isYourProfile     bool
 }
+
+type GetLoggedInUserProfileResponseBody struct {
+	Id                int64          `json:"id"`
+	UserName          string         `json:"userName"`
+	DisplayName       sql.NullString `json:"displayName"`
+	Bio               sql.NullString `json:"bio"`
+	Avatar            sql.NullString `json:"avatar"`
+	Banner            sql.NullString `json:"banner"`
+	LikeCount         int            `json:"likeCount"`
+	PostCount         int            `json:"postCount"`
+	FollowerCount     int            `json:"followerCount"`
+	FollowingCount    int            `json:"followingCount"`
+	IsFollowersPublic bool           `json:"isFollowersPublic"`
+	IsFollowingPublic bool           `json:"isFollowingPublic"`
+	IsPostsPublic     bool           `json:"isPostsPublic"`
+	IsLikesPublic     bool           `json:"isLikesPublic"`
+}
