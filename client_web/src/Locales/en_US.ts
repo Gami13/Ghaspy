@@ -35,5 +35,4 @@ export default {
 		error: 'Email or password is incorrect',
 		empty: 'Email or password is empty',
 	},
-	// login
 };

@@ -20,10 +20,10 @@ export default function Navbar(props: { className?: string }) {
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
 			<div>
-				<A href="/" class={style.logo} onClick={() => setActiveComponent('postbar')}>
-					<img src="logo_nobg.png" alt="" />
+				<A href="/" class={style.logo}>
+					<img src="logo_nobg.png" alt="TEMP" />
 				</A>
-				<A href="/" onClick={() => setActiveComponent('postbar')}>
+				<A href="/">
 					<IconHome />
 					<h3>{t.nav.home()}</h3>
 				</A>
@@ -78,7 +78,7 @@ export default function Navbar(props: { className?: string }) {
 					<h3>Username</h3>
 					<p>@username</p>
 				</div>
-				<IconDotsVertical onClick={() => setActiveComponent('settings')} />
+				<IconDotsVertical />
 			</div>
 		</nav>
 	);
