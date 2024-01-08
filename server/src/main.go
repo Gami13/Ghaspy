@@ -130,6 +130,7 @@ func main() {
 	app.Get("/profile/:name", getProfileUserName)
 	app.Get("/profile", getLoggedInUserProfile)
 	app.Post("/post", addPost)
+	app.Get("/postsChrono/:page", getPostsChronologically)
 
 	app.Static("/attachment", "C:\\uploads")
 

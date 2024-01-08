@@ -7,11 +7,11 @@ CREATE TABLE IF NOT EXISTS users (
 	salt VARCHAR(255) NOT NULL, 
 	isValidated BOOLEAN NOT NULL DEFAULT '0', 
 	isBanned BOOLEAN NOT NULL DEFAULT '0', 
-	displayName VARCHAR(255), 
-	bio TEXT, 
-	avatar VARCHAR(255), 
-	banner bigint, 
-	prefferedLanguage VARCHAR(255) NOT NULL DEFAULT 'en', 
+	displayName VARCHAR(255) NOT NULL DEFAULT '', 
+	bio TEXT NOT NULL DEFAULT '',,
+	avatar VARCHAR(255) NOT NULL DEFAULT '', 
+	banner VARCHAR(255) NOT NULL DEFAULT '',
+	prefferedLanguage VARCHAR(255) NOT NULL DEFAULT 'en-US', 
 	isFollowingPublic BOOLEAN NOT NULL DEFAULT '1', 
 	isFollowersPublic BOOLEAN NOT NULL DEFAULT '1', 
 	isPostsPublic BOOLEAN NOT NULL DEFAULT '1', 
@@ -22,11 +22,11 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS posts ( 
 	id bigint NOT NULL PRIMARY KEY, 
 	authorId bigint NOT NULL, 
-	content TEXT, 
-	replyTo bigint, 
-	quoteOf bigint, 
+	content TEXT NOT NULL DEFAULT '', 
+	replyTo bigint NOT NULL DEFAULT '0',
+	quoteOf bigint NOT NULL DEFAULT '0',
 	score integer NOT NULL DEFAULT '0', 
-	attachments  VARCHAR[] 
+	attachments  VARCHAR[] NOT NULL DEFAULT '{}',
 ); 
  
 CREATE TABLE IF NOT EXISTS likes ( 

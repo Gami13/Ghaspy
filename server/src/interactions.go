@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -269,10 +270,10 @@ func getProfileId(c *fiber.Ctx) error {
 	}
 	var responseBody GetProfileResponseBody
 	responseBody.UserName = sqlBody.UserName
-	responseBody.DisplayName = sqlBody.DisplayName.String
-	responseBody.Bio = sqlBody.Bio.String
-	responseBody.Avatar = sqlBody.Avatar.String
-	responseBody.Banner = sqlBody.Banner.String
+	responseBody.DisplayName = sqlBody.DisplayName
+	responseBody.Bio = sqlBody.Bio
+	responseBody.Avatar = sqlBody.Avatar
+	responseBody.Banner = sqlBody.Banner
 	responseBody.LikeCount = sqlBody.likeCount
 	responseBody.PostCount = sqlBody.postCount
 	responseBody.FollowerCount = sqlBody.countFollowers
@@ -314,9 +315,9 @@ func getProfileUserName(c *fiber.Ctx) error {
 	}
 	var responseBody GetProfileResponseBody
 	responseBody.UserName = sqlBody.UserName
-	responseBody.DisplayName = sqlBody.DisplayName.String
-	responseBody.Bio = sqlBody.Bio.String
-	responseBody.Avatar = sqlBody.Avatar.String
+	responseBody.DisplayName = sqlBody.DisplayName
+	responseBody.Bio = sqlBody.Bio
+	responseBody.Avatar = sqlBody.Avatar
 	responseBody.LikeCount = sqlBody.likeCount
 	responseBody.PostCount = sqlBody.postCount
 	responseBody.FollowerCount = sqlBody.countFollowers
@@ -409,6 +410,11 @@ func addPost(c *fiber.Ctx) error {
 			"message": "Unexpected error occured",
 		})
 	}
+	// INSERT 1 LIKE
+	// _, err = dbpool.Exec(c.Context(), "INSERT INTO likes (id, userId, postId) VALUES ($1, $2, $3)", newSnowflake("0011").ID, 69, postId)
+	// if err != nil {
+	// 	logger.Println("ERROR: ", err)
+	// }
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Post added successfully",
@@ -535,6 +541,61 @@ func toggleFollowing(c *fiber.Ctx) error {
 }
 
 func getPostsChronologically(c *fiber.Ctx) error {
-	dppool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	page := c.Params("page")
+	pageInt, err := strconv.ParseInt(page, 10, 64)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, page is not a number",
+		})
+	}
+	postIds := getPostIdsChronologically(c, pageInt)
+	var posts []Post
+	for _, postId := range postIds {
+		posts = append(posts, getPost(c, postId))
+	}
+	return c.Status(200).JSON(posts)
+}
 
+func getUserShort(c *fiber.Ctx, userId int64) UserShort {
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	row := dbpool.QueryRow(c.Context(), "SELECT users.id,users.username,users.displayName,users.avatar, users.banner, users.bio FROM users WHERE users.id = $1", userId)
+	var sqlBody UserShort
+	err := row.Scan(&sqlBody.Id, &sqlBody.UserName, &sqlBody.DisplayName, &sqlBody.Avatar, &sqlBody.Banner, &sqlBody.Bio)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+	}
+	return sqlBody
+}
+
+func getPost(c *fiber.Ctx, postId int64) Post {
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	row := dbpool.QueryRow(c.Context(), "SELECT posts.id, users.id as authorId, users.username, users.displayname, users.avatar, users.banner, users.bio, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, (SELECT COUNT(likes.id) FROM likes WHERE likes.postId = $1) as likeCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.quoteof = $1) as quoteCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.replyto = $1) as replyCount FROM posts, users, likes WHERE posts.authorid = users.id AND posts.id = $1", postId)
+	var sqlBody Post
+
+	err := row.Scan(&sqlBody.Id, &sqlBody.Author.Id, &sqlBody.Author.UserName, &sqlBody.Author.DisplayName, &sqlBody.Author.Avatar, &sqlBody.Author.Banner, &sqlBody.Author.Bio, &sqlBody.Content, &sqlBody.ReplyTo, &sqlBody.QuouteOf, &sqlBody.Attachments, &sqlBody.LikeCount, &sqlBody.QuoteCount, &sqlBody.ReplyCount)
+	logger.Println("attachments", sqlBody.Attachments)
+
+	if err != nil {
+		logger.Println("ERROR: ", err)
+	}
+	return sqlBody
+}
+
+func getPostIdsChronologically(c *fiber.Ctx, page int64) []int64 {
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	var postIds []int64
+	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts ORDER BY posts.id DESC LIMIT 50 OFFSET $1", 50*page)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+	}
+	for rows.Next() {
+		var postId int64
+		err := rows.Scan(&postId)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+		}
+		postIds = append(postIds, postId)
+	}
+	return postIds
 }

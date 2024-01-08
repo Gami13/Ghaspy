@@ -107,3 +107,7 @@ Authorization: {{token}}
 ###TEST
 POST {{apiURL}}/post
 Authorization: {{token}}
+
+
+###GET POSTS CHRONO
+GET {{apiURL}}/postsChrono/0
