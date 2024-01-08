@@ -6,6 +6,10 @@ import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
+	// panel type
+
+	type Panel = 'username' | 'email' | 'password' | 'repeat' | 'none';
+
 	const [loading, setLoading] = createSignal(false);
 	const [username, setUsername] = createSignal('');
 	const [password, setPassword] = createSignal('');
@@ -96,6 +100,9 @@ const Signup = () => {
 							setUsername(e.target.value);
 							validate();
 						}}
+						onfocus={() => {
+							setPanel('username');
+						}}
 					/>
 					<input
 						type="text"
@@ -103,6 +110,9 @@ const Signup = () => {
 						oninput={(e) => {
 							setEmail(e.currentTarget.value);
 							validate();
+						}}
+						onfocus={() => {
+							setPanel('email');
 						}}
 					/>
 
@@ -114,6 +124,9 @@ const Signup = () => {
 
 							validate();
 						}}
+						onfocus={() => {
+							setPanel('password');
+						}}
 					/>
 					<input
 						type="password"
@@ -122,6 +135,9 @@ const Signup = () => {
 							setPasswordRepeat(e.target.value);
 
 							validate();
+						}}
+						onfocus={() => {
+							setPanel('repeat');
 						}}
 					/>
 

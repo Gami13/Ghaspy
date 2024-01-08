@@ -32,10 +32,15 @@
 	font-size: 1em;
 	font-weight: 600;
 	color: var(--bg5);
+	transition: all 0.2s ease-in-out;
 }
 .Signup .validators .backendError > h3 {
-	color: var(--secondary);
+	color: var(--error);
 	font-size: 1em;
+}
+.current h3 {
+	color: var(--secondary) !important;
+	transition: all 0.2s ease-in-out;
 }
 
 .Signup .validators .error svg {
