@@ -26,11 +26,12 @@ export default {
 		passwordNumber: 'Hasło musi zawierać cyfrę',
 		passwordNoSpaces: 'Hasło nie może zawierać spacji',
 
-		passwordRepeat: 'Hasła muszą być takie same',
+		repeatPassword: 'Hasła muszą być takie same',
 
 		emailInvalid: 'Niepoprawny adres email',
 		emailTaken: 'Ten adres email jest już zajęty',
-	},
 		emailOrPasswordIncorrect: 'Email lub hasło niepoprawne',
-		emailOrPasswordEmpty: 'Email lub hasło puste',
+		emailOrPasswordEmpty: 'Email lub hasło puste'
+	},
+		
 };

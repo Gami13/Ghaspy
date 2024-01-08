@@ -6,7 +6,7 @@ import { API_URL } from '../../constants';
 import { IconAlertCircle, IconCircleCheck } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t } from '@/Translation';
 const Signup = () => {
-	type Panel = 'Username' | 'Email' | 'Password' | 'Repeat' | 'none';
+	type Panel = 'username' | 'email' | 'password' | 'repeat' | 'none';
 	const navigate = useNavigate();
 	const [loading, setLoading] = createSignal(false);
 	const [username, setUsername] = createSignal('');
@@ -14,6 +14,7 @@ const Signup = () => {
 	const [passwordRepeat, setPasswordRepeat] = createSignal('');
 	const [email, setEmail] = createSignal('');
 
+	const [panel, setPanel] = createSignal<Panel>('none');
 	const [filledRequirements, setFilledRequirements] = createSignal<Array<AuthTransKeysT>>([]);
 	const [backendErrors, setBackendErrors] = createSignal<Array<AuthTransKeysT>>([]);
 	const [err, setErr] = createSignal(false);
@@ -98,6 +99,9 @@ const Signup = () => {
 								setUsername(e.target.value);
 								validate();
 							}}
+							onFocus={() => {
+								setPanel('username');
+							}}
 						/>
 						<input
 							type="text"
@@ -105,6 +109,9 @@ const Signup = () => {
 							oninput={(e) => {
 								setEmail(e.currentTarget.value);
 								validate();
+							}}
+							onFocus={() => {
+								setPanel('email');
 							}}
 						/>
 
@@ -116,6 +123,9 @@ const Signup = () => {
 
 								validate();
 							}}
+							onFocus={() => {
+								setPanel('password');
+							}}
 						/>
 						<input
 							type="password"
@@ -124,6 +134,9 @@ const Signup = () => {
 								setPasswordRepeat(e.target.value);
 
 								validate();
+							}}
+							onFocus={() => {
+								setPanel('repeat');
 							}}
 						/>
 
@@ -144,7 +157,13 @@ const Signup = () => {
 									!filledRequirements().includes(item) && (!item.includes('Taken') || backendErrors().includes(item))
 								}
 							>
-								<div classList={{ [style.error]: true, [style.backendError]: backendErrors().includes(item) }}>
+								<div
+									classList={{
+										[style.error]: true,
+										[style.backendError]: backendErrors().includes(item),
+										[style.current]: item.includes(panel()),
+									}}
+								>
 									<IconAlertCircle />
 									<h3>{t.auth[item]()}</h3>
 								</div>

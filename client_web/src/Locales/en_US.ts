@@ -26,12 +26,13 @@ export default {
 		passwordNumber: 'Password must contain a number',
 		passwordNoSpaces: 'Password cannot contain spaces',
 
-		passwordRepeat: 'Passwords must match',
+		repeatPassword: 'Passwords must match',
 
 		emailInvalid: 'Invalid email address',
 		emailTaken: 'This email address is already taken',
-	},
 		// login
 		emailOrPasswordIncorrect: 'Email or password incorrect',
 		emailOrPasswordEmpty: 'Email or password empty',
+	},
+		
 };

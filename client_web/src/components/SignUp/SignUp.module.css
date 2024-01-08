@@ -32,19 +32,16 @@
 .Signup .validators .error h3 {
 	font-size: 1em;
 	font-weight: 600;
-	color: var(--secondary);
+	color: var(--text3);
 }
 .valid *,
 .Signup .validators .error * {
 	transition: all 0.5s ease;
 }
 
-.valid h3 {
+.current h3 {
 	font-size: 1em;
-	color: var(--bg5) !important;
-}
-.valid svg {
-	color: var(--success) !important;
+	color: var(--secondary) !important;
 }
 
 .Signup .validators .error svg {
