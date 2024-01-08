@@ -34,5 +34,6 @@ export default {
 	login: {
 		error: 'Email lub hasło jest niepoprawne',
 		empty: 'Email lub hasło jest puste',
+		unvalidated: 'Email nie został jeszcze zweryfikowany',
 	},
 };

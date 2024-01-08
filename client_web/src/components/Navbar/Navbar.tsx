@@ -21,7 +21,7 @@ export default function Navbar(props: { className?: string }) {
 		<nav class={[style.nav, props.className].join(' ')}>
 			<div>
 				<A href="/" class={style.logo}>
-					<img src="logo_nobg.png" alt="TEMP" />
+					<img src="logo.png" alt="TEMP" />
 				</A>
 				<A href="/">
 					<IconHome />
@@ -68,18 +68,19 @@ export default function Navbar(props: { className?: string }) {
 						<IconUser />
 						<h3>{t.nav.profile()}</h3>
 					</A>
+					<button class={style.post}>Post</button>
 				</Show>
-
-				<button class={style.post}>Post</button>
 			</div>
-			<div class={style.user}>
-				<img alt="" class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
-				<div class={style.user_data}>
-					<h3>Username</h3>
-					<p>@username</p>
+			<Show when={AppState.isLoggedIn()}>
+				<div class={style.user}>
+					<img alt="" class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
+					<div class={style.user_data}>
+						<h3>Username</h3>
+						<p>@username</p>
+					</div>
+					<IconDotsVertical />
 				</div>
-				<IconDotsVertical />
-			</div>
+			</Show>
 		</nav>
 	);
 }

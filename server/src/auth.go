@@ -39,12 +39,12 @@ func logInUser(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid email or password",
+			"message": "error",
 		})
 	}
 	if !isValidated {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "User is not validated",
+			"message": "unvalidated",
 		})
 	}
 	//CHECK IF PASSWORD IS CORRECT
@@ -56,7 +56,7 @@ func logInUser(c *fiber.Ctx) error {
 	}
 	if !match {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid email or password",
+			"message": "error",
 		})
 	}
 

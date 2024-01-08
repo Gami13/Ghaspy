@@ -4,7 +4,10 @@ import TrendBar from '../TrendBar/TrendBar';
 import Navbar from '../Navbar/Navbar';
 
 import { JSXElement } from 'solid-js';
-function Main(props: { children: Element | Element[] }) {
+type MainProps = {
+	children: Element | Element[] | JSXElement | JSXElement[];
+};
+function Main(props: MainProps) {
 	return (
 		<div class={style.main}>
 			<Navbar className={style.navbar} />

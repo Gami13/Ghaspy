@@ -34,5 +34,6 @@ export default {
 	login: {
 		error: 'Email or password is incorrect',
 		empty: 'Email or password is empty',
+		unvalidated: 'Email has not been validated yet',
 	},
 };
