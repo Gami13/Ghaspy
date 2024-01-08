@@ -30,8 +30,16 @@ export default {
 
 		emailInvalid: 'Niepoprawny adres email',
 		emailTaken: 'Ten adres email jest już zajęty',
+<<<<<<< HEAD
 		emailOrPasswordIncorrect: 'Email lub hasło niepoprawne',
 		emailOrPasswordEmpty: 'Email lub hasło puste'
 	},
 		
+=======
+	},
+	login: {
+		error: 'Email lub hasło jest niepoprawne',
+		empty: 'Email lub hasło jest puste',
+	},
+>>>>>>> 096ff4b469af56a5a0da7f6849d3b98ca8016340
 };

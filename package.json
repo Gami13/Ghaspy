@@ -1,6 +1,0 @@
-{
-	"dependencies": {
-		"@solid-devtools/overlay": "^0.29.2",
-		"solid-devtools": "^0.29.2"
-	}
-}

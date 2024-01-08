@@ -30,9 +30,17 @@ export default {
 
 		emailInvalid: 'Invalid email address',
 		emailTaken: 'This email address is already taken',
+<<<<<<< HEAD
 		// login
 		emailOrPasswordIncorrect: 'Email or password incorrect',
 		emailOrPasswordEmpty: 'Email or password empty',
 	},
 		
+=======
+	},
+	login: {
+		error: 'Email or password is incorrect',
+		empty: 'Email or password is empty',
+	},
+>>>>>>> 096ff4b469af56a5a0da7f6849d3b98ca8016340
 };
