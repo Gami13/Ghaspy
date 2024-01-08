@@ -64,6 +64,7 @@ export default function PostWriter(props: PostWriterProps) {
 				<hr />
 				<div class={style.post_buttons}>
 					<button
+						title="Add image"
 						type="button"
 						onclick={(e) => {
 							e.preventDefault();
@@ -73,6 +74,7 @@ export default function PostWriter(props: PostWriterProps) {
 						<IconPhoto></IconPhoto>
 					</button>
 					<input
+						title="Add image"
 						type="file"
 						id="imgupload"
 						style="display:none"
