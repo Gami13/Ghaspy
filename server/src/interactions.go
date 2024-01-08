@@ -424,6 +424,22 @@ func getProfileUserName(c *fiber.Ctx) error {
 	return c.Status(200).JSON(responseBody)
 
 }
+func getLoggedInUserProfile(c *fiber.Ctx) error {
+	logger.Println("GET LOGGED IN USER PROFILE")
+	var token = c.GetReqHeaders()["Authorization"][0]
+
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	row := dbpool.QueryRow(c.Context(), "SELECT users.id,users.username,users.displayName,users.bio,users.avatar, users.banner,users.isFollowersPublic,users.isFollowingPublic,users.isPostsPublic,users.isLikesPublic,(SELECT COUNT(likes.id) FROM likes, tokens WHERE likes.userId = tokens.userId AND tokens.token = $1) AS likeCount,(SELECT COUNT(posts.id) FROM posts,tokens WHERE posts.authorID = tokens.userId AND tokens.token = $1) AS postCount, (SELECT COUNT(follows.id) FROM follows,tokens WHERE follows.followerid = tokens.userId AND tokens.token = $1) AS countFollows,(SELECT COUNT(follows.id) FROM follows,tokens  WHERE follows.followedid =tokens.userId AND tokens.token = $1) AS countFollowers FROM users, tokens WHERE users.id = tokens.userId AND tokens.token = $1", token)
+	var sqlBody GetLoggedInUserProfileResponseBody
+	err := row.Scan(&sqlBody.Id, &sqlBody.UserName, &sqlBody.DisplayName, &sqlBody.Bio, &sqlBody.Avatar, &sqlBody.Banner, &sqlBody.IsFollowersPublic, &sqlBody.IsFollowingPublic, &sqlBody.IsPostsPublic, &sqlBody.IsLikesPublic, &sqlBody.LikeCount, &sqlBody.PostCount, &sqlBody.FollowerCount, &sqlBody.FollowingCount)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+	}
+	return c.Status(200).JSON(sqlBody)
+}
 
 func getProfilePosts(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{

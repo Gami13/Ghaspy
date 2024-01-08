@@ -126,6 +126,7 @@ func main() {
 	app.Post("/setBanner", setBanner)
 	app.Get("/profileId/:id", getProfileId)
 	app.Get("/profile/:name", getProfileUserName)
+	app.Get("/profile", getLoggedInUserProfile)
 
 	app.Static("/attachment", "C:\\uploads")
 
