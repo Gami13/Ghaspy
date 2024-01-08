@@ -533,3 +533,8 @@ func toggleFollowing(c *fiber.Ctx) error {
 		"message": "OK",
 	})
 }
+
+func getPostsChronologically(c *fiber.Ctx) error {
+	dppool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
+}
