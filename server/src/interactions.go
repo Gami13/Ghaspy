@@ -415,6 +415,43 @@ func addPost(c *fiber.Ctx) error {
 	})
 }
 
+func getPins(c *fiber.Ctx) error {
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
+func togglePin(c *fiber.Ctx) error {
+	// VERY BAD IDEA GAMI!!! >:3
+	token := c.GetReqHeaders()["Authorization"][0]
+	requestBody := new(TogglePinRequestBody)
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks(id,userId,postId) VALUES ($1, (SELECT tokens.userId FROM tokens where token = $2), $3) WHERE bookmarks.userId NOT IN (SELECT userId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3) AND bookmarks.postId NOT IN (SELECT postId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3)", newSnowflake("0111").ID, token, requestBody.PostID)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured",
+		})
+	}
+
+	if tag.RowsAffected() == 1 {
+		return c.Status(http.StatusOK).JSON(
+			fiber.Map{
+				"message": "Pinned successfully",
+			})
+
+	}
+	// INSERT INTO bookmarks(id,userId,postId) VALUES ($1, (SELECT tokens.userId FROM tokens where token = $2), $3) WHERE bookmarks.userId NOT IN (SELECT userId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3) AND bookmarks.postId NOT IN (SELECT postId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3)
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "OK",
+	})
+}
+
 func getProfilePosts(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
@@ -499,18 +536,6 @@ func getChatrooms(c *fiber.Ctx) error {
 }
 
 func getChatroomMessages(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getBookmarks(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func toggleBookmark(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
 	})

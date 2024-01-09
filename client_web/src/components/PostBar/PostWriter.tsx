@@ -1,6 +1,6 @@
 import {
 	IconSettings,
-	IconPhoto,
+	IconPhotoPlus,
 	IconGif,
 	IconAdjustmentsHorizontal,
 	IconMoodSmile,
@@ -20,10 +20,15 @@ export default function PostWriter(props: PostWriterProps) {
 	const [files, setFiles] = createSignal<File[]>([]);
 	const [text, setText] = createSignal('');
 	const AppState = useAppState();
+
+	//get user data
+	const userAvatar = AppState.userAvatar();
+	const username = AppState.userName();
+	const displayName = AppState.userDisplayName();
 	return (
 		<div class={style.postTemplate}>
 			<object class={style.avatar} data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar" type="image/png">
-				<img src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
+				<img src={`${CDN_URL}${userAvatar}`} alt="TEMP" />
 			</object>
 			<div class={style.post}>
 				<div
@@ -71,7 +76,7 @@ export default function PostWriter(props: PostWriterProps) {
 							document.getElementById('imgupload')?.click();
 						}}
 					>
-						<IconPhoto></IconPhoto>
+						<IconPhotoPlus></IconPhotoPlus>
 					</button>
 					<input
 						title="Add image"

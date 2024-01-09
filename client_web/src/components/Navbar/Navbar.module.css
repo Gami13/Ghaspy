@@ -76,7 +76,12 @@
 	width: 2.5em;
 	border-radius: 50%;
 }
-.nav > .user > svg {
+.nav > .user > a {
+	background-color: transparent !important;
+	text-decoration: none;
+	color: white;
+}
+.nav > .user > a > svg {
 	height: 1.5em;
 	width: 1.5em;
 	border-radius: 50%;
@@ -85,7 +90,7 @@
 	box-sizing: content-box;
 	padding: 0.25em;
 }
-.nav > .user > svg:hover {
+.nav > .user > a > svg:hover {
 	background-color: var(--bg2);
 	transition: all 0.25s;
 	border-radius: 50%;

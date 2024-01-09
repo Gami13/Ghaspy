@@ -52,7 +52,7 @@ POST {{apiURL}}/logout
 Authorization: yesss
 
 
-@token = 138904788392738857.9f_EUa2oOFlaWXt4zj0J_fI1MAUzl5CZ-xawdCFITErW4PY9RVacd8VLxiai-7i2CV7HU3nwPaLDlGt2O7uvjPNSu1olRg-QHDnegVNdTIk3tw0MHrnJn8yoyt32_nwL53Cs28dQZ89Co42nww7bJrD-J8-zlM4cZYjSq-61SkY
+@token = 139448575558942761.rijpCM39qxNiacWHWejbfTcugtpNiuNLvihZPGyxx_3y95SwFq46qQX0O2AejOORZ9m-MT0e5DoQwKiVRRIrkxwCnwYoewdNlQTLH7vY9LNVv5E0_hw8ODmHp8GlBOo-fjLzz3c3jrKMvTKjWvYR9dWG7EMVFunHTCDMfTKqE5Y
 
 ###setDisplayName test
 POST {{apiURL}}/setDisplayName
@@ -107,3 +107,11 @@ Authorization: {{token}}
 ###TEST
 POST {{apiURL}}/post
 Authorization: {{token}}
+
+###togglePin
+POST {{apiURL}}/togglePin
+Authorization: {{token}}
+
+{
+	"postID":"139349861414731794"
+}

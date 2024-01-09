@@ -1,9 +1,10 @@
-import { IconArrowBack, IconLink, IconMail, IconStackBack } from '@tabler/icons-solidjs';
+import { IconArrowBack, IconLink, IconMail } from '@tabler/icons-solidjs';
 import style from './UserProfile.module.css';
-import { useParams, useSearchParams } from '@solidjs/router';
-import { Match, ResourceActions, Show, Switch, createResource, createSignal, onMount } from 'solid-js';
+import { useParams } from '@solidjs/router';
+import { Match, ResourceActions, Show, Switch, createResource, createSignal } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
+import { IconUser, IconForklift } from '@tabler/icons-solidjs';
 
 type GetProfileResponse = {
 	userName: string;
@@ -32,7 +33,10 @@ function localizeTime(time: string) {
 export default function UserProfile() {
 	const params = useParams();
 	const AppState = useAppState();
-	const [userData, userDataAction] = createResource<GetProfileResponse>(async () => {
+	const [isEditUser, setIsEditUser] = createSignal(false);
+	const [filePath, setFilePath] = createSignal('');
+
+	const [userData, _] = createResource<GetProfileResponse>(async () => {
 		const res = await fetch(`${API_URL}/profile/${params.username}`, {
 			method: 'GET',
 			headers: {
@@ -48,11 +52,85 @@ export default function UserProfile() {
 	// BANNER MUST BE 3:1, THIS WILL BE ENFORCED ON UPLOAD
 	// AVATAR MUST BE 1:1, THIS WILL BE ENFORCED ON UPLOAD
 	// TODO: ADD TRANSLATION
+	function handleEditUser() {
+		return async (e: any) => {
+			setIsEditUser(false);
+			handleUpload(e);
+
+			e.preventDefault();
+		};
+	}
+	function handleUpload(e: any) {
+		e.preventDefault();
+		let file = e.target.uploadFile.files[0];
+		console.log(file);
+		let token = e.target.token.value;
+		let formData = new FormData();
+		formData.append('file', file);
+
+		fetch(API_URL + '/setAvatar', {
+			headers: {
+				Authorization: `${token}`,
+			},
+			method: 'POST',
+			body: formData,
+		}).then((res) => res.json().then((data) => setFilePath(data.filename)));
+	}
 	return (
 		<Show when={userData()}>
 			<div class={style.main}>
+				<Show when={isEditUser()}>
+					<div class={style.overlay}>
+						<div class={style.userEdit}>
+							<button
+								class={style.close}
+								onclick={() => {
+									setIsEditUser(false);
+								}}
+							>
+								X
+							</button>
+							<h2>Edit Profile</h2>
+							<form onsubmit={handleEditUser()}>
+								<div class={style.furasLift}>
+									<input type="file" name="uploadFile" id="marcinToFurasUpload" />
+
+									<button
+										title="Add image"
+										type="button"
+										onclick={(e) => {
+											e.preventDefault();
+											document.getElementById('marcinToFurasUpload')?.click();
+										}}
+									>
+										<IconForklift />
+									</button>
+								</div>
+
+								<div>
+									<input type="file" name="uploadFile" id="avatarUpload" />
+
+									<button
+										title="Add image"
+										type="button"
+										onclick={(e) => {
+											e.preventDefault();
+											document.getElementById('avatarUpload')?.click();
+										}}
+									>
+										<IconUser></IconUser>
+									</button>
+								</div>
+
+								<label for="bio">Bio</label>
+								<textarea name="bio" id="bio" cols="30" rows="10"></textarea>
+								<button type="submit">Submit</button>
+							</form>
+						</div>
+					</div>
+				</Show>
 				<section class={style.header}>
-					<button>
+					<button title="return">
 						<IconArrowBack />
 					</button>
 					<h1>{userData().displayName || userData().userName || params.username || 'user'}</h1>
@@ -73,26 +151,33 @@ export default function UserProfile() {
 							</object>
 						</div>
 						<div class={style.buttons}>
-							<button type="button">
+							<button title="copy-link" type="button">
 								<IconLink />
 							</button>
 
-							{/* <Show when={userData().areYouFollowing}> */}
-							<button>
-								<IconMail />
-							</button>
-							{/* </Show> */}
-							<button class={style.primaryAction}>Follow</button>
+							<Show when={userData().areYouFollowing}>
+								<button title="message">
+									<IconMail />
+								</button>
+							</Show>
 
 							<Switch>
 								<Match when={userData().isYourProfile && AppState.isLoggedIn()}>
-									<button class={style.secondaryAction}>Edit Profile</button>
+									<button
+										class={style.secondaryAction}
+										onclick={() => {
+											setIsEditUser(true);
+										}}
+									>
+										Edit Profile
+									</button>
 								</Match>
 								<Match when={userData().areYouFollowing && AppState.isLoggedIn()}>
 									<button class={style.secondaryAction}>Unfollow</button>
 								</Match>
-								{/* <Match when={!userData().areYouFollowing && AppState.isLoggedIn()}> */}
-								{/* </Match> */}
+								<Match when={!userData().areYouFollowing && AppState.isLoggedIn()}>
+									<button class={style.primaryAction}>Follow</button>
+								</Match>
 							</Switch>
 						</div>
 					</div>

@@ -10,25 +10,48 @@ import {
 } from '@tabler/icons-solidjs';
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
-import { createSignal } from 'solid-js';
+import { createSignal, onMount } from 'solid-js';
 import { CDN_URL } from '@/constants';
-import { AppStateProvider, useAppState } from '@/AppState';
+import { useAppState } from '@/AppState';
 import PostWriter from './PostWriter';
 
 export default function PostBar() {
-	const [text, setText] = createSignal('');
 	const AppState = useAppState();
+	type GetPostsResponse = {
+		id: number;
+		authorId: number;
+		context: string;
+		replyTo: number;
+		quoteOf: number;
+		attechments: string[];
+	};
 
+	onMount(() => {
+		fetch('http://localhost:8080/postsChrono', {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		})
+			.then((res) => {
+				if (res.status == 200) {
+					res.json().then((data: GetPostsResponse[]) => {
+						console.log(data);
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	});
 	return (
-		<>
+		<div class={style.main}>
 			<div class={style.content_header}>
 				<button>For You</button>
 				<button>Following</button>
 			</div>
 			<PostWriter />
 
-			<div class={style.posts}>
-				<div class={style.post}>
+			<section class={style.posts}>
+				<article class={style.post}>
 					<object class={style.avatar} data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar" type="image/png">
 						<img src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
 					</object>
@@ -76,8 +99,8 @@ export default function PostBar() {
 							</button>
 						</div>
 					</div>
-				</div>
-			</div>
-		</>
+				</article>
+			</section>
+		</div>
 	);
 }

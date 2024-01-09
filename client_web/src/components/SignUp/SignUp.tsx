@@ -81,7 +81,7 @@ const Signup = () => {
 			validators.push('emailInvalid');
 		if (passwordRepeat() == password()) validators.push('passwordRepeat');
 
-		console.log(validators);
+		// console.log(validators);
 		setFilledRequirements(validators as Array<AuthTransKeysT>);
 	}
 
@@ -91,58 +91,56 @@ const Signup = () => {
 	return (
 		<div class={style.Signup}>
 			<form onSubmit={handleSubmit} class={style.registerForm}>
-				<Show when={!loading() && !err()} fallback={<p>Something went wrong</p>}>
-					<h1>Rejestracja</h1>
-					<input
-						type="text"
-						placeholder="username"
-						oninput={(e) => {
-							setUsername(e.target.value);
-							validate();
-						}}
-						onfocus={() => {
-							setPanel('username');
-						}}
-					/>
-					<input
-						type="text"
-						placeholder="email"
-						oninput={(e) => {
-							setEmail(e.currentTarget.value);
-							validate();
-						}}
-						onfocus={() => {
-							setPanel('email');
-						}}
-					/>
+				<h1>Rejestracja</h1>
+				<input
+					type="text"
+					placeholder="username"
+					oninput={(e) => {
+						setUsername(e.target.value);
+						validate();
+					}}
+					onfocus={() => {
+						setPanel('username');
+					}}
+				/>
+				<input
+					type="text"
+					placeholder="email"
+					oninput={(e) => {
+						setEmail(e.currentTarget.value);
+						validate();
+					}}
+					onfocus={() => {
+						setPanel('email');
+					}}
+				/>
 
-					<input
-						type="password"
-						placeholder="password"
-						oninput={(e) => {
-							setPassword(e.currentTarget.value);
+				<input
+					type="password"
+					placeholder="password"
+					oninput={(e) => {
+						setPassword(e.currentTarget.value);
 
-							validate();
-						}}
-						onfocus={() => {
-							setPanel('password');
-						}}
-					/>
-					<input
-						type="password"
-						placeholder="Repeat password"
-						oninput={(e) => {
-							setPasswordRepeat(e.target.value);
+						validate();
+					}}
+					onfocus={() => {
+						setPanel('password');
+					}}
+				/>
+				<input
+					type="password"
+					placeholder="Repeat password"
+					oninput={(e) => {
+						setPasswordRepeat(e.target.value);
 
-							validate();
-						}}
-						onfocus={() => {
-							setPanel('repeat');
-						}}
-					/>
+						validate();
+					}}
+					onfocus={() => {
+						setPanel('repeat');
+					}}
+				/>
 
-					<button type="submit">Register</button>
-				</Show>
+				<button type="submit">Register</button>
 			</form>
 
 			<div class={style.validators}>
@@ -150,7 +148,7 @@ const Signup = () => {
 
 				<For each={AuthTransKeys}>
 					{(item) => {
-						console.log('item', item);
+						// console.log('item', item);
 						return (
 							<Show
 								when={

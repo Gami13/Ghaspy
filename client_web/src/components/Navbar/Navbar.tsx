@@ -9,6 +9,8 @@ import {
 	IconDotsVertical,
 	IconPin,
 } from '@tabler/icons-solidjs';
+import { CDN_URL } from '@/constants';
+
 import style from './Navbar.module.css';
 import { t } from '@/Translation';
 import { useAppState } from '@/AppState';
@@ -16,6 +18,8 @@ import { Show, createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
 export default function Navbar(props: { className?: string }) {
 	const AppState = useAppState();
+
+	//get user data
 
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
@@ -73,12 +77,18 @@ export default function Navbar(props: { className?: string }) {
 			</div>
 			<Show when={AppState.isLoggedIn()}>
 				<div class={style.user}>
-					<img alt="" class={style.user_avatar} src="http://fakeimg.pl/512x512?font=lobster"></img>
+					<img class={style.user_avatar} src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
 					<div class={style.user_data}>
-						<h3>Username</h3>
-						<p>@username</p>
+						<h3>{AppState.userDisplayName()}</h3>
+						<p>{AppState.userName()}</p>
 					</div>
-					<IconDotsVertical />
+					<A href={`/${AppState.userName()}`}>
+						<IconDotsVertical
+							onclick={() => {
+								t.nav.profile();
+							}}
+						/>
+					</A>
 				</div>
 			</Show>
 		</nav>
