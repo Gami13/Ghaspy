@@ -1,7 +1,7 @@
 import { IconArrowBack, IconLink, IconMail } from '@tabler/icons-solidjs';
 import style from './UserProfile.module.css';
 import { A, useParams } from '@solidjs/router';
-import { Match, ResourceActions, Show, Switch, createResource, createSignal } from 'solid-js';
+import { Match, ResourceActions, Show, Switch, createResource, createSignal, onMount } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
 import { IconUser, IconForklift } from '@tabler/icons-solidjs';
@@ -36,11 +36,11 @@ export default function UserProfile() {
 	const [isEditUser, setIsEditUser] = createSignal(false);
 	const [filePath, setFilePath] = createSignal('');
 
-	const [userData, _] = createResource<GetProfileResponse>(async () => {
+	const [userData, userDataActions] = createResource<GetProfileResponse>(async () => {
 		const res = await fetch(`${API_URL}/profile/${params.username}`, {
 			method: 'GET',
 			headers: {
-				Authorization: AppState.userToken() || '',
+				Authorization: AppState.userToken(),
 				'Content-Type': 'application/json',
 			},
 		});
@@ -48,6 +48,10 @@ export default function UserProfile() {
 		console.log(data);
 		return data as GetProfileResponse;
 	}) as [() => GetProfileResponse, ResourceActions<GetProfileResponse | undefined, unknown>];
+	onMount(() => {
+		userDataActions.refetch();
+	});
+
 	//
 	// BANNER MUST BE 3:1, THIS WILL BE ENFORCED ON UPLOAD
 	// AVATAR MUST BE 1:1, THIS WILL BE ENFORCED ON UPLOAD
@@ -93,14 +97,14 @@ export default function UserProfile() {
 							<h2>Edit Profile</h2>
 							<form onsubmit={handleEditUser()}>
 								<div class={style.furasLift}>
-									<input type="file" name="uploadFile" id="marcinToFurasUpload" />
+									<input type="file" name="uploadFile" id="liftUpload" />
 
 									<button
 										title="Add image"
 										type="button"
 										onclick={(e) => {
 											e.preventDefault();
-											document.getElementById('marcinToFurasUpload')?.click();
+											document.getElementById('liftUpload')?.click();
 										}}
 									>
 										<IconForklift />

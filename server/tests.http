@@ -92,14 +92,14 @@ Authorization: {{token}}
 GET {{apiURL}}/profileId/138904712213692416
 
 ###Get Profile test + token
-GET {{apiURL}}/profileId/138904712213692416
+GET {{apiURL}}/profileId/139146330835517440
 Authorization: {{token}}
 
 ###Get Profile by username test
 GET {{apiURL}}/profile/Gami
 
 ###Get Profile by username test + token
-GET {{apiURL}}/profile/Gami
+GET {{apiURL}}/profile/Gami2
 Authorization: {{token}}
 
 
@@ -118,5 +118,23 @@ POST {{apiURL}}/togglePin
 Authorization: {{token}}
 
 {
-	"postID":139300128763674658
+	"postID":"139300128763674658"
 }
+
+###toggleLike
+POST {{apiURL}}/toggleLike
+Authorization: {{token}}
+
+{
+	"postID":"139300128763674658"
+}
+
+###toggleFollow
+POST {{apiURL}}/toggleFollow
+Authorization: {{token}}
+
+{
+	"profileID":"139146330835517440"
+}
+
+

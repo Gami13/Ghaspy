@@ -98,6 +98,9 @@ type Snowflake struct {
 func (s Snowflake) String() string {
 	return strconv.FormatInt(s.ID, 2)
 }
+func (s Snowflake) StringID() string {
+	return strconv.FormatInt(s.ID, 10)
+}
 
 func newSnowflake(idType string) Snowflake {
 	var currentDate = time.Now().UnixMilli()

@@ -2,6 +2,7 @@
 import { render } from 'solid-js/web';
 import 'solid-devtools';
 import { Route, Router } from '@solidjs/router';
+
 import Signup from './components/SignUp/SignUp';
 
 import './index.css';
@@ -18,7 +19,7 @@ import { onMount } from 'solid-js';
 import { API_URL } from './constants';
 
 type GetProfileResponse = {
-	id: string;
+	id: bigint;
 	userName: string;
 	displayName: string;
 	bio: string;
@@ -52,11 +53,11 @@ function App() {
 			.then((res) => {
 				if (res.status == 200) {
 					res.json().then((data: GetProfileResponse) => {
-						window.localStorage.setItem('userId', data.id);
+						window.localStorage.setItem('userId', data.id.toString());
 						window.localStorage.setItem('token', token);
 						AppState.setIsLoggedIn(true);
 						AppState.setUserToken(token);
-						AppState.setUserId(data.id);
+						AppState.setUserId(data.id.toString());
 						AppState.setUserAvatar(data.avatar);
 						AppState.setUserBanner(data.banner);
 						AppState.setUserBio(data.bio);

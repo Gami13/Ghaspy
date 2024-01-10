@@ -279,8 +279,8 @@ func getProfileId(c *fiber.Ctx) error {
 	responseBody.PostCount = sqlBody.postCount
 	responseBody.FollowerCount = sqlBody.countFollowers
 	responseBody.FollowingCount = sqlBody.countFollows
-	responseBody.AreYouFollowing = sqlBody.isFollowingYou
-	responseBody.AreYouFollowedBy = sqlBody.isFollowed
+	responseBody.AreYouFollowing = sqlBody.isFollowed
+	responseBody.AreYouFollowedBy = sqlBody.isFollowingYou
 	responseBody.JoinedAt = snowflakeFromInt(sqlBody.id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 
 	responseBody.IsFollowersPublic = sqlBody.isFollowersPublic
@@ -323,8 +323,8 @@ func getProfileUserName(c *fiber.Ctx) error {
 	responseBody.PostCount = sqlBody.postCount
 	responseBody.FollowerCount = sqlBody.countFollowers
 	responseBody.FollowingCount = sqlBody.countFollows
-	responseBody.AreYouFollowing = sqlBody.isFollowingYou
-	responseBody.AreYouFollowedBy = sqlBody.isFollowed
+	responseBody.AreYouFollowing = sqlBody.isFollowed
+	responseBody.AreYouFollowedBy = sqlBody.isFollowingYou
 	responseBody.JoinedAt = snowflakeFromInt(sqlBody.id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 
 	responseBody.IsFollowersPublic = sqlBody.isFollowersPublic
@@ -432,15 +432,23 @@ func togglePin(c *fiber.Ctx) error {
 
 	token := c.GetReqHeaders()["Authorization"][0]
 	requestBody := new(TogglePinRequestBody)
+
 	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
 		logger.Println("ERROR: ", err)
 		return err
 	}
+	PostID, err := strconv.Atoi(requestBody.PostID)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, post id is not a number",
+		})
+	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 	//CHECK IF PIN EXISTS
-	row := dbpool.QueryRow(c.Context(), "SELECT COUNT(bookmarks.id) FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, requestBody.PostID)
+	row := dbpool.QueryRow(c.Context(), "SELECT COUNT(bookmarks.id) FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, PostID)
 	var count int
-	err := row.Scan(&count)
+	err = row.Scan(&count)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -448,7 +456,7 @@ func togglePin(c *fiber.Ctx) error {
 		})
 	}
 	if count == 0 {
-		tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake("0011").ID, token, requestBody.PostID)
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake("0111").ID, token, PostID)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -461,7 +469,7 @@ func togglePin(c *fiber.Ctx) error {
 			"state":   true,
 		})
 	} else {
-		tag, err := dbpool.Exec(c.Context(), "DELETE FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, requestBody.PostID)
+		tag, err := dbpool.Exec(c.Context(), "DELETE FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, PostID)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -477,50 +485,166 @@ func togglePin(c *fiber.Ctx) error {
 
 }
 
-func toggleLiking(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
+func toggleLike(c *fiber.Ctx) error {
+	token := c.GetReqHeaders()["Authorization"][0]
+	requestBody := new(ToggleLikeRequestBody)
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
+	PostID, err := strconv.Atoi(requestBody.PostID)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, post id is not a number",
+		})
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
+	row := dbpool.QueryRow(c.Context(), "SELECT COUNT(likes.id) FROM likes WHERE likes.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND likes.postId = $2", token, PostID)
+	var count int
+	err = row.Scan(&count)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured possibly not logged in",
+		})
+	}
+	if count == 0 {
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO likes (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake("0011").ID, token, PostID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Like added successfully",
+			"state":   true,
+		})
+	} else {
+		tag, err := dbpool.Exec(c.Context(), "DELETE FROM likes WHERE likes.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND likes.postId = $2", token, PostID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Like removed successfully",
+			"state":   false,
+		})
+	}
 }
 
-func toggleFollowing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
+func toggleFollow(c *fiber.Ctx) error {
+	token := c.GetReqHeaders()["Authorization"][0]
+	requestBody := new(ToggleFollowRequestBody)
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	UserID, err := strconv.Atoi(requestBody.UserID)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, post id is not a number",
+		})
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	//CHECK IF PIN EXISTS
+	row := dbpool.QueryRow(c.Context(), "SELECT COUNT(follows.id) FROM follows WHERE follows.followerId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND follows.followedId = $2", token, UserID)
+	var count int
+	err = row.Scan(&count)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured possibly not logged in",
+		})
+	}
+	if count == 0 {
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO follows (id, followerId, followedId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake("0100").ID, token, UserID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Follow added successfully",
+			"state":   true,
+		})
+	} else {
+		tag, err := dbpool.Exec(c.Context(), "DELETE FROM follows WHERE follows.followerId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND follows.followedId = $2", token, UserID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Follow removed successfully",
+			"state":   false,
+		})
+	}
 }
 
-func getPosts(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
+// func getLikes(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
 
-func getLikes(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
+// func getFollowers(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
 
-func getFollowers(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getFollowing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
+// func getFollowing(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
 
 func deletePost(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
+	token := c.GetReqHeaders()["Authorization"][0]
+	requestBody := new(DeletePostRequestBody)
+	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+		logger.Println("ERROR: ", err)
+		return err
+	}
+	PostID, err := strconv.Atoi(requestBody.PostID)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, post id is not a number",
+		})
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
+	tag, err := dbpool.Exec(c.Context(), "DELETE FROM posts WHERE posts.id = $1 AND posts.authorId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $2)", PostID, token)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Unexpected error occured possibly not logged in",
+		})
+	}
+	logger.Println(tag)
+	if tag.RowsAffected() == 0 {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
 	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
+		"message": "Post deleted successfully",
 	})
+
 }
 
 // func changeChatroomImage(c *fiber.Ctx) error {
@@ -560,12 +684,17 @@ func deletePost(c *fiber.Ctx) error {
 // 	})
 // }
 
-// func getChatroomMessages(c *fiber.Ctx) error {
-// 	return c.Status(200).JSON(fiber.Map{
-// 		"message": "OK",
-// 	})
-// }
-
+//	func getChatroomMessages(c *fiber.Ctx) error {
+//		return c.Status(200).JSON(fiber.Map{
+//			"message": "OK",
+//		})
+//	}
+//
+//	func getPosts(c *fiber.Ctx) error {
+//		return c.Status(200).JSON(fiber.Map{
+//			"message": "OK",
+//		})
+//	}
 func getPostsChronologically(c *fiber.Ctx) error {
 	page := c.Params("page")
 	pageInt, err := strconv.ParseInt(page, 10, 64)
@@ -622,6 +751,7 @@ func getPost(c *fiber.Ctx, postId int64) Post {
 	if err != nil {
 		logger.Println("ERROR: ", err)
 	}
+	idInt, _ := strconv.Atoi(sqlBody.Id)
 	return Post{
 		Id:          sqlBody.Id,
 		Author:      sqlBody.Author,
@@ -632,7 +762,7 @@ func getPost(c *fiber.Ctx, postId int64) Post {
 		LikeCount:   sqlBody.LikeCount,
 		QuoteCount:  sqlBody.QuoteCount,
 		ReplyCount:  sqlBody.ReplyCount,
-		TimePosted:  snowflakeFromInt(sqlBody.Id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
+		TimePosted:  snowflakeFromInt(int64(idInt)).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
 	}
 }
 
@@ -784,7 +914,7 @@ func appendQuote(c *fiber.Ctx, post PostNestedNested) PostNestedNestedQuote {
 
 func removeDuplicates(posts []PostNestedNested) []PostNestedNested {
 	var newPosts []PostNestedNested
-	var replyIds []int64
+	var replyIds []string
 	for _, post := range posts {
 		if post.ReplyTo != nil {
 			replyIds = append(replyIds, post.ReplyTo.Id)

@@ -42,7 +42,7 @@ type GetProfileSQLBody struct {
 }
 
 type GetLoggedInUserProfileResponseBody struct {
-	Id                int64  `json:"id"`
+	Id                string `json:"id"`
 	UserName          string `json:"userName"`
 	DisplayName       string `json:"displayName"`
 	Bio               string `json:"bio"`
@@ -58,7 +58,7 @@ type GetLoggedInUserProfileResponseBody struct {
 	IsLikesPublic     bool   `json:"isLikesPublic"`
 }
 type UserShort struct {
-	Id          int64  `json:"id"`
+	Id          string `json:"id"`
 	UserName    string `json:"userName"`
 	DisplayName string `json:"displayName"`
 	Avatar      string `json:"avatar"`
@@ -67,7 +67,7 @@ type UserShort struct {
 }
 
 type Post struct {
-	Id          int64     `json:"id"`
+	Id          string    `json:"id"`
 	Author      UserShort `json:"author"`
 	Content     string    `json:"content"`
 	ReplyTo     int64     `json:"replyTo"`
@@ -80,7 +80,7 @@ type Post struct {
 }
 
 type PostNested struct {
-	Id          int64     `json:"id"`
+	Id          string    `json:"id"`
 	Author      UserShort `json:"author"`
 	Content     string    `json:"content"`
 	ReplyTo     *Post     `json:"replyTo"`
@@ -93,7 +93,7 @@ type PostNested struct {
 }
 
 type PostNestedNested struct {
-	Id          int64       `json:"id"`
+	Id          string      `json:"id"`
 	Author      UserShort   `json:"author"`
 	Content     string      `json:"content"`
 	ReplyTo     *PostNested `json:"replyTo"`
@@ -106,7 +106,7 @@ type PostNestedNested struct {
 }
 
 type PostNestedNestedQuote struct {
-	Id          int64       `json:"id"`
+	Id          string      `json:"id"`
 	Author      UserShort   `json:"author"`
 	Content     string      `json:"content"`
 	ReplyTo     *PostNested `json:"replyTo"`

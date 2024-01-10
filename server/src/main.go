@@ -133,6 +133,8 @@ func main() {
 	app.Post("/post", addPost)
 	app.Get("/postsChrono/:page", getPostsChronologically)
 	app.Post("/togglePin", togglePin)
+	app.Post("/toggleLike", toggleLike)
+	app.Post("/toggleFollow", toggleFollow)
 
 	app.Static("/attachment", "C:\\uploads")
 

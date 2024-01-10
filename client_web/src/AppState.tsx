@@ -3,7 +3,7 @@ import { Locale } from './Translation';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 const [locale, setLocale] = createSignal<Locale>('pl_PL');
-const [userToken, setUserToken] = createSignal<string | undefined>(undefined); // TODO: [userToken, setUserToken] = [null, null
+const [userToken, setUserToken] = createSignal<string>(''); // TODO: [userToken, setUserToken] = [null, null
 const [userName, setUserName] = createSignal<string | undefined>(undefined);
 const [userDisplayName, setUserDisplayName] = createSignal<string | undefined>(undefined);
 const [userAvatar, setUserAvatar] = createSignal<string | undefined>(undefined);
