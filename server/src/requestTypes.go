@@ -19,3 +19,11 @@ type SetDisplayNameRequestBody struct {
 type SetBioRequestBody struct {
 	Bio string `json:"bio"`
 }
+
+type GetPinsRequestBody struct {
+	Page int `json:"page"`
+}
+
+type TogglePinRequestBody struct {
+	PostID int `json:"postID"`
+}

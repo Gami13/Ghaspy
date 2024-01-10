@@ -1,5 +1,5 @@
 import style from './Main.module.css';
-import { Match } from 'solid-js';
+import { Match, Show } from 'solid-js';
 import TrendBar from '../TrendBar/TrendBar';
 import Navbar from '../Navbar/Navbar';
 import { useLocation } from '@solidjs/router';
@@ -18,9 +18,9 @@ function Main(props: MainProps) {
 			<main class={[style.mainBar, location.pathname.toString() === '/signup' ? style.noBanner : ''].join(' ')}>
 				{props.children}
 			</main>
-			<Match when={location.pathname.toString() === '/signup'}>
+			<Show when={location.pathname.toString() !== '/signup'}>
 				<TrendBar className={style.trendbar} />
-			</Match>
+			</Show>
 		</div>
 	);
 }

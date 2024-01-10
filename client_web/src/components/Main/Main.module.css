@@ -16,6 +16,8 @@
 .mainBar {
 	width: 50%;
 	height: 100%;
+	max-height: 100vh;
+	overflow: auto;
 	border-left: var(--default-border);
 	border-right: var(--default-border);
 }

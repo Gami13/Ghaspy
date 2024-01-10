@@ -71,10 +71,11 @@ func uploadTest(c *fiber.Ctx) error {
 }
 
 func main() {
-	err := godotenv.Load(".env")
+	err := godotenv.Load(".env.example")
 	if err != nil {
 		logger.Fatalf("Error loading .env file: %s", err)
 	}
+
 	app := fiber.New()
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	logger.Println("Connecting to database...", os.Getenv("DATABASE_URL"))
@@ -131,6 +132,7 @@ func main() {
 	app.Get("/profile", getLoggedInUserProfile)
 	app.Post("/post", addPost)
 	app.Get("/postsChrono/:page", getPostsChronologically)
+	app.Post("/togglePin", togglePin)
 
 	app.Static("/attachment", "C:\\uploads")
 
