@@ -71,7 +71,7 @@ func uploadTest(c *fiber.Ctx) error {
 }
 
 func main() {
-	err := godotenv.Load(".env.example")
+	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Fatalf("Error loading .env file: %s", err)
 	}

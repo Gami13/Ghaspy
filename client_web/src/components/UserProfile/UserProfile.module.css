@@ -16,7 +16,7 @@
 	border: 1px var(--secondary) solid;
 	border-top: none;
 }
-.header > button {
+.header > a {
 	height: 100%;
 	width: 100%;
 
@@ -27,8 +27,15 @@
 	border: none;
 	cursor: pointer;
 	transition: all 0.5s ease-in-out;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text);
+	> svg {
+		height: 100%;
+	}
 }
-.header > button:hover {
+.header > a:hover {
 	background-color: var(--bg1);
 	transition: all 0.25s;
 }

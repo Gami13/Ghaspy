@@ -60,7 +60,7 @@
 	display: inline-flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: space-between;
+	gap: 1em;
 	padding: 0.5em;
 }
 .nav > .user:hover {

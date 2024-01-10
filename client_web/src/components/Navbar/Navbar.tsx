@@ -55,14 +55,14 @@ export default function Navbar(props: { className?: string }) {
 						<IconBell />
 						<h3>{t.nav.alerts()}</h3>
 					</A> */}
-					<A href="">
+					{/* <A href="">
 						<IconMail />
 						<h3>{t.nav.inbox()}</h3>
-					</A>
-					<A href="">
+					</A> */}
+					{/* <A href="">
 						<IconList />
 						<h3>{t.nav.lists()}</h3>
-					</A>
+					</A> */}
 					<A href="">
 						<IconPin />
 
@@ -76,20 +76,13 @@ export default function Navbar(props: { className?: string }) {
 				</Show>
 			</div>
 			<Show when={AppState.isLoggedIn()}>
-				<div class={style.user}>
+				<A class={style.user} href={`/${AppState.userName()}`}>
 					<img class={style.user_avatar} src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
 					<div class={style.user_data}>
 						<h3>{AppState.userDisplayName()}</h3>
 						<p>{AppState.userName()}</p>
 					</div>
-					<A href={`/${AppState.userName()}`}>
-						<IconDotsVertical
-							onclick={() => {
-								t.nav.profile();
-							}}
-						/>
-					</A>
-				</div>
+				</A>
 			</Show>
 		</nav>
 	);

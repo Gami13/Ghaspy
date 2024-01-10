@@ -1,6 +1,6 @@
 import { IconArrowBack, IconLink, IconMail } from '@tabler/icons-solidjs';
 import style from './UserProfile.module.css';
-import { useParams } from '@solidjs/router';
+import { A, useParams } from '@solidjs/router';
 import { Match, ResourceActions, Show, Switch, createResource, createSignal } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
@@ -130,9 +130,9 @@ export default function UserProfile() {
 					</div>
 				</Show>
 				<section class={style.header}>
-					<button title="return">
+					<A href="/">
 						<IconArrowBack />
-					</button>
+					</A>
 					<h1>{userData().displayName || userData().userName || params.username || 'user'}</h1>
 				</section>
 

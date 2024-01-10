@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -579,7 +580,24 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	for _, postId := range postIds {
 		posts = append(posts, getPost(c, postId))
 	}
-	return c.Status(200).JSON(posts)
+	//Now we need to get 2 layers of replies for each post and append them to the post and then remove duplicates
+	postsWithReplies := []PostNested{}
+	for _, post := range posts {
+		postsWithReplies = append(postsWithReplies, appendReplyToPost(c, post))
+
+	}
+	postsWithRepliesNested := []PostNestedNested{}
+	for _, post := range postsWithReplies {
+		postsWithRepliesNested = append(postsWithRepliesNested, appendReplyToNestedPost(c, post))
+	}
+	postsWithRepliesNested = removeDuplicates(postsWithRepliesNested)
+
+	postsWithRepliesNestedAndQuotes := []PostNestedNestedQuote{}
+	for _, post := range postsWithRepliesNested {
+		postsWithRepliesNestedAndQuotes = append(postsWithRepliesNestedAndQuotes, appendQuote(c, post))
+	}
+
+	return c.Status(200).JSON(postsWithRepliesNestedAndQuotes)
 }
 
 func getUserShort(c *fiber.Ctx, userId int64) UserShort {
@@ -604,7 +622,18 @@ func getPost(c *fiber.Ctx, postId int64) Post {
 	if err != nil {
 		logger.Println("ERROR: ", err)
 	}
-	return sqlBody
+	return Post{
+		Id:          sqlBody.Id,
+		Author:      sqlBody.Author,
+		Content:     sqlBody.Content,
+		ReplyTo:     sqlBody.ReplyTo,
+		QuouteOf:    sqlBody.QuouteOf,
+		Attachments: sqlBody.Attachments,
+		LikeCount:   sqlBody.LikeCount,
+		QuoteCount:  sqlBody.QuoteCount,
+		ReplyCount:  sqlBody.ReplyCount,
+		TimePosted:  snowflakeFromInt(sqlBody.Id).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
+	}
 }
 
 func getPostIdsChronologically(c *fiber.Ctx, page int64) []int64 {
@@ -623,4 +652,152 @@ func getPostIdsChronologically(c *fiber.Ctx, page int64) []int64 {
 		postIds = append(postIds, postId)
 	}
 	return postIds
+}
+
+func appendReplyToPost(c *fiber.Ctx, post Post) PostNested {
+	if post.ReplyTo == 0 {
+		return PostNested{
+			Id:          post.Id,
+			Author:      post.Author,
+			Content:     post.Content,
+			ReplyTo:     nil,
+			QuouteOf:    post.QuouteOf,
+			Attachments: post.Attachments,
+			LikeCount:   post.LikeCount,
+			QuoteCount:  post.QuoteCount,
+			ReplyCount:  post.ReplyCount,
+			TimePosted:  post.TimePosted,
+		}
+	}
+	var reply = getPost(c, post.ReplyTo)
+
+	return PostNested{
+		Id:          post.Id,
+		Author:      post.Author,
+		Content:     post.Content,
+		ReplyTo:     &reply,
+		QuouteOf:    post.QuouteOf,
+		Attachments: post.Attachments,
+		LikeCount:   post.LikeCount,
+		QuoteCount:  post.QuoteCount,
+		ReplyCount:  post.ReplyCount,
+		TimePosted:  post.TimePosted,
+	}
+}
+
+func appendReplyToNestedPost(c *fiber.Ctx, post PostNested) PostNestedNested {
+	if post.ReplyTo == nil {
+		return PostNestedNested{
+			Id:          post.Id,
+			Author:      post.Author,
+			Content:     post.Content,
+			ReplyTo:     nil,
+			QuouteOf:    post.QuouteOf,
+			Attachments: post.Attachments,
+			LikeCount:   post.LikeCount,
+			QuoteCount:  post.QuoteCount,
+			ReplyCount:  post.ReplyCount,
+			TimePosted:  post.TimePosted,
+		}
+	}
+	if post.ReplyTo.ReplyTo == 0 {
+		return PostNestedNested{
+			Id:      post.Id,
+			Author:  post.Author,
+			Content: post.Content,
+			ReplyTo: &PostNested{
+				Id:          post.ReplyTo.Id,
+				Author:      post.ReplyTo.Author,
+				Content:     post.ReplyTo.Content,
+				ReplyTo:     nil,
+				QuouteOf:    post.ReplyTo.QuouteOf,
+				Attachments: post.ReplyTo.Attachments,
+				LikeCount:   post.ReplyTo.LikeCount,
+				QuoteCount:  post.ReplyTo.QuoteCount,
+				ReplyCount:  post.ReplyTo.ReplyCount,
+				TimePosted:  post.ReplyTo.TimePosted,
+			},
+			QuouteOf:    post.QuouteOf,
+			Attachments: post.Attachments,
+			LikeCount:   post.LikeCount,
+			QuoteCount:  post.QuoteCount,
+			ReplyCount:  post.ReplyCount,
+			TimePosted:  post.TimePosted,
+		}
+	}
+
+	replyReply := getPost(c, post.ReplyTo.ReplyTo)
+	return PostNestedNested{
+		Id:      post.Id,
+		Author:  post.Author,
+		Content: post.Content,
+		ReplyTo: &PostNested{
+			Id:          post.ReplyTo.Id,
+			Author:      post.ReplyTo.Author,
+			Content:     post.ReplyTo.Content,
+			ReplyTo:     &replyReply,
+			QuouteOf:    post.ReplyTo.QuouteOf,
+			Attachments: post.ReplyTo.Attachments,
+			LikeCount:   post.ReplyTo.LikeCount,
+			QuoteCount:  post.ReplyTo.QuoteCount,
+			ReplyCount:  post.ReplyTo.ReplyCount,
+			TimePosted:  post.ReplyTo.TimePosted,
+		},
+		QuouteOf:    post.QuouteOf,
+		Attachments: post.Attachments,
+		LikeCount:   post.LikeCount,
+		QuoteCount:  post.QuoteCount,
+		ReplyCount:  post.ReplyCount,
+		TimePosted:  post.TimePosted,
+	}
+}
+
+func appendQuote(c *fiber.Ctx, post PostNestedNested) PostNestedNestedQuote {
+	if post.QuouteOf == 0 {
+		return PostNestedNestedQuote{
+			Id:          post.Id,
+			Author:      post.Author,
+			Content:     post.Content,
+			ReplyTo:     post.ReplyTo,
+			QuouteOf:    nil,
+			Attachments: post.Attachments,
+			LikeCount:   post.LikeCount,
+			QuoteCount:  post.QuoteCount,
+			ReplyCount:  post.ReplyCount,
+			TimePosted:  post.TimePosted,
+		}
+	}
+	var quote = getPost(c, post.QuouteOf)
+	return PostNestedNestedQuote{
+		Id:          post.Id,
+		Author:      post.Author,
+		Content:     post.Content,
+		ReplyTo:     post.ReplyTo,
+		QuouteOf:    &quote,
+		Attachments: post.Attachments,
+		LikeCount:   post.LikeCount,
+		QuoteCount:  post.QuoteCount,
+		ReplyCount:  post.ReplyCount,
+		TimePosted:  post.TimePosted,
+	}
+}
+
+func removeDuplicates(posts []PostNestedNested) []PostNestedNested {
+	var newPosts []PostNestedNested
+	var replyIds []int64
+	for _, post := range posts {
+		if post.ReplyTo != nil {
+			replyIds = append(replyIds, post.ReplyTo.Id)
+			if post.ReplyTo.ReplyTo != nil {
+				replyIds = append(replyIds, post.ReplyTo.ReplyTo.Id)
+			}
+		}
+
+	}
+	for _, post := range posts {
+		if post.ReplyTo == nil || !slices.Contains(replyIds, post.Id) {
+			newPosts = append(newPosts, post)
+		}
+	}
+	return newPosts
 }

@@ -78,3 +78,42 @@ type Post struct {
 	ReplyCount  int       `json:"replyCount"`
 	TimePosted  string    `json:"timePosted"`
 }
+
+type PostNested struct {
+	Id          int64     `json:"id"`
+	Author      UserShort `json:"author"`
+	Content     string    `json:"content"`
+	ReplyTo     *Post     `json:"replyTo"`
+	QuouteOf    int64     `json:"quouteOf"`
+	Attachments []string  `json:"attachments"`
+	LikeCount   int       `json:"likeCount"`
+	QuoteCount  int       `json:"quoteCount"`
+	ReplyCount  int       `json:"replyCount"`
+	TimePosted  string    `json:"timePosted"`
+}
+
+type PostNestedNested struct {
+	Id          int64       `json:"id"`
+	Author      UserShort   `json:"author"`
+	Content     string      `json:"content"`
+	ReplyTo     *PostNested `json:"replyTo"`
+	QuouteOf    int64       `json:"quouteOf"`
+	Attachments []string    `json:"attachments"`
+	LikeCount   int         `json:"likeCount"`
+	QuoteCount  int         `json:"quoteCount"`
+	ReplyCount  int         `json:"replyCount"`
+	TimePosted  string      `json:"timePosted"`
+}
+
+type PostNestedNestedQuote struct {
+	Id          int64       `json:"id"`
+	Author      UserShort   `json:"author"`
+	Content     string      `json:"content"`
+	ReplyTo     *PostNested `json:"replyTo"`
+	QuouteOf    *Post       `json:"quouteOf"`
+	Attachments []string    `json:"attachments"`
+	LikeCount   int         `json:"likeCount"`
+	QuoteCount  int         `json:"quoteCount"`
+	ReplyCount  int         `json:"replyCount"`
+	TimePosted  string      `json:"timePosted"`
+}
