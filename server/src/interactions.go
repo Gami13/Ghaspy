@@ -429,7 +429,7 @@ func getPins(c *fiber.Ctx) error {
 }
 
 func togglePin(c *fiber.Ctx) error {
-	// VERY BAD IDEA GAMI!!! >:3
+
 	token := c.GetReqHeaders()["Authorization"][0]
 	requestBody := new(TogglePinRequestBody)
 	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
@@ -437,64 +437,47 @@ func togglePin(c *fiber.Ctx) error {
 		return err
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks(id,userId,postId) VALUES ($1, (SELECT tokens.userId FROM tokens where token = $2), $3) WHERE bookmarks.userId NOT IN (SELECT userId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3) AND bookmarks.postId NOT IN (SELECT postId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3)", newSnowflake("0111").ID, token, requestBody.PostID)
+	//CHECK IF PIN EXISTS
+	row := dbpool.QueryRow(c.Context(), "SELECT COUNT(bookmarks.id) FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, requestBody.PostID)
+	var count int
+	err := row.Scan(&count)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Unexpected error occured",
+			"message": "Unexpected error occured possibly not logged in",
+		})
+	}
+	if count == 0 {
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake("0011").ID, token, requestBody.PostID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Pin added successfully",
+			"state":   true,
+		})
+	} else {
+		tag, err := dbpool.Exec(c.Context(), "DELETE FROM bookmarks WHERE bookmarks.userId = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) AND bookmarks.postId = $2", token, requestBody.PostID)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Unexpected error occured possibly not logged in",
+			})
+		}
+		logger.Println(tag)
+		return c.Status(200).JSON(fiber.Map{
+			"message": "Pin removed successfully",
+			"state":   false,
 		})
 	}
 
-	if tag.RowsAffected() == 1 {
-		return c.Status(http.StatusOK).JSON(
-			fiber.Map{
-				"message": "Pinned successfully",
-			})
-
-	}
-	// INSERT INTO bookmarks(id,userId,postId) VALUES ($1, (SELECT tokens.userId FROM tokens where token = $2), $3) WHERE bookmarks.userId NOT IN (SELECT userId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3) AND bookmarks.postId NOT IN (SELECT postId FROM bookmarks WHERE userId = (SELECT tokens.userId FROM tokens where token = $2) AND postId = $3)
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
 }
 
-func getProfilePosts(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getProfileLikes(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getProfileFollowers(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getProfileFollowing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func changeChatroomImage(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-func changeChatroomName(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func deletePost(c *fiber.Ctx) error {
+func toggleLiking(c *fiber.Ctx) error {
 	// 	var token = c.GetReqHeaders()["Authorization"][0]
 
 	return c.Status(200).JSON(fiber.Map{
@@ -502,29 +485,7 @@ func deletePost(c *fiber.Ctx) error {
 	})
 }
 
-func toggleLikingPost(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func sendMessage(c *fiber.Ctx) error {
-	// 	var token = c.GetReqHeaders()["Authorization"][0]
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func createChatroom(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func addToChatroom(c *fiber.Ctx) error {
+func toggleFollowing(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
 	})
@@ -536,13 +497,7 @@ func getPosts(c *fiber.Ctx) error {
 	})
 }
 
-func getChatrooms(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
-}
-
-func getChatroomMessages(c *fiber.Ctx) error {
+func getLikes(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
 	})
@@ -560,11 +515,56 @@ func getFollowing(c *fiber.Ctx) error {
 	})
 }
 
-func toggleFollowing(c *fiber.Ctx) error {
+func deletePost(c *fiber.Ctx) error {
+	// 	var token = c.GetReqHeaders()["Authorization"][0]
+
 	return c.Status(200).JSON(fiber.Map{
 		"message": "OK",
 	})
 }
+
+// func changeChatroomImage(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+// func changeChatroomName(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+
+// func sendMessage(c *fiber.Ctx) error {
+// 	// 	var token = c.GetReqHeaders()["Authorization"][0]
+
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+
+// func createChatroom(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+
+// func addToChatroom(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+
+// func getChatrooms(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
+
+// func getChatroomMessages(c *fiber.Ctx) error {
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"message": "OK",
+// 	})
+// }
 
 func getPostsChronologically(c *fiber.Ctx) error {
 	page := c.Params("page")

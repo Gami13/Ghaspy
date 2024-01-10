@@ -27,3 +27,11 @@ type GetPinsRequestBody struct {
 type TogglePinRequestBody struct {
 	PostID int `json:"postID"`
 }
+
+type ToggleLikeRequestBody struct {
+	PostID int `json:"postID"`
+}
+
+type ToggleFollowRequestBody struct {
+	UserID int `json:"userID"`
+}
