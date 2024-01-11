@@ -1,10 +1,15 @@
 import { IconArrowBack, IconLink, IconMail } from '@tabler/icons-solidjs';
 import style from './UserProfile.module.css';
 import { A, useParams } from '@solidjs/router';
-import { Match, ResourceActions, Show, Switch, createResource, createSignal, onMount } from 'solid-js';
+import { For, Match, ResourceActions, Show, Switch, createResource, createSignal, onMount } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
 import { IconUser, IconForklift } from '@tabler/icons-solidjs';
+import { t } from '@/Translation';
+import Fallback from '@/fallback.png';
+import { getPosts } from '@/api/utils';
+import Post from '../PostBar/Post';
+import { PostT } from '@/types';
 
 type GetProfileResponse = {
 	userName: string;
@@ -35,7 +40,12 @@ export default function UserProfile() {
 	const AppState = useAppState();
 	const [isEditUser, setIsEditUser] = createSignal(false);
 	const [filePath, setFilePath] = createSignal('');
-
+	const [posts, setPosts] = createSignal<PostT[]>([]);
+	onMount(() => {
+		getPosts(params.username).then((data) => {
+			setPosts(data);
+		});
+	});
 	const [userData, userDataActions] = createResource<GetProfileResponse>(async () => {
 		const res = await fetch(`${API_URL}/profile/${params.username}`, {
 			method: 'GET',
@@ -46,12 +56,15 @@ export default function UserProfile() {
 		});
 		const data = await res.json();
 		console.log(data);
+		if (data.userName == AppState.userName()) {
+			setIsYourProfile(true);
+		}
 		return data as GetProfileResponse;
 	}) as [() => GetProfileResponse, ResourceActions<GetProfileResponse | undefined, unknown>];
 	onMount(() => {
 		userDataActions.refetch();
 	});
-
+	const [isYourProfile, setIsYourProfile] = createSignal(false);
 	//
 	// BANNER MUST BE 3:1, THIS WILL BE ENFORCED ON UPLOAD
 	// AVATAR MUST BE 1:1, THIS WILL BE ENFORCED ON UPLOAD
@@ -94,7 +107,7 @@ export default function UserProfile() {
 							>
 								X
 							</button>
-							<h2>Edit Profile</h2>
+							<h2>{t.profile.edit()}</h2>
 							<form onsubmit={handleEditUser()}>
 								<div class={style.furasLift}>
 									<input type="file" name="uploadFile" id="liftUpload" />
@@ -128,7 +141,7 @@ export default function UserProfile() {
 
 								<label for="bio">Bio</label>
 								<textarea name="bio" id="bio" cols="30" rows="10"></textarea>
-								<button type="submit">Submit</button>
+								<button type="submit">{t.profile.submit()}</button>
 							</form>
 						</div>
 					</div>
@@ -141,18 +154,14 @@ export default function UserProfile() {
 				</section>
 
 				<section class={style.profile}>
-					<object class={style.banner} data="http://fakeimg.pl/1080x360?text=PLACEHOLDER&font=museo" type="image/png">
-						<img src={`${CDN_URL}${userData().banner}`} alt="" />
-					</object>
+					{/* <object class={style.banner} data={Fallback} type="image/png"> */}
+					<img class={style.banner} src={`${CDN_URL}139696474781910262.png`} alt="" />
+					{/* </object> */}
 					<div class={style.actions}>
 						<div class={style.avatarContainer}>
-							<object
-								class={style.avatar}
-								data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar"
-								type="image/png"
-							>
-								<img src={`${CDN_URL}${userData().avatar}`} alt="" />
-							</object>
+							{/* <object class={style.avatar} data={Fallback} type="image/png"> */}
+							<img class={style.avatar} src={`${CDN_URL}${userData().avatar}`} alt="" />
+							{/* </object> */}
 						</div>
 						<div class={style.buttons}>
 							<button title="copy-link" type="button">
@@ -166,21 +175,21 @@ export default function UserProfile() {
 							</Show>
 
 							<Switch>
-								<Match when={userData().isYourProfile && AppState.isLoggedIn()}>
+								<Match when={isYourProfile() && AppState.isLoggedIn()}>
 									<button
 										class={style.secondaryAction}
 										onclick={() => {
 											setIsEditUser(true);
 										}}
 									>
-										Edit Profile
+										{t.profile.edit()}
 									</button>
 								</Match>
 								<Match when={userData().areYouFollowing && AppState.isLoggedIn()}>
-									<button class={style.secondaryAction}>Unfollow</button>
+									<button class={style.secondaryAction}>{t.profile.unfollow()}</button>
 								</Match>
 								<Match when={!userData().areYouFollowing && AppState.isLoggedIn()}>
-									<button class={style.primaryAction}>Follow</button>
+									<button class={style.primaryAction}>{t.profile.follow()}</button>
 								</Match>
 							</Switch>
 						</div>
@@ -189,14 +198,15 @@ export default function UserProfile() {
 						<h3>{userData().displayName || userData().userName || params.username || 'user'}</h3>
 						<div class={style.username}>
 							<h4>@{userData().userName || params.username || 'user'}</h4>
-							<span class={style.tag}>You</span>
 							<Switch>
-								{/* <Match when={userData().isYourProfile}></Match> */}
+								<Match when={isYourProfile()}>
+									<span class={style.tag}>{t.profile.you()}</span>
+								</Match>
 								<Match when={userData().areYouFollowing && userData()?.areYouFollowedBy}>
-									<button class={style.tag}>Mutual</button>
+									<button class={style.tag}>{t.profile.mutual()}</button>
 								</Match>
 								<Match when={userData().areYouFollowedBy}>
-									<button class={style.tag}>Follows you</button>
+									<button class={style.tag}>{t.profile.followsYou()}</button>
 								</Match>
 							</Switch>
 						</div>
@@ -208,26 +218,29 @@ export default function UserProfile() {
 					<div class={style.data}>
 						<Show when={userData().isLikesPublic}>
 							<span>
-								<mark>{userData().likeCount || 0}</mark> Likes
+								<mark>{userData().likeCount || 0}</mark> {t.profile.likes()}
 							</span>
 						</Show>
 						<Show when={userData().isPostsPublic && !userData().areYouFollowing}>
 							<span>
-								<mark>{userData().postCount || 0}</mark> Posts
+								<mark>{userData().postCount || 0}</mark> {t.profile.posts()}
 							</span>
 						</Show>
 						<Show when={userData().isFollowersPublic}>
 							<span>
-								<mark>{userData().followerCount || 0}</mark> Followers
+								<mark>{userData().followerCount || 0}</mark> {t.profile.followers()}
 							</span>
 						</Show>
 
 						<Show when={userData().isFollowingPublic}>
 							<span>
-								<mark>{userData().followingCount || 0}</mark> Following
+								<mark>{userData().followingCount || 0}</mark> {t.profile.following()}
 							</span>
 						</Show>
 					</div>
+				</section>
+				<section class={style.posts}>
+					<For each={posts()}>{(post) => <Post post={post} />}</For>
 				</section>
 			</div>
 		</Show>

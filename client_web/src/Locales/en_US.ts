@@ -34,6 +34,37 @@ export default {
 	login: {
 		error: 'Email or password is incorrect',
 		empty: 'Email or password is empty',
+		logIn: 'Log in',
+		errorLabel: 'Error:',
+
 		unvalidated: 'Email has not been validated yet',
+		email: 'Email',
+		password: 'Password',
+		passwordRepeat: 'Repeat Password',
+		username: 'Username',
+	},
+	profile: {
+		edit: 'Edit profile',
+		bio: 'Bio',
+		submit: 'Submit',
+		follow: 'Follow',
+		unfollow: 'Unfollow',
+		mutual: 'Mutual',
+		followsYou: 'Follows you',
+		following: 'Following',
+		followers: 'Followers',
+		posts: 'Posts',
+		likes: 'Likes',
+		you: 'You',
+	},
+	signup: {
+		signUp: 'Sign Up',
+		requirements: 'Requirements',
+	},
+	posts: {
+		posts: 'Posts',
+		likes: 'Likes',
+		whatsHappening: 'What`s happening?',
+		post: 'Post',
 	},
 };

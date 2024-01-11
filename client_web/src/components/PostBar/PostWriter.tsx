@@ -1,17 +1,11 @@
-import {
-	IconSettings,
-	IconPhotoPlus,
-	IconGif,
-	IconAdjustmentsHorizontal,
-	IconMoodSmile,
-	IconCalendarClock,
-	IconMapPin,
-} from '@tabler/icons-solidjs';
+import { IconPhotoPlus, IconTrash } from '@tabler/icons-solidjs';
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
 import { For, createSignal } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
+import Fallback from '@/fallback.png';
+import { t } from '@/Translation';
 type PostWriterProps = {
 	quoteOf?: string;
 	replyTo?: string;
@@ -22,26 +16,25 @@ export default function PostWriter(props: PostWriterProps) {
 	const AppState = useAppState();
 
 	//get user data
-	const userAvatar = AppState.userAvatar();
-	const username = AppState.userName();
-	const displayName = AppState.userDisplayName();
+	// show something if content too long
+
 	return (
 		<div class={style.postTemplate}>
-			<object class={style.avatar} data="https://dummyimage.com/360x360/fc03d7.png?text=Avatar" type="image/png">
-				<img src={`${CDN_URL}${userAvatar}`} alt="TEMP" />
-			</object>
+			{/* <object class={style.avatar} data={Fallback} type="image/png"> */}
+			<img src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
+			{/* </object> */}
 			<div class={style.post}>
 				<div
 					class={style.post_text}
 					role="textbox"
 					contentEditable="plaintext-only"
 					onfocus={(e) => {
-						if (e.currentTarget.innerText == "What's happening?") e.currentTarget.innerText = '';
+						if (e.currentTarget.innerText == t.posts.whatsHappening()) e.currentTarget.innerText = '';
 						e.currentTarget.style.color = 'white';
 					}}
 					onblur={(e) => {
 						if (e.currentTarget.innerText == '') {
-							e.currentTarget.innerText = "What's happening?";
+							e.currentTarget.innerText = t.posts.whatsHappening();
 							e.currentTarget.style.color = 'var(--text2)';
 						}
 					}}
@@ -64,7 +57,7 @@ export default function PostWriter(props: PostWriterProps) {
 							}
 						}
 					}}
-					innerText={"What's happening?"}
+					innerText={t.posts.whatsHappening()}
 				></div>
 				<hr />
 				<div class={style.post_buttons}>
@@ -124,7 +117,7 @@ export default function PostWriter(props: PostWriterProps) {
 							});
 						}}
 					>
-						Post
+						{t.posts.post()}
 					</button>
 				</div>
 			</div>
@@ -139,7 +132,7 @@ export default function PostWriter(props: PostWriterProps) {
 											setFiles((files) => files.filter((f) => f != file));
 										}}
 									>
-										X
+										<IconTrash></IconTrash>
 									</button>
 
 									<img src={URL.createObjectURL(file)} alt="lol" />

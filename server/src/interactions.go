@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"slices"
@@ -362,20 +361,26 @@ func addPost(c *fiber.Ctx) error {
 		})
 
 	}
-	var content sql.NullString
-	var quoteOf sql.NullString
-	var replyTo sql.NullString
+	var content = ""
+	var quoteOf = 0
+	var replyTo = 0
 	if len(form.Value["content"]) != 0 {
-		content.String = form.Value["content"][0]
+		content = form.Value["content"][0]
 	}
-	if len(form.Value["quoteOf"]) != 0 {
-		quoteOf.String = form.Value["quoteOf"][0]
+	// if len(form.Value["quoteOf"]) != 0 {
+	// 	quoteOf = form.Value["quoteOf"][0]
+	// }
+	// if len(form.Value["replyTo"]) != 0 {
+	// 	replyTo = form.Value["replyTo"][0]
+	// }
+	if len(content) > 360 {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, content is too long",
+		})
 	}
-	if len(form.Value["replyTo"]) != 0 {
-		replyTo.String = form.Value["replyTo"][0]
-	}
+
 	var fileNames []string
-	if len(form.File) == 0 && content.String == "" && quoteOf.String == "" && replyTo.String == "" {
+	if len(form.File) == 0 && content == "" && quoteOf == 0 && replyTo == 0 {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message": "Bad Request, no content provided",
 		})
@@ -397,9 +402,9 @@ func addPost(c *fiber.Ctx) error {
 	postId := newSnowflake("0010").ID
 	println("POST ID", postId)
 	println("TOKEN", token)
-	println("CONTENT", content.String)
-	println("QUOTE OF", quoteOf.String)
-	println("REPLY TO", replyTo.String)
+	println("CONTENT", content)
+	println("QUOTE OF", quoteOf)
+	println("REPLY TO", replyTo)
 	for _, fileName := range fileNames {
 		println("FILE NAME", fileName)
 	}
@@ -423,9 +428,23 @@ func addPost(c *fiber.Ctx) error {
 }
 
 func getPins(c *fiber.Ctx) error {
-	return c.Status(200).JSON(fiber.Map{
-		"message": "OK",
-	})
+	var token = c.GetReqHeaders()["Authorization"][0]
+
+	page := c.Params("page")
+	pageInt, err := strconv.ParseInt(page, 10, 64)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, page is not a number",
+		})
+	}
+	postIds := getPinIdsChronologically(c, pageInt, token)
+	var posts []Post
+	for _, postId := range postIds {
+		posts = append(posts, getPost(c, postId))
+	}
+
+	return c.Status(200).JSON(posts)
 }
 
 func togglePin(c *fiber.Ctx) error {
@@ -689,12 +708,25 @@ func deletePost(c *fiber.Ctx) error {
 //			"message": "OK",
 //		})
 //	}
-//
-//	func getPosts(c *fiber.Ctx) error {
-//		return c.Status(200).JSON(fiber.Map{
-//			"message": "OK",
-//		})
-//	}
+func getPosts(c *fiber.Ctx) error {
+
+	page := c.Params("page")
+	username := c.Params("username")
+	pageInt, err := strconv.ParseInt(page, 10, 64)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Bad Request, page is not a number",
+		})
+	}
+	postIds := getUserPostsChronologically(c, pageInt, username)
+	var posts []Post
+	for _, postId := range postIds {
+		posts = append(posts, getPost(c, postId))
+	}
+
+	return c.Status(200).JSON(posts)
+}
 func getPostsChronologically(c *fiber.Ctx) error {
 	page := c.Params("page")
 	pageInt, err := strconv.ParseInt(page, 10, 64)
@@ -784,6 +816,41 @@ func getPostIdsChronologically(c *fiber.Ctx, page int64) []int64 {
 	return postIds
 }
 
+func getPinIdsChronologically(c *fiber.Ctx, page int64, token string) []int64 {
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	var postIds []int64
+	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts, bookmarks WHERE posts.id = bookmarks.postId AND bookmarks.userid = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) ORDER BY bookmarks.id DESC LIMIT 50 OFFSET $2", token, 50*page)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+	}
+	for rows.Next() {
+		var postId int64
+		err := rows.Scan(&postId)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+		}
+		postIds = append(postIds, postId)
+	}
+	return postIds
+}
+
+func getUserPostsChronologically(c *fiber.Ctx, page int64, userName string) []int64 {
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	var postIds []int64
+	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts WHERE posts.authorId = (SELECT users.id FROM users WHERE users.username = $1) ORDER BY posts.id DESC LIMIT 50 OFFSET $2", userName, 50*page)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+	}
+	for rows.Next() {
+		var postId int64
+		err := rows.Scan(&postId)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+		}
+		postIds = append(postIds, postId)
+	}
+	return postIds
+}
 func appendReplyToPost(c *fiber.Ctx, post Post) PostNested {
 	if post.ReplyTo == 0 {
 		return PostNested{

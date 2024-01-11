@@ -25,7 +25,7 @@ export default function AvatarTest() {
 			<input type="file" name="uploadFile" id="uploadFile" />
 			<input type="submit" value="Upload" />
 			<Show when={filePath().length > 1}>
-				<img src={CDN_URL + '138320307350929414.jpg'} alt="Uploaded Image" />
+				<img src={CDN_URL + filePath()} alt="Uploaded Image" />
 			</Show>
 		</form>
 	);

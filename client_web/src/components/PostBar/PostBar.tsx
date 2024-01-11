@@ -10,33 +10,17 @@ import {
 } from '@tabler/icons-solidjs';
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
-import { createSignal, onMount } from 'solid-js';
+import { For, createSignal, onMount } from 'solid-js';
 import { CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
 import PostWriter from './PostWriter';
 import Post from './Post';
+import { PostT } from '@/types';
+import { t } from '@/Translation';
 
 export default function PostBar() {
 	const AppState = useAppState();
-	type UserShort = {
-		id: BigInt;
-		userName: string;
-		displayName: string;
-		avatar: string;
-		banner: string;
-		bio: string;
-	};
-	type Post = {
-		id: BigInt;
-		author: UserShort;
-		content: string;
-		replyTo: Post | null;
-		quoteOf: Post | null;
-		likesCount: number;
-		quoteCount: number;
-		replyCount: number;
-		timePosted: string;
-	};
+	const [posts, setPosts] = createSignal<PostT[]>([]);
 
 	onMount(() => {
 		fetch('http://localhost:8080/postsChrono/0', {
@@ -45,7 +29,8 @@ export default function PostBar() {
 		})
 			.then((res) => {
 				if (res.status == 200) {
-					res.json().then((data: Post[]) => {
+					res.json().then((data: PostT[]) => {
+						setPosts(data);
 						console.log(data);
 					});
 				}
@@ -57,13 +42,13 @@ export default function PostBar() {
 	return (
 		<div class={style.main}>
 			<div class={style.content_header}>
-				<button>For You</button>
-				<button>Following</button>
+				<button>{t.posts.posts()}</button>
+				{/* <button>Following</button> */}
 			</div>
 			<PostWriter />
 
 			<section class={style.posts}>
-				<Post />
+				<For each={posts()}>{(post) => <Post post={post} />}</For>
 			</section>
 		</div>
 	);

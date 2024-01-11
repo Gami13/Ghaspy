@@ -17,6 +17,7 @@ import UserProfile from './components/UserProfile/UserProfile';
 import Login from './components/Login/Login';
 import { onMount } from 'solid-js';
 import { API_URL } from './constants';
+import PinsBar from './components/PostBar/PinsBar';
 
 type GetProfileResponse = {
 	id: bigint;
@@ -89,6 +90,7 @@ function App() {
 					<Route path="/:username" component={UserProfile} />
 					<Route path="login" component={Login} />
 					<Route path="signup" component={Signup} />
+					<Route path="pins" component={PinsBar} />
 				</Route>
 				<Route path="uploadTest" component={UploadTest} />
 				<Route path="avatarTest" component={AvatarTest} />

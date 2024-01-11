@@ -135,6 +135,9 @@ func main() {
 	app.Post("/togglePin", togglePin)
 	app.Post("/toggleLike", toggleLike)
 	app.Post("/toggleFollow", toggleFollow)
+	app.Delete("/post", deletePost)
+	app.Get("/pins/:page", getPins)
+	app.Get("/postsProfile/:username/:page", getPosts)
 
 	app.Static("/attachment", "C:\\uploads")
 

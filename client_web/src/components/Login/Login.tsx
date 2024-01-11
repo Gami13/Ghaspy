@@ -60,11 +60,11 @@ const Login = () => {
 	return (
 		<div class={style.Login}>
 			<form onSubmit={handleSubmit} class={style.registerForm}>
-				<h1>Logowanie</h1>
+				<h1>{t.login.logIn()}</h1>
 
 				<input
 					type="text"
-					placeholder="email"
+					placeholder={t.login.email()}
 					oninput={(e) => {
 						setEmail(e.currentTarget.value);
 					}}
@@ -72,18 +72,18 @@ const Login = () => {
 
 				<input
 					type="password"
-					placeholder="password"
+					placeholder={t.login.password()}
 					oninput={(e) => {
 						setPassword(e.currentTarget.value);
 					}}
 				/>
 
-				<button type="submit">Zaloguj</button>
+				<button type="submit">{t.login.logIn()}</button>
 			</form>
 
 			<Show when={err()}>
 				<div class={style.validators}>
-					<h3>Błąd:</h3>
+					<h3>{t.login.errorLabel()}</h3>
 
 					<div class={style.error}>
 						<IconAlertCircle />

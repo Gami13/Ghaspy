@@ -91,10 +91,10 @@ const Signup = () => {
 	return (
 		<div class={style.Signup}>
 			<form onSubmit={handleSubmit} class={style.registerForm}>
-				<h1>Rejestracja</h1>
+				<h1>{t.signup.signUp()}</h1>
 				<input
 					type="text"
-					placeholder="username"
+					placeholder={t.login.username()}
 					oninput={(e) => {
 						setUsername(e.target.value);
 						validate();
@@ -105,7 +105,7 @@ const Signup = () => {
 				/>
 				<input
 					type="text"
-					placeholder="email"
+					placeholder={t.login.email()}
 					oninput={(e) => {
 						setEmail(e.currentTarget.value);
 						validate();
@@ -117,7 +117,7 @@ const Signup = () => {
 
 				<input
 					type="password"
-					placeholder="password"
+					placeholder={t.login.password()}
 					oninput={(e) => {
 						setPassword(e.currentTarget.value);
 
@@ -129,7 +129,7 @@ const Signup = () => {
 				/>
 				<input
 					type="password"
-					placeholder="Repeat password"
+					placeholder={t.login.passwordRepeat()}
 					oninput={(e) => {
 						setPasswordRepeat(e.target.value);
 
@@ -140,11 +140,11 @@ const Signup = () => {
 					}}
 				/>
 
-				<button type="submit">Register</button>
+				<button type="submit">{t.signup.signUp()}</button>
 			</form>
 
 			<div class={style.validators}>
-				<h3>Sign Up requirements:</h3>
+				<h3>{t.signup.requirements()}</h3>
 
 				<For each={AuthTransKeys}>
 					{(item) => {

@@ -1,7 +1,7 @@
 .content {
 	display: flex;
 	flex-direction: column;
-
+	gap: 1em;
 	position: relative;
 }
 .content_header {
@@ -9,10 +9,10 @@
 	height: 3em;
 
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr;
 	grid-template-rows: 1fr;
 
-	border: 1px var(--secondary) solid;
+	border: 1px var(--secondary) solid !important;
 	border-top: none;
 }
 .content_header button {
@@ -38,7 +38,8 @@
 	width: 100%;
 	height: fit-content;
 	border-bottom: var(--default-border);
-	padding: 2em;
+	padding: 1em;
+
 	display: grid;
 	gap: 0.5em;
 	grid-template-columns: 3em 1fr;
@@ -52,7 +53,7 @@
 	border: none;
 	background-color: var(--accent);
 }
-.postTemplate object {
+.postTemplate img {
 	width: 3em;
 	height: 3em;
 	object-fit: contain;
@@ -63,12 +64,14 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.5em;
-	border-bottom: var(--default-border);
 }
 .postTemplate .post .post_text {
 	width: 100%;
 	height: 2em;
 	font-size: 1.25em;
+	max-width: 100%;
+	white-space: wrap;
+	overflow-x: hidden;
 	overflow: hidden;
 	resize: none;
 	background-color: var(--bg0);
@@ -77,6 +80,8 @@
 	padding-top: 0.5em;
 	justify-content: flex-start;
 	color: var(--text3);
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 .post_buttons {
@@ -91,6 +96,9 @@
 	background-color: var(--bg0);
 	outline: none;
 	border: none;
+	width: fit-content;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 .post_buttons svg {
 	width: 1.5em;
@@ -124,21 +132,30 @@
 .postTemplate ul > li > button {
 	position: absolute;
 	opacity: 0;
+	width: 3em;
+	height: 3em;
+	padding: 0.25em;
+	background-color: var(--bg5);
+
 	top: 0;
 	right: 0;
-	bottom: 0;
-	left: 0;
-	background-color: transparent;
+	border-radius: 0 0.5em 0 0.5em;
+
 	outline: none;
 	border: none;
 	cursor: pointer;
 	transition: all 0.5s ease-in-out;
 }
 .postTemplate ul > li > button:hover {
-	background-color: var(--bg1);
-	opacity: 0.5;
+	background-color: var(--error);
+
 	transition: all 0.25s;
 }
+.postTemplate ul > li:hover > button {
+	opacity: 1;
+	transition: all 0.25s;
+}
+
 .postTemplate ul > li > img {
 	height: max-content;
 	overflow-y: scroll;
@@ -175,6 +192,13 @@
 	flex-direction: column;
 	gap: 1em;
 }
+/* scroll clip to top of post */
+.posts > .post:first-child {
+	scroll-margin-top: 3em;
+}
+.posts > .post:last-child {
+	border-bottom: none;
+}
 
 .posts > .post {
 	width: 100%;
@@ -185,9 +209,12 @@
 	grid-template-areas: 'avatar post';
 	padding: 1em;
 	gap: 0.5em;
+	border-bottom: 1px var(--bg3) solid;
 }
-
-.post > object {
+.posts > .post:last-child {
+	border-bottom: none;
+}
+.post > img {
 	grid-area: avatar;
 	width: 3em;
 	height: 3em;
@@ -197,8 +224,23 @@
 
 .post .userData {
 	display: flex;
+	align-items: center;
 	flex-direction: row;
 	gap: 0.5em;
+}
+.userData h4 {
+	color: var(--text2);
+}
+.userData .username {
+	text-decoration: none;
+}
+
+.userData .username h5 {
+	color: var(--primary);
+}
+.userData time {
+	font-size: 0.75em;
+	color: var(--text3);
 }
 .post .postContent {
 	display: flex;
@@ -208,12 +250,46 @@
 	grid-area: post;
 	align-items: center;
 }
-.post .postContent object {
+
+.post .postContent img {
 	object-fit: contain;
 	border-radius: 0.5em;
+	max-width: 50%;
 	border: 3px var(--bg5) solid;
 }
-.post .userData svg {
+.post .postContent p {
+	text-align: left;
+	width: 100%;
+	max-width: 100%;
+	white-space: wrap;
+	overflow-x: hidden;
+	resize: none;
+	padding-left: 0.25em;
+}
+.deletePost {
+	background-color: transparent;
+	outline: none;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 2.5em;
+	height: 2.5em;
+	transition: all 0.5s ease-in-out;
+	border-radius: 50%;
+	padding: 0.1em;
+	margin-left: auto;
+	margin-right: 1em;
+}
+.deletePost:hover {
+	transition: all 0.25s;
+
+	background-color: var(--error);
+	transition: all 0.5s ease-in-out;
+}
+
+.post .userData > svg {
 	width: 1.3em;
 	height: 1.3em;
 	cursor: pointer;
@@ -225,8 +301,8 @@
 .post .postButtons {
 	display: flex;
 	flex-direction: row;
-	gap: 0.5em;
-	justify-content: space-between;
+	gap: 5em;
+	justify-content: center;
 	align-items: center;
 	padding: 0.5em 0;
 }
@@ -248,4 +324,82 @@
 	height: 1.5em;
 	width: 1.5em;
 	fill: none;
+}
+.liked {
+	fill: var(--primary) !important;
+	stroke: var(--primary);
+	animation: like 1s ease-in-out;
+}
+.notLiked {
+	fill: none !important;
+	stroke: var(--text3);
+	animation: unlike 1s ease-in-out;
+}
+.bookmarked {
+	stroke: var(--purpiel);
+	animation: bookmark 1s ease-in-out;
+}
+.notBookmarked {
+	stroke: var(--text3);
+	animation: unbookmark 1s ease-in-out;
+}
+
+@keyframes like {
+	/* shake and scale */
+	0%,
+	100% {
+		transform: scale(1);
+		rotate: 5deg;
+	}
+	25% {
+		transform: scale(1.25);
+		rotate: 0deg;
+	}
+	50% {
+		transform: scale(1);
+		rotate: -5deg;
+	}
+	75% {
+		transform: scale(1.25);
+		rotate: 0deg;
+	}
+}
+@keyframes unlike {
+	/* heart drops */
+	0%,
+	100% {
+		transform: translate(0, 0);
+		opacity: 1;
+		rotate: 0deg;
+	}
+
+	50% {
+		transform: translate(0.5em, 0.5em);
+		opacity: 0;
+		rotate: 10deg;
+	}
+	75%,
+	95% {
+		transform: translate(0, 0);
+		opacity: 0;
+		rotate: 10deg;
+	}
+}
+@keyframes bookmark {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(0.5em);
+	}
+}
+@keyframes unbookmark {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-0.5em);
+	}
 }

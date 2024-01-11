@@ -12,6 +12,7 @@
 	--error: #ff0000;
 	--success: #00ff00;
 	--warning: #ffff00;
+	--purpiel: rgb(193, 129, 249);
 
 	--bg0: #000000;
 	--bg1: #131313;
@@ -40,6 +41,18 @@
 	padding: 0;
 	box-sizing: border-box;
 }
+/* Scrollbar */
+::-webkit-scrollbar {
+	width: 10px;
+}
+::-webkit-scrollbar-track {
+	background: var(--bg2);
+}
+::-webkit-scrollbar-thumb {
+	background: rgb(193, 129, 249);
+	border-radius: 10px;
+}
+
 body {
 	height: 100vh;
 	width: 100vw;

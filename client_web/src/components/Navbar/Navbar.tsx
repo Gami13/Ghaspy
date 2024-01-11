@@ -16,10 +16,9 @@ import { t } from '@/Translation';
 import { useAppState } from '@/AppState';
 import { Show, createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
+import Fallback from '@/fallback.png';
 export default function Navbar(props: { className?: string }) {
 	const AppState = useAppState();
-
-	//get user data
 
 	return (
 		<nav class={[style.nav, props.className].join(' ')}>
@@ -63,7 +62,7 @@ export default function Navbar(props: { className?: string }) {
 						<IconList />
 						<h3>{t.nav.lists()}</h3>
 					</A> */}
-					<A href="">
+					<A href="/pins">
 						<IconPin />
 
 						<h3>{t.nav.pins()}</h3>
@@ -77,10 +76,12 @@ export default function Navbar(props: { className?: string }) {
 			</div>
 			<Show when={AppState.isLoggedIn()}>
 				<A class={style.user} href={`/${AppState.userName()}`}>
+					{/* <object class={style.user_avatar} data={Fallback} type="image/png"> */}
 					<img class={style.user_avatar} src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
+					{/* </object> */}
 					<div class={style.user_data}>
 						<h3>{AppState.userDisplayName()}</h3>
-						<p>{AppState.userName()}</p>
+						<p>@{AppState.userName()}</p>
 					</div>
 				</A>
 			</Show>

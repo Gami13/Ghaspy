@@ -138,3 +138,7 @@ Authorization: {{token}}
 }
 
 
+###getPins
+GET {{apiURL}}/pins/0
+Authorization: {{token}}
+

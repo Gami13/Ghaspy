@@ -38,3 +38,7 @@ type ToggleFollowRequestBody struct {
 type DeletePostRequestBody struct {
 	PostID string `json:"postID"`
 }
+
+type GetPostsRequestBody struct {
+	UserName string `json:"username"`
+}
