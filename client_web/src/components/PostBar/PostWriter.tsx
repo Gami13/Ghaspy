@@ -1,7 +1,7 @@
 import { IconPhotoPlus, IconTrash } from '@tabler/icons-solidjs';
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
-import { For, createResource, createSignal } from 'solid-js';
+import { For, createResource, createSignal, onMount } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
 import Fallback from '@/fallback.png';
@@ -17,10 +17,9 @@ export default function PostWriter(props: PostWriterProps) {
 	const [userAvatar, userAvatarActions] = createResource(() => {
 		return CDN_URL + AppState.userAvatar();
 	});
-	onMount(()=>
-	{
-		console.log(AppState.userAvatar())
-	})
+	onMount(() => {
+		console.log(AppState.userAvatar());
+	});
 
 	console.log(AppState.userAvatar());
 	return (
