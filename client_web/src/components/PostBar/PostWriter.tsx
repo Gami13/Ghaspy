@@ -1,7 +1,7 @@
 import { IconPhotoPlus, IconTrash } from '@tabler/icons-solidjs';
 import { A } from '@solidjs/router';
 import style from './PostBar.module.css';
-import { For, createSignal } from 'solid-js';
+import { For, createResource, createSignal } from 'solid-js';
 import { API_URL, CDN_URL } from '@/constants';
 import { useAppState } from '@/AppState';
 import Fallback from '@/fallback.png';
@@ -14,14 +14,19 @@ export default function PostWriter(props: PostWriterProps) {
 	const [files, setFiles] = createSignal<File[]>([]);
 	const [text, setText] = createSignal('');
 	const AppState = useAppState();
+	const [userAvatar, userAvatarActions] = createResource(() => {
+		return CDN_URL + AppState.userAvatar();
+	});
+	onMount(()=>
+	{
+		console.log(AppState.userAvatar())
+	})
 
-	//get user data
-	// show something if content too long
-
+	console.log(AppState.userAvatar());
 	return (
 		<div class={style.postTemplate}>
 			{/* <object class={style.avatar} data={Fallback} type="image/png"> */}
-			<img src={`${CDN_URL}${AppState.userAvatar()}`} alt="TEMP" />
+			<img src={userAvatar()} alt="TEMP" />
 			{/* </object> */}
 			<div class={style.post}>
 				<div

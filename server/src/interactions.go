@@ -10,11 +10,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func getExamples(c *fiber.Ctx) error {
-	return c.Status(200).JSON(examples)
-
-}
-
 func setDisplayName(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 	requestBody := new(SetDisplayNameRequestBody)
@@ -441,7 +436,7 @@ func getPins(c *fiber.Ctx) error {
 	postIds := getPinIdsChronologically(c, pageInt, token)
 	var posts []Post
 	for _, postId := range postIds {
-		posts = append(posts, getPost(c, postId))
+		posts = append(posts, getPost(c, postId, token))
 	}
 
 	return c.Status(200).JSON(posts)
@@ -709,7 +704,10 @@ func deletePost(c *fiber.Ctx) error {
 //		})
 //	}
 func getPosts(c *fiber.Ctx) error {
-
+	token := c.GetReqHeaders()["Authorization"][0]
+	if len(token) == 0 {
+		token = ""
+	}
 	page := c.Params("page")
 	username := c.Params("username")
 	pageInt, err := strconv.ParseInt(page, 10, 64)
@@ -722,12 +720,16 @@ func getPosts(c *fiber.Ctx) error {
 	postIds := getUserPostsChronologically(c, pageInt, username)
 	var posts []Post
 	for _, postId := range postIds {
-		posts = append(posts, getPost(c, postId))
+		posts = append(posts, getPost(c, postId, token))
 	}
 
 	return c.Status(200).JSON(posts)
 }
 func getPostsChronologically(c *fiber.Ctx) error {
+	token := ""
+	if len(c.GetReqHeaders()["Authorization"]) > 0 {
+		token = c.GetReqHeaders()["Authorization"][0]
+	}
 	page := c.Params("page")
 	pageInt, err := strconv.ParseInt(page, 10, 64)
 	if err != nil {
@@ -739,23 +741,23 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	postIds := getPostIdsChronologically(c, pageInt)
 	var posts []Post
 	for _, postId := range postIds {
-		posts = append(posts, getPost(c, postId))
+		posts = append(posts, getPost(c, postId, token))
 	}
 	//Now we need to get 2 layers of replies for each post and append them to the post and then remove duplicates
 	postsWithReplies := []PostNested{}
 	for _, post := range posts {
-		postsWithReplies = append(postsWithReplies, appendReplyToPost(c, post))
+		postsWithReplies = append(postsWithReplies, appendReplyToPost(c, post, token))
 
 	}
 	postsWithRepliesNested := []PostNestedNested{}
 	for _, post := range postsWithReplies {
-		postsWithRepliesNested = append(postsWithRepliesNested, appendReplyToNestedPost(c, post))
+		postsWithRepliesNested = append(postsWithRepliesNested, appendReplyToNestedPost(c, post, token))
 	}
 	postsWithRepliesNested = removeDuplicates(postsWithRepliesNested)
 
 	postsWithRepliesNestedAndQuotes := []PostNestedNestedQuote{}
 	for _, post := range postsWithRepliesNested {
-		postsWithRepliesNestedAndQuotes = append(postsWithRepliesNestedAndQuotes, appendQuote(c, post))
+		postsWithRepliesNestedAndQuotes = append(postsWithRepliesNestedAndQuotes, appendQuote(c, post, token))
 	}
 
 	return c.Status(200).JSON(postsWithRepliesNestedAndQuotes)
@@ -772,29 +774,38 @@ func getUserShort(c *fiber.Ctx, userId int64) UserShort {
 	return sqlBody
 }
 
-func getPost(c *fiber.Ctx, postId int64) Post {
+func getPost(c *fiber.Ctx, postId int64, token string) Post {
+
+	if len(token) == 0 {
+		token = ""
+	}
+	logger.Println("token", token)
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	row := dbpool.QueryRow(c.Context(), "SELECT posts.id, users.id as authorId, users.username, users.displayname, users.avatar, users.banner, users.bio, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, (SELECT COUNT(likes.id) FROM likes WHERE likes.postId = $1) as likeCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.quoteof = $1) as quoteCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.replyto = $1) as replyCount FROM posts, users, likes WHERE posts.authorid = users.id AND posts.id = $1", postId)
+	row := dbpool.QueryRow(c.Context(), "SELECT posts.id, users.id as authorId, users.username, users.displayname, users.avatar, users.banner, users.bio, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, (SELECT COUNT(likes.id) FROM likes WHERE likes.postId = $1) as likeCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.quoteof = $1) as quoteCount, (SELECT COUNT(posts.id) FROM posts WHERE posts.replyto = $1) as replyCount, (SELECT CASE WHEN COUNT(likes.id) > 0 THEN true ELSE false END FROM likes, tokens WHERE likes.postid = $1 and likes.userid = tokens.userId AND tokens.token = $2) AS isLiked, (SELECT CASE WHEN COUNT(bookmarks.id) > 0 THEN true ELSE false END FROM bookmarks, tokens WHERE bookmarks.postid = $1 and bookmarks.userid = tokens.userId AND tokens.token = $2) AS isBookmarked FROM posts, users, likes WHERE posts.authorid = users.id AND posts.id = $1", postId, token)
 	var sqlBody Post
 
-	err := row.Scan(&sqlBody.Id, &sqlBody.Author.Id, &sqlBody.Author.UserName, &sqlBody.Author.DisplayName, &sqlBody.Author.Avatar, &sqlBody.Author.Banner, &sqlBody.Author.Bio, &sqlBody.Content, &sqlBody.ReplyTo, &sqlBody.QuouteOf, &sqlBody.Attachments, &sqlBody.LikeCount, &sqlBody.QuoteCount, &sqlBody.ReplyCount)
+	err := row.Scan(&sqlBody.Id, &sqlBody.Author.Id, &sqlBody.Author.UserName, &sqlBody.Author.DisplayName, &sqlBody.Author.Avatar, &sqlBody.Author.Banner, &sqlBody.Author.Bio, &sqlBody.Content, &sqlBody.ReplyTo, &sqlBody.QuouteOf, &sqlBody.Attachments, &sqlBody.LikeCount, &sqlBody.QuoteCount, &sqlBody.ReplyCount, &sqlBody.IsLiked, &sqlBody.IsBookmarked)
 	logger.Println("attachments", sqlBody.Attachments)
+	logger.Println("isLiked", sqlBody.IsLiked)
+	logger.Println("isBookmarked", sqlBody.IsBookmarked)
 
 	if err != nil {
 		logger.Println("ERROR: ", err)
 	}
 	idInt, _ := strconv.Atoi(sqlBody.Id)
 	return Post{
-		Id:          sqlBody.Id,
-		Author:      sqlBody.Author,
-		Content:     sqlBody.Content,
-		ReplyTo:     sqlBody.ReplyTo,
-		QuouteOf:    sqlBody.QuouteOf,
-		Attachments: sqlBody.Attachments,
-		LikeCount:   sqlBody.LikeCount,
-		QuoteCount:  sqlBody.QuoteCount,
-		ReplyCount:  sqlBody.ReplyCount,
-		TimePosted:  snowflakeFromInt(int64(idInt)).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
+		Id:           sqlBody.Id,
+		Author:       sqlBody.Author,
+		Content:      sqlBody.Content,
+		ReplyTo:      sqlBody.ReplyTo,
+		QuouteOf:     sqlBody.QuouteOf,
+		Attachments:  sqlBody.Attachments,
+		LikeCount:    sqlBody.LikeCount,
+		QuoteCount:   sqlBody.QuoteCount,
+		ReplyCount:   sqlBody.ReplyCount,
+		TimePosted:   snowflakeFromInt(int64(idInt)).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
+		IsLiked:      sqlBody.IsLiked,
+		IsBookmarked: sqlBody.IsBookmarked,
 	}
 }
 
@@ -851,50 +862,56 @@ func getUserPostsChronologically(c *fiber.Ctx, page int64, userName string) []in
 	}
 	return postIds
 }
-func appendReplyToPost(c *fiber.Ctx, post Post) PostNested {
+func appendReplyToPost(c *fiber.Ctx, post Post, token string) PostNested {
 	if post.ReplyTo == 0 {
 		return PostNested{
-			Id:          post.Id,
-			Author:      post.Author,
-			Content:     post.Content,
-			ReplyTo:     nil,
-			QuouteOf:    post.QuouteOf,
-			Attachments: post.Attachments,
-			LikeCount:   post.LikeCount,
-			QuoteCount:  post.QuoteCount,
-			ReplyCount:  post.ReplyCount,
-			TimePosted:  post.TimePosted,
+			Id:           post.Id,
+			Author:       post.Author,
+			Content:      post.Content,
+			ReplyTo:      nil,
+			QuouteOf:     post.QuouteOf,
+			Attachments:  post.Attachments,
+			LikeCount:    post.LikeCount,
+			QuoteCount:   post.QuoteCount,
+			ReplyCount:   post.ReplyCount,
+			TimePosted:   post.TimePosted,
+			IsLiked:      post.IsLiked,
+			IsBookmarked: post.IsBookmarked,
 		}
 	}
-	var reply = getPost(c, post.ReplyTo)
+	var reply = getPost(c, post.ReplyTo, token)
 
 	return PostNested{
-		Id:          post.Id,
-		Author:      post.Author,
-		Content:     post.Content,
-		ReplyTo:     &reply,
-		QuouteOf:    post.QuouteOf,
-		Attachments: post.Attachments,
-		LikeCount:   post.LikeCount,
-		QuoteCount:  post.QuoteCount,
-		ReplyCount:  post.ReplyCount,
-		TimePosted:  post.TimePosted,
+		Id:           post.Id,
+		Author:       post.Author,
+		Content:      post.Content,
+		ReplyTo:      &reply,
+		QuouteOf:     post.QuouteOf,
+		Attachments:  post.Attachments,
+		LikeCount:    post.LikeCount,
+		QuoteCount:   post.QuoteCount,
+		ReplyCount:   post.ReplyCount,
+		TimePosted:   post.TimePosted,
+		IsLiked:      post.IsLiked,
+		IsBookmarked: post.IsBookmarked,
 	}
 }
 
-func appendReplyToNestedPost(c *fiber.Ctx, post PostNested) PostNestedNested {
+func appendReplyToNestedPost(c *fiber.Ctx, post PostNested, token string) PostNestedNested {
 	if post.ReplyTo == nil {
 		return PostNestedNested{
-			Id:          post.Id,
-			Author:      post.Author,
-			Content:     post.Content,
-			ReplyTo:     nil,
-			QuouteOf:    post.QuouteOf,
-			Attachments: post.Attachments,
-			LikeCount:   post.LikeCount,
-			QuoteCount:  post.QuoteCount,
-			ReplyCount:  post.ReplyCount,
-			TimePosted:  post.TimePosted,
+			Id:           post.Id,
+			Author:       post.Author,
+			Content:      post.Content,
+			ReplyTo:      nil,
+			QuouteOf:     post.QuouteOf,
+			Attachments:  post.Attachments,
+			LikeCount:    post.LikeCount,
+			QuoteCount:   post.QuoteCount,
+			ReplyCount:   post.ReplyCount,
+			TimePosted:   post.TimePosted,
+			IsLiked:      post.IsLiked,
+			IsBookmarked: post.IsBookmarked,
 		}
 	}
 	if post.ReplyTo.ReplyTo == 0 {
@@ -903,79 +920,91 @@ func appendReplyToNestedPost(c *fiber.Ctx, post PostNested) PostNestedNested {
 			Author:  post.Author,
 			Content: post.Content,
 			ReplyTo: &PostNested{
-				Id:          post.ReplyTo.Id,
-				Author:      post.ReplyTo.Author,
-				Content:     post.ReplyTo.Content,
-				ReplyTo:     nil,
-				QuouteOf:    post.ReplyTo.QuouteOf,
-				Attachments: post.ReplyTo.Attachments,
-				LikeCount:   post.ReplyTo.LikeCount,
-				QuoteCount:  post.ReplyTo.QuoteCount,
-				ReplyCount:  post.ReplyTo.ReplyCount,
-				TimePosted:  post.ReplyTo.TimePosted,
+				Id:           post.ReplyTo.Id,
+				Author:       post.ReplyTo.Author,
+				Content:      post.ReplyTo.Content,
+				ReplyTo:      nil,
+				QuouteOf:     post.ReplyTo.QuouteOf,
+				Attachments:  post.ReplyTo.Attachments,
+				LikeCount:    post.ReplyTo.LikeCount,
+				QuoteCount:   post.ReplyTo.QuoteCount,
+				ReplyCount:   post.ReplyTo.ReplyCount,
+				TimePosted:   post.ReplyTo.TimePosted,
+				IsLiked:      post.ReplyTo.IsLiked,
+				IsBookmarked: post.ReplyTo.IsBookmarked,
 			},
-			QuouteOf:    post.QuouteOf,
-			Attachments: post.Attachments,
-			LikeCount:   post.LikeCount,
-			QuoteCount:  post.QuoteCount,
-			ReplyCount:  post.ReplyCount,
-			TimePosted:  post.TimePosted,
+			QuouteOf:     post.QuouteOf,
+			Attachments:  post.Attachments,
+			LikeCount:    post.LikeCount,
+			QuoteCount:   post.QuoteCount,
+			ReplyCount:   post.ReplyCount,
+			TimePosted:   post.TimePosted,
+			IsLiked:      post.IsLiked,
+			IsBookmarked: post.IsBookmarked,
 		}
 	}
 
-	replyReply := getPost(c, post.ReplyTo.ReplyTo)
+	replyReply := getPost(c, post.ReplyTo.ReplyTo, token)
 	return PostNestedNested{
 		Id:      post.Id,
 		Author:  post.Author,
 		Content: post.Content,
 		ReplyTo: &PostNested{
-			Id:          post.ReplyTo.Id,
-			Author:      post.ReplyTo.Author,
-			Content:     post.ReplyTo.Content,
-			ReplyTo:     &replyReply,
-			QuouteOf:    post.ReplyTo.QuouteOf,
-			Attachments: post.ReplyTo.Attachments,
-			LikeCount:   post.ReplyTo.LikeCount,
-			QuoteCount:  post.ReplyTo.QuoteCount,
-			ReplyCount:  post.ReplyTo.ReplyCount,
-			TimePosted:  post.ReplyTo.TimePosted,
+			Id:           post.ReplyTo.Id,
+			Author:       post.ReplyTo.Author,
+			Content:      post.ReplyTo.Content,
+			ReplyTo:      &replyReply,
+			QuouteOf:     post.ReplyTo.QuouteOf,
+			Attachments:  post.ReplyTo.Attachments,
+			LikeCount:    post.ReplyTo.LikeCount,
+			QuoteCount:   post.ReplyTo.QuoteCount,
+			ReplyCount:   post.ReplyTo.ReplyCount,
+			TimePosted:   post.ReplyTo.TimePosted,
+			IsLiked:      post.ReplyTo.IsLiked,
+			IsBookmarked: post.ReplyTo.IsBookmarked,
 		},
-		QuouteOf:    post.QuouteOf,
-		Attachments: post.Attachments,
-		LikeCount:   post.LikeCount,
-		QuoteCount:  post.QuoteCount,
-		ReplyCount:  post.ReplyCount,
-		TimePosted:  post.TimePosted,
+		QuouteOf:     post.QuouteOf,
+		Attachments:  post.Attachments,
+		LikeCount:    post.LikeCount,
+		QuoteCount:   post.QuoteCount,
+		ReplyCount:   post.ReplyCount,
+		TimePosted:   post.TimePosted,
+		IsLiked:      post.IsLiked,
+		IsBookmarked: post.IsBookmarked,
 	}
 }
 
-func appendQuote(c *fiber.Ctx, post PostNestedNested) PostNestedNestedQuote {
+func appendQuote(c *fiber.Ctx, post PostNestedNested, token string) PostNestedNestedQuote {
 	if post.QuouteOf == 0 {
 		return PostNestedNestedQuote{
-			Id:          post.Id,
-			Author:      post.Author,
-			Content:     post.Content,
-			ReplyTo:     post.ReplyTo,
-			QuouteOf:    nil,
-			Attachments: post.Attachments,
-			LikeCount:   post.LikeCount,
-			QuoteCount:  post.QuoteCount,
-			ReplyCount:  post.ReplyCount,
-			TimePosted:  post.TimePosted,
+			Id:           post.Id,
+			Author:       post.Author,
+			Content:      post.Content,
+			ReplyTo:      post.ReplyTo,
+			QuouteOf:     nil,
+			Attachments:  post.Attachments,
+			LikeCount:    post.LikeCount,
+			QuoteCount:   post.QuoteCount,
+			ReplyCount:   post.ReplyCount,
+			TimePosted:   post.TimePosted,
+			IsLiked:      post.IsLiked,
+			IsBookmarked: post.IsBookmarked,
 		}
 	}
-	var quote = getPost(c, post.QuouteOf)
+	var quote = getPost(c, post.QuouteOf, token)
 	return PostNestedNestedQuote{
-		Id:          post.Id,
-		Author:      post.Author,
-		Content:     post.Content,
-		ReplyTo:     post.ReplyTo,
-		QuouteOf:    &quote,
-		Attachments: post.Attachments,
-		LikeCount:   post.LikeCount,
-		QuoteCount:  post.QuoteCount,
-		ReplyCount:  post.ReplyCount,
-		TimePosted:  post.TimePosted,
+		Id:           post.Id,
+		Author:       post.Author,
+		Content:      post.Content,
+		ReplyTo:      post.ReplyTo,
+		QuouteOf:     &quote,
+		Attachments:  post.Attachments,
+		LikeCount:    post.LikeCount,
+		QuoteCount:   post.QuoteCount,
+		ReplyCount:   post.ReplyCount,
+		TimePosted:   post.TimePosted,
+		IsLiked:      post.IsLiked,
+		IsBookmarked: post.IsBookmarked,
 	}
 }
 

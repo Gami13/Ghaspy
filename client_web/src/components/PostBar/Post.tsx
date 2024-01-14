@@ -28,10 +28,14 @@ function localizeTime(time: string) {
 	}).format(Date.parse(time));
 }
 export default function Post(props: { post: PostT }) {
+	console.log('LIKE AND BOOKMARK', props.post.isBookmarked, props.post.isLiked);
 	const AppState = useAppState();
-	const [bookmarked, setBookmarked] = createSignal(false);
-	const [liked, setLiked] = createSignal(false);
-	const result = toggleLike(props.post.id, AppState.userToken());
+	const [bookmarked, setBookmarked] = createSignal(props.post.isBookmarked);
+	const [liked, setLiked] = createSignal(props.post.isLiked);
+	const [likeCount, setLikeCount] = createSignal(props.post.likeCount);
+
+	const isLikedDefault = props.post.isLiked;
+	// const isBookmarkedDefault = props.post.isLiked
 
 	return (
 		<article class={style.post}>
@@ -71,42 +75,44 @@ export default function Post(props: { post: PostT }) {
 						<IconRepeat></IconRepeat>
 						{props.post.quoteCount}
 					</button>
-					<button title="like">
-						<IconHeart
-							onclick={(e) => {
-								setLiked(!liked());
+					<button
+						title="like"
+						onclick={async () => {
+							setLiked(!liked());
+							if (liked() && isLikedDefault) {
+								setLikeCount(likeCount() + 1);
+							}
+							if (!liked() && isLikedDefault) {
+								setLikeCount(likeCount() - 1);
+							}
+							const result = await toggleLike(props.post.id, AppState.userToken());
 
-								if (!result) {
-									setLiked(!liked());
+							if (!result) {
+								setLiked(!liked());
+								if (liked() && isLikedDefault) {
+									setLikeCount(likeCount() + 1);
 								}
-								e.target.classList.add(liked() ? style.liked : style.notLiked);
-								e.target.classList.remove(liked() ? style.notLiked : style.liked);
-							}}
-						></IconHeart>
-						0
+								if (!liked() && isLikedDefault) {
+									setLikeCount(likeCount() - 1);
+								}
+							}
+						}}
+					>
+						<IconHeart classList={{ [style.liked]: liked(), [style.notLiked]: !liked() }} />
+						{likeCount()}
 					</button>
 
 					<button
 						title="bookmark"
-						onclick={() => {
-							const result = togglePin(props.post.id, AppState.userToken());
+						onclick={async () => {
 							setBookmarked(!bookmarked());
+							const result = await togglePin(props.post.id, AppState.userToken());
 							if (!result) {
 								setBookmarked(!bookmarked());
 							}
 						}}
 					>
-						<IconBookmark
-							onclick={(e) => {
-								setLiked(!bookmarked());
-
-								if (!result) {
-									setLiked(!bookmarked());
-								}
-								e.target.classList.add(bookmarked() ? style.notBookmarked : style.bookmarked);
-								e.target.classList.remove(bookmarked() ? style.bookmarked : style.notBookmarked);
-							}}
-						></IconBookmark>
+						<IconBookmark classList={{ [style.bookmarked]: bookmarked(), [style.notBookmarked]: !bookmarked() }} />
 					</button>
 					<button title="copyLink">
 						<IconUpload></IconUpload>

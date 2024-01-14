@@ -23,9 +23,13 @@ export default function PostBar() {
 	const [posts, setPosts] = createSignal<PostT[]>([]);
 
 	onMount(() => {
+		console.log('AUTHORIZATION: ', window.localStorage.getItem('token'));
 		fetch('http://localhost:8080/postsChrono/0', {
 			method: 'GET',
-			headers: { 'Content-Type': 'application/json' },
+			headers: {
+				Authorization: window.localStorage.getItem('token') || "",
+				'Content-Type': 'application/json',
+			},
 		})
 			.then((res) => {
 				if (res.status == 200) {
