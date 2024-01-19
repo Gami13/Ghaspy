@@ -13,8 +13,10 @@ export type PostT = {
 	replyTo: PostT | null;
 	quoteOf: PostT | null;
 	attachments: string[];
-	likesCount: number;
+	likeCount: number;
 	quoteCount: number;
 	replyCount: number;
 	timePosted: string;
+	isLiked: boolean;
+	isBookmarked: boolean;
 };

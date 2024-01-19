@@ -42,11 +42,10 @@ type GetProfileResponse = {
 const root = document.getElementById('root');
 function App() {
 	const AppState = useAppState();
-	onMount(() => {
-		const token = window.localStorage.getItem('token');
-		const userId = window.localStorage.getItem('userId');
 
-		if (!token || !userId) return;
+	const token = window.localStorage.getItem('token');
+
+	if (token) {
 		fetch(API_URL + '/profile', {
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json', Authorization: token },
@@ -81,7 +80,8 @@ function App() {
 				console.log(err);
 				alert("cant't connect to server");
 			});
-	});
+	}
+
 	return (
 		<AppStateProvider>
 			<Router>

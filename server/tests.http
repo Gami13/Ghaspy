@@ -113,12 +113,17 @@ Authorization: {{token}}
 GET {{apiURL}}/postsChrono/0
 
 
+###GET POSTS CHRONO + TOKEN
+GET {{apiURL}}/postsChrono/0
+Authorization: {{token}}
+
+
 ###togglePin
 POST {{apiURL}}/togglePin
 Authorization: {{token}}
 
 {
-	"postID":"139300128763674658"
+	"postID":"139284701805281282"
 }
 
 ###toggleLike
@@ -126,7 +131,7 @@ POST {{apiURL}}/toggleLike
 Authorization: {{token}}
 
 {
-	"postID":"139300128763674658"
+	"postID":"139284701805281282"
 }
 
 ###toggleFollow

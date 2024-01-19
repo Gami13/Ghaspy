@@ -67,53 +67,61 @@ type UserShort struct {
 }
 
 type Post struct {
-	Id          string    `json:"id"`
-	Author      UserShort `json:"author"`
-	Content     string    `json:"content"`
-	ReplyTo     int64     `json:"replyTo"`
-	QuouteOf    int64     `json:"quouteOf"`
-	Attachments []string  `json:"attachments"`
-	LikeCount   int       `json:"likeCount"`
-	QuoteCount  int       `json:"quoteCount"`
-	ReplyCount  int       `json:"replyCount"`
-	TimePosted  string    `json:"timePosted"`
+	Id           string    `json:"id"`
+	Author       UserShort `json:"author"`
+	Content      string    `json:"content"`
+	ReplyTo      int64     `json:"replyTo"`
+	QuouteOf     int64     `json:"quouteOf"`
+	Attachments  []string  `json:"attachments"`
+	LikeCount    int       `json:"likeCount"`
+	QuoteCount   int       `json:"quoteCount"`
+	ReplyCount   int       `json:"replyCount"`
+	TimePosted   string    `json:"timePosted"`
+	IsLiked      bool      `json:"isLiked"`
+	IsBookmarked bool      `json:"isBookmarked"`
 }
 
 type PostNested struct {
-	Id          string    `json:"id"`
-	Author      UserShort `json:"author"`
-	Content     string    `json:"content"`
-	ReplyTo     *Post     `json:"replyTo"`
-	QuouteOf    int64     `json:"quouteOf"`
-	Attachments []string  `json:"attachments"`
-	LikeCount   int       `json:"likeCount"`
-	QuoteCount  int       `json:"quoteCount"`
-	ReplyCount  int       `json:"replyCount"`
-	TimePosted  string    `json:"timePosted"`
+	Id           string    `json:"id"`
+	Author       UserShort `json:"author"`
+	Content      string    `json:"content"`
+	ReplyTo      *Post     `json:"replyTo"`
+	QuouteOf     int64     `json:"quouteOf"`
+	Attachments  []string  `json:"attachments"`
+	LikeCount    int       `json:"likeCount"`
+	QuoteCount   int       `json:"quoteCount"`
+	ReplyCount   int       `json:"replyCount"`
+	TimePosted   string    `json:"timePosted"`
+	IsLiked      bool      `json:"isLiked"`
+	IsBookmarked bool      `json:"isBookmarked"`
 }
 
 type PostNestedNested struct {
-	Id          string      `json:"id"`
-	Author      UserShort   `json:"author"`
-	Content     string      `json:"content"`
-	ReplyTo     *PostNested `json:"replyTo"`
-	QuouteOf    int64       `json:"quouteOf"`
-	Attachments []string    `json:"attachments"`
-	LikeCount   int         `json:"likeCount"`
-	QuoteCount  int         `json:"quoteCount"`
-	ReplyCount  int         `json:"replyCount"`
-	TimePosted  string      `json:"timePosted"`
+	Id           string      `json:"id"`
+	Author       UserShort   `json:"author"`
+	Content      string      `json:"content"`
+	ReplyTo      *PostNested `json:"replyTo"`
+	QuouteOf     int64       `json:"quouteOf"`
+	Attachments  []string    `json:"attachments"`
+	LikeCount    int         `json:"likeCount"`
+	QuoteCount   int         `json:"quoteCount"`
+	ReplyCount   int         `json:"replyCount"`
+	TimePosted   string      `json:"timePosted"`
+	IsLiked      bool        `json:"isLiked"`
+	IsBookmarked bool        `json:"isBookmarked"`
 }
 
 type PostNestedNestedQuote struct {
-	Id          string      `json:"id"`
-	Author      UserShort   `json:"author"`
-	Content     string      `json:"content"`
-	ReplyTo     *PostNested `json:"replyTo"`
-	QuouteOf    *Post       `json:"quouteOf"`
-	Attachments []string    `json:"attachments"`
-	LikeCount   int         `json:"likeCount"`
-	QuoteCount  int         `json:"quoteCount"`
-	ReplyCount  int         `json:"replyCount"`
-	TimePosted  string      `json:"timePosted"`
+	Id           string      `json:"id"`
+	Author       UserShort   `json:"author"`
+	Content      string      `json:"content"`
+	ReplyTo      *PostNested `json:"replyTo"`
+	QuouteOf     *Post       `json:"quouteOf"`
+	Attachments  []string    `json:"attachments"`
+	LikeCount    int         `json:"likeCount"`
+	QuoteCount   int         `json:"quoteCount"`
+	ReplyCount   int         `json:"replyCount"`
+	TimePosted   string      `json:"timePosted"`
+	IsLiked      bool        `json:"isLiked"`
+	IsBookmarked bool        `json:"isBookmarked"`
 }
