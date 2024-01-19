@@ -197,7 +197,7 @@ func signUpUser(c *fiber.Ctx) error {
 	}
 	logger.Println("HASH: ", hash, "SALT: ", salt)
 
-	userId := newSnowflake("0000")
+	userId := newSnowflake(SF_USER)
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId.ID, requestBody.Nickname, requestBody.Email, hash, salt, false)
 	if err != nil {
 		logger.Println("ERROR: ", err)
@@ -333,7 +333,7 @@ func base64URL(data []byte) string {
 func addVerificationCode(c *fiber.Ctx, userId int64) (string, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
-	verificationId := newSnowflake("0001")
+	verificationId := newSnowflake(SF_VERIFICATION)
 	verificationBytes, err := generateRandomBytes(96)
 	if err != nil {
 		logger.Println("ERROR: ", err)
@@ -401,7 +401,7 @@ func comparePasswordAndHash(password string, hash string, salt string) (match bo
 }
 
 func generateToken() (token string, snowflake Snowflake, err error) {
-	snowflake = newSnowflake("1000")
+	snowflake = newSnowflake(SF_TOKEN)
 
 	tokenBytes, err := generateRandomBytes(128)
 	if err != nil {

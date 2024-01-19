@@ -17,13 +17,6 @@ import (
 
 var logger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
 
-var examples = []struct {
-	TEXT string `json:"text"`
-}{
-	{TEXT: "SEBA LUBI PLACKI"},
-	{TEXT: "GAMI LUBI PLACKI"},
-}
-
 func SetLocal[T any](c *fiber.Ctx, key string, value T) {
 	c.Locals(key, value)
 }
@@ -38,7 +31,7 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	fileExtension := splits[len(splits)-1]
 	println(fileExtension)
 
-	snowflake := newSnowflake("0110")
+	snowflake := newSnowflake(SnowflakeType(SF_ATTACHMENT))
 
 	newFileName := strconv.FormatInt(snowflake.ID, 10) + "." + fileExtension
 	// Save the files to disk:
@@ -112,7 +105,6 @@ func main() {
 	logger.Println("INVALID", isUsernameValid("12345 67Aa.,!-_"))
 	logger.Println("VALID", isUsernameValid("1234567Aa.,-_"))
 
-	app.Get("/examples", getExamples)
 	app.Post("/login", logInUser)
 	app.Post("/logout", logOutUser)
 	app.Post("/signup", signUpUser)
