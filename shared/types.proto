@@ -1,4 +1,5 @@
 syntax = "proto3";
+package main;
 
 
 message RequestSignUpUser{
@@ -21,11 +22,11 @@ message RequestSetBio{
 	string bio = 1;
 }
 
-message RequestGetPins{
+message RequestGetBookmarks{
 	uint32 page = 1;
 }
 
-message RequestTogglePin{
+message RequestToggleBookmark{
 	string postID = 1;
 }
 
@@ -51,7 +52,7 @@ message ResponseError {
   string message = 1;
 }
 
-message SQLUserProfileBody{
+message SQLUser{
 	uint64 id = 1;
 	string username = 2;
 	string displayName = 3;
@@ -68,12 +69,10 @@ message SQLUserProfileBody{
 	uint64 countPosts = 14;
 	uint64 countFollowers = 15;
 	uint64 countFollowing = 16;
-	bool isFollowingYou = 17;
-	bool isFollowedByYou = 18;
-	bool isYourProfile = 19;
+	bool isYourProfile = 17;
 }
 
-message ResponseGetProfile{
+message User{
 	string username = 1;
 	string displayName = 2;
 	string bio = 3;
@@ -91,4 +90,22 @@ message ResponseGetProfile{
 	bool isPostsPublic = 15;
 	bool isLikesPublic = 16;
 	bool isYourProfile = 17;
+}
+
+
+message Post{
+	string id = 1;
+	User author = 2;
+	string content = 3;
+	optional string replyToID = 4;
+	optional Post replyTo = 5;
+	optional string quotedID = 6;
+	optional Post quoted = 7;
+	repeated string attachments = 8;
+	uint64 countLikes = 9;
+	uint64 countReplies = 10;
+	uint64 countQuotes = 11;
+	string timePosted = 12;
+	bool isLiked = 13;
+	bool isBookmarked = 14;
 }
