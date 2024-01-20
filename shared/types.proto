@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+
+message RequestSignUpUser{
+	string username = 1;
+	string password = 2;
+	string email = 3;
+}
+
+message RequestLogInUser{
+	string email = 1;
+	string password = 2;
+	string deviceName = 3;
+}
+
+message RequestSetDisplayName{
+	string displayName = 1;
+}
+
+message RequestSetBio{
+	string bio = 1;
+}
+
+message RequestGetPins{
+	uint32 page = 1;
+}
+
+message RequestTogglePin{
+	string postID = 1;
+}
+
+message RequestToggleLike{
+	string postID = 1;
+}
+
+message RequestToggleFollow{
+	string userID = 1;
+}
+
+message RequestDeletePost{
+	string postID = 1;
+}
+
+message RequestGetPosts{
+	string username = 1;
+	uint32 page = 2;
+}
+
+
+message ResponseError {
+  string message = 1;
+}
+
+message SQLUserProfileBody{
+	uint64 id = 1;
+	string username = 2;
+	string displayName = 3;
+	string bio = 4;
+	string avatar = 5;
+	string banner = 6;
+	bool isFollowersPublic = 7;
+	bool isFollowingPublic = 8;
+	bool isPostsPublic = 9;
+	bool isLikesPublic = 10;
+	bool isFollowingYou = 11;
+	bool isFollowedByYou = 12;
+	uint64 countLikes = 13;
+	uint64 countPosts = 14;
+	uint64 countFollowers = 15;
+	uint64 countFollowing = 16;
+	bool isFollowingYou = 17;
+	bool isFollowedByYou = 18;
+	bool isYourProfile = 19;
+}
+
+message ResponseGetProfile{
+	string username = 1;
+	string displayName = 2;
+	string bio = 3;
+	string avatar = 4;
+	string banner = 5;
+	uint64 countLikes = 6;
+	uint64 countPosts = 7;
+	uint64 countFollowers = 8;
+	uint64 countFollowing = 9;
+	bool isFollowingYou = 10;
+	bool isFollowedByYou = 11;
+	string joinedAt = 12;
+	bool isFollowersPublic = 13;
+	bool isFollowingPublic = 14;
+	bool isPostsPublic = 15;
+	bool isLikesPublic = 16;
+	bool isYourProfile = 17;
+}
