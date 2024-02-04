@@ -1,6 +1,7 @@
 package main
 
 import (
+	"beeper_server/src/types"
 	"encoding/json"
 	"net/http"
 	"slices"
@@ -9,6 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+// TODO: TRANSLATE
 
 func setDisplayName(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
@@ -22,21 +25,18 @@ func setDisplayName(c *fiber.Ctx) error {
 	res, err := dbpool.Exec(c.Context(), "UPDATE users SET displayName = $1 FROM tokens WHERE tokens.token = $2 AND users.id = tokens.userId", requestBody.DisplayName, token)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return c.Status(http.StatusGatewayTimeout).JSON(fiber.Map{
-			"message": "Gateway Timeout",
-		})
+		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	logger.Println(res)
 	if res.RowsAffected() == 0 {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized",
-		})
+		return protoError(c, http.StatusUnauthorized, "unautohirized")
+
 	}
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "Display named changed successfully",
-	})
+	return protoSuccess(c, http.StatusOK, &types.ResponseSetDisplayName{Message: "Display name changed successfully"})
 
 }
+
+// TODO: TRANSLATE
 
 func setBio(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
@@ -67,6 +67,9 @@ func setBio(c *fiber.Ctx) error {
 	})
 
 }
+
+// TODO: TRANSLATE
+
 func toggleIsFollowersPublic(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 
@@ -92,6 +95,8 @@ func toggleIsFollowersPublic(c *fiber.Ctx) error {
 		"current": isFollowersPublic,
 	})
 }
+
+// TODO: TRANSLATE
 
 func toggleIsFollowingPublic(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
@@ -119,6 +124,8 @@ func toggleIsFollowingPublic(c *fiber.Ctx) error {
 	})
 }
 
+// TODO: TRANSLATE
+
 func toggleIsPostsPublic(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 
@@ -145,6 +152,8 @@ func toggleIsPostsPublic(c *fiber.Ctx) error {
 	})
 }
 
+// TODO: TRANSLATE
+
 func toggleIsLikesPublic(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 
@@ -170,6 +179,8 @@ func toggleIsLikesPublic(c *fiber.Ctx) error {
 		"current": isLikesPublic,
 	})
 }
+
+// TODO: TRANSLATE
 
 func setAvatar(c *fiber.Ctx) error {
 	var token = c.GetReqHeaders()["Authorization"][0]
@@ -207,6 +218,8 @@ func setAvatar(c *fiber.Ctx) error {
 	})
 }
 
+// TODO: TRANSLATE
+
 func setBanner(c *fiber.Ctx) error {
 	var token = c.GetReqHeaders()["Authorization"][0]
 
@@ -242,6 +255,8 @@ func setBanner(c *fiber.Ctx) error {
 		"filename": filename,
 	})
 }
+
+// TODO: TRANSLATE
 
 func getProfileId(c *fiber.Ctx) error {
 	var token = "0"
@@ -288,6 +303,8 @@ func getProfileId(c *fiber.Ctx) error {
 
 }
 
+// TODO: TRANSLATE
+
 func getProfileUserName(c *fiber.Ctx) error {
 	var token = "0"
 
@@ -331,6 +348,9 @@ func getProfileUserName(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responseBody)
 
 }
+
+// TODO: TRANSLATE
+
 func getLoggedInUserProfile(c *fiber.Ctx) error {
 	logger.Println("GET LOGGED IN USER PROFILE")
 	var token = c.GetReqHeaders()["Authorization"][0]
@@ -347,6 +367,9 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusOK).JSON(sqlBody)
 }
+
+// TODO: TRANSLATE
+
 func addPost(c *fiber.Ctx) error {
 	logger.Println("ADD POST")
 	var token = c.GetReqHeaders()["Authorization"][0]
@@ -413,16 +436,13 @@ func addPost(c *fiber.Ctx) error {
 			"message": "Unexpected error occured",
 		})
 	}
-	// INSERT 1 LIKE
-	// _, err = dbpool.Exec(c.Context(), "INSERT INTO likes (id, userId, postId) VALUES ($1, $2, $3)", newSnowflake("0011").ID, 69, postId)
-	// if err != nil {
-	// 	logger.Println("ERROR: ", err)
-	// }
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "Post added successfully",
 	})
 }
+
+// TODO: TRANSLATE
 
 func getPins(c *fiber.Ctx) error {
 	var token = c.GetReqHeaders()["Authorization"][0]
@@ -443,6 +463,8 @@ func getPins(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(posts)
 }
+
+// TODO: TRANSLATE
 
 func togglePin(c *fiber.Ctx) error {
 
@@ -501,6 +523,8 @@ func togglePin(c *fiber.Ctx) error {
 
 }
 
+// TODO: TRANSLATE
+
 func toggleLike(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 	requestBody := new(ToggleLikeRequestBody)
@@ -555,6 +579,8 @@ func toggleLike(c *fiber.Ctx) error {
 		})
 	}
 }
+
+// TODO: TRANSLATE
 
 func toggleFollow(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
@@ -627,6 +653,7 @@ func toggleFollow(c *fiber.Ctx) error {
 // 		"message": "OK",
 // 	})
 // }
+// TODO: TRANSLATE
 
 func deletePost(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
@@ -705,6 +732,9 @@ func deletePost(c *fiber.Ctx) error {
 //			"message": "OK",
 //		})
 //	}
+
+// TODO: TRANSLATE
+
 func getPosts(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"][0]
 	if len(token) == 0 {
@@ -727,6 +757,9 @@ func getPosts(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(posts)
 }
+
+// TODO: TRANSLATE
+
 func getPostsChronologically(c *fiber.Ctx) error {
 	token := ""
 	if len(c.GetReqHeaders()["Authorization"]) > 0 {
@@ -765,18 +798,19 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(postsWithRepliesNestedAndQuotes)
 }
 
-func getUserShort(c *fiber.Ctx, userId int64) UserShort {
+func getUserShort(c *fiber.Ctx, userId int64) (UserShort, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 	row := dbpool.QueryRow(c.Context(), "SELECT users.id,users.username,users.displayName,users.avatar, users.banner, users.bio FROM users WHERE users.id = $1", userId)
 	var sqlBody UserShort
 	err := row.Scan(&sqlBody.Id, &sqlBody.UserName, &sqlBody.DisplayName, &sqlBody.Avatar, &sqlBody.Banner, &sqlBody.Bio)
 	if err != nil {
 		logger.Println("ERROR: ", err)
+		return UserShort{}, err
 	}
-	return sqlBody
+	return sqlBody, nil
 }
 
-func getPost(c *fiber.Ctx, postId int64, token string) Post {
+func getPost(c *fiber.Ctx, postId int64, token string) (Post, error) {
 
 	if len(token) == 0 {
 		token = ""
@@ -793,7 +827,7 @@ func getPost(c *fiber.Ctx, postId int64, token string) Post {
 
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return Post{}
+		return Post{}, err
 	}
 	idInt, _ := strconv.Atoi(sqlBody.Id)
 	return Post{
@@ -809,57 +843,57 @@ func getPost(c *fiber.Ctx, postId int64, token string) Post {
 		TimePosted:   snowflakeFromInt(int64(idInt)).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"),
 		IsLiked:      sqlBody.IsLiked,
 		IsBookmarked: sqlBody.IsBookmarked,
-	}
+	}, nil
 }
 
-func getPostIdsChronologically(c *fiber.Ctx, page int64) []int64 {
+func getPostIdsChronologically(c *fiber.Ctx, page int64) ([]int64, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 	var postIds []int64
 	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts ORDER BY posts.id DESC LIMIT 50 OFFSET $1", 50*page)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return []int64{}
+		return []int64{}, err
 	}
 	for rows.Next() {
 		var postId int64
 		err := rows.Scan(&postId)
 		if err != nil {
 			logger.Println("ERROR: ", err)
-			return []int64{}
+			return []int64{}, err
 		}
 		postIds = append(postIds, postId)
 	}
-	return postIds
+	return postIds, nil
 }
 
-func getPinIdsChronologically(c *fiber.Ctx, page int64, token string) []int64 {
+func getPinIdsChronologically(c *fiber.Ctx, page int64, token string) ([]int64, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 	var postIds []int64
 	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts, bookmarks WHERE posts.id = bookmarks.postId AND bookmarks.userid = (SELECT tokens.userId FROM tokens WHERE tokens.token = $1) ORDER BY bookmarks.id DESC LIMIT 50 OFFSET $2", token, 50*page)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return []int64{}
+		return []int64{}, err
 	}
 	for rows.Next() {
 		var postId int64
 		err := rows.Scan(&postId)
 		if err != nil {
 			logger.Println("ERROR: ", err)
-			return []int64{}
+			return []int64{}, err
 
 		}
 		postIds = append(postIds, postId)
 	}
-	return postIds
+	return postIds, nil
 }
 
-func getUserPostsChronologically(c *fiber.Ctx, page int64, userName string) []int64 {
+func getUserPostsChronologically(c *fiber.Ctx, page int64, userName string) ([]int64, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 	var postIds []int64
 	rows, err := dbpool.Query(c.Context(), "SELECT posts.id FROM posts WHERE posts.authorId = (SELECT users.id FROM users WHERE users.username = $1) ORDER BY posts.id DESC LIMIT 50 OFFSET $2", userName, 50*page)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return []int64{}
+		return []int64{}, err
 
 	}
 	for rows.Next() {
@@ -867,13 +901,15 @@ func getUserPostsChronologically(c *fiber.Ctx, page int64, userName string) []in
 		err := rows.Scan(&postId)
 		if err != nil {
 			logger.Println("ERROR: ", err)
-			return []int64{}
+			return []int64{}, err
 
 		}
 		postIds = append(postIds, postId)
 	}
-	return postIds
+	return postIds, nil
 }
+
+// TODO: REPLACE THIS BULLSHIT
 func appendReplyToPost(c *fiber.Ctx, post Post, token string) PostNested {
 	if post.ReplyTo == 0 {
 		return PostNested{

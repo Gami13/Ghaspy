@@ -1,12 +1,13 @@
 package main
 
 import (
+	"beeper_server/src/types"
 	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
+	"net/http"
 	"net/smtp"
 	"os"
 	"regexp"
@@ -17,68 +18,59 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/argon2"
+	"google.golang.org/protobuf/proto"
 )
 
 func logInUser(c *fiber.Ctx) error {
-	requestBody := new(LoginRequestBody)
+	requestBody := types.RequestLogInUser{}
 
-	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+	err := proto.Unmarshal(c.Body(), &requestBody)
+	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+		return protoError(c, http.StatusBadRequest, "cantUnmarshal")
 	}
 	logger.Println("LOGGING IN: ", requestBody.Email)
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	//GET USERID SALT AND PASSWORD HASH
+
 	var userId int64
 	var salt string
 	var hash string
 	var isValidated bool
 
-	err := dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
+	err = dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
+
 	if err != nil {
-		logger.Println("ERROR: ", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error",
-		})
+		return protoError(c, http.StatusBadRequest, "loginDataIncorrect")
 	}
 	if !isValidated {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "unvalidated",
-		})
+
+		return protoError(c, http.StatusBadRequest, "loginUnvalidated")
+
 	}
-	//CHECK IF PASSWORD IS CORRECT
-	match, err := comparePasswordAndHash(requestBody.Password, hash, salt)
-	logger.Println("MATCH: ", match)
-	if err != nil {
-		logger.Println("ERROR: ", err)
-		return err
-	}
+	match := comparePasswordAndHash(requestBody.Password, hash, salt)
+
 	if !match {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error",
-		})
+		return protoError(c, http.StatusBadRequest, "loginDataIncorrect")
+
 	}
 
 	token, snowflake, err := generateToken()
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+		return protoError(c, http.StatusBadRequest, "loginCantGenerateToken")
+
 	}
-	logger.Println("TOKEN: ", token)
-	logger.Println("SNOWFLAKE: ", snowflake.ID)
 
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake.ID, userId, token, requestBody.DeviceName)
 	if err != nil {
-		logger.Println("ERROR: ", err)
-		return err
-	}
+		return protoError(c, http.StatusBadRequest, "loginCantInsertToken")
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"token":   token,
-		"userId":  strconv.FormatInt(userId, 10),
-		"message": "User logged in successfully",
-	})
+	}
+	logger.Println("USER LOGGED IN: ", requestBody.Email)
+
+	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: strconv.FormatInt(userId, 10), Message: "userLoggedIn"})
+
 }
 
 // PASSWORD REQUIREMENTS
@@ -89,19 +81,19 @@ func logInUser(c *fiber.Ctx) error {
 func isPasswordValid(password string) []string {
 	var errors []string
 	if len(password) < 8 {
-		errors = append(errors, "passwordTooShort")
+		errors = append(errors, "signupPasswordTooShort")
 	}
 	if regexp.MustCompile(`\s`).MatchString(password) {
-		errors = append(errors, "passwordNoSpaces")
+		errors = append(errors, "signupPasswordNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-z]`).MatchString(password) {
-		errors = append(errors, "passwordLetter")
+		errors = append(errors, "signupPasswordLetter")
 	}
 	if !regexp.MustCompile(`[0-9]`).MatchString(password) {
-		errors = append(errors, "passwordNumber")
+		errors = append(errors, "signupPasswordNumber")
 	}
 	if !regexp.MustCompile(`[A-Z]`).MatchString(password) {
-		errors = append(errors, "passwordCapital")
+		errors = append(errors, "signupPasswordCapital")
 	}
 	return errors
 }
@@ -115,37 +107,31 @@ func isPasswordValid(password string) []string {
 func isUsernameValid(username string) []string {
 	var errors []string
 	if len(username) < 3 {
-		errors = append(errors, "usernameTooShort")
+		errors = append(errors, "signupUsernameTooShort")
 	}
 	if len(username) > 64 {
-		errors = append(errors, "usernameTooLong")
+		errors = append(errors, "signupUsernameTooLong")
 	}
 	if regexp.MustCompile(`\s`).MatchString(username) {
-		errors = append(errors, "usernameNoSpaces")
+		errors = append(errors, "signupUsernameNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-zA-Z0-9_.,-]`).MatchString(username) {
-		errors = append(errors, "usernameNoSpecials")
+		errors = append(errors, "signupUsernameNoSpecials")
 	}
 	return errors
 }
 
 func signUpUser(c *fiber.Ctx) error {
-	requestBody := new(RegisterRequestBody)
-	if err := json.Unmarshal(c.Body(), requestBody); err != nil {
+	requestBody := types.RequestSignUpUser{}
+	err := proto.Unmarshal(c.Body(), &requestBody)
+	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+		return protoError(c, http.StatusBadRequest, "cantUnmarshal")
 	}
-	logger.Println("REGISTERING: ", requestBody.Email, requestBody.Nickname, requestBody.Password)
-
-	//DOESNT WORK
-	// if err := c.BodyParser(requestBody); err != nil {
-	// 	logger.Println("ERROR: ", err)
-	// 	return err
-	// }
-	logger.Println("REGISTERING: ", requestBody.Email)
+	logger.Println("REGISTERING: ", requestBody.Email, requestBody.Username, requestBody.Password)
 
 	passwordErrors := isPasswordValid(requestBody.Password)
-	usernameErrors := isUsernameValid(requestBody.Nickname)
+	usernameErrors := isUsernameValid(requestBody.Username)
 	var emailErrors []string
 
 	if requestBody.Email == "" || requestBody.Email[0] == '@' || requestBody.Email[len(requestBody.Email)-1] == '@' || !strings.Contains(requestBody.Email, "@") {
@@ -154,69 +140,73 @@ func signUpUser(c *fiber.Ctx) error {
 	}
 
 	if len(passwordErrors) > 0 || len(usernameErrors) > 0 || len(emailErrors) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"passwordErrors": passwordErrors,
-			"usernameErrors": usernameErrors,
-			"emailErrors":    emailErrors,
+		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
+			PasswordErrors: passwordErrors,
+			UsernameErrors: usernameErrors,
+			EmailErrors:    emailErrors,
 		})
 
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
-	//CHECK IF USERNAME IS TAKEN
 	var rowAmount int
-	err := dbpool.QueryRow(context.Background(), "SELECT COUNT(id) FROM users WHERE username = $1", requestBody.Nickname).Scan(&rowAmount)
+	err = dbpool.QueryRow(context.Background(), "SELECT COUNT(id) FROM users WHERE username = $1", requestBody.Username).Scan(&rowAmount)
 	if err != nil {
-		logger.Println("ERROR: ", err)
-		return err
+		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if rowAmount != 0 {
 		//TODO: IF USERNAME IS TAKEN BUT ISNT VERIFIED, AND THE VERIFICATION CODE IS NO LONGER VALID, DELETE THE USER AND REGISTER A NEW ONE
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"usernameErrors": []string{"usernameTaken"},
+		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
+			UsernameErrors: []string{"usernameTaken"},
 		})
+
 	}
-	//CHECK IF EMAIL IS TAKEN
+
 	err = dbpool.QueryRow(context.Background(), "SELECT COUNT(id) FROM users WHERE email = $1", requestBody.Email).Scan(&rowAmount)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+
+		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if rowAmount != 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"emailErrors": []string{"emailTaken"},
+		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
+			EmailErrors: []string{"emailTaken"},
 		})
-	}
-	// REGISTER USER HERE
 
-	//PREPARE PASSWORD
+	}
+
 	hash, salt, err := preparePassword(requestBody.Password)
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return err
+		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	logger.Println("HASH: ", hash, "SALT: ", salt)
 
 	userId := newSnowflake(SF_USER)
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId.ID, requestBody.Nickname, requestBody.Email, hash, salt, false)
-	if err != nil {
-		logger.Println("ERROR: ", err)
-		return err
-	}
+
 	verificationCode, err := addVerificationCode(c, userId.ID)
 	if err != nil {
-		logger.Println("ERROR: ", err)
-		return err
+
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
+	}
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId.ID, requestBody.Username, requestBody.Email, hash, salt, false)
+	if err != nil {
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
+	}
+	//SEND EMAIL WITH VERIFICATION CODE
+
+	err = sendMail(requestBody.Email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
+
+	if err != nil {
+		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 
-	//SEND EMAIL WITH VERIFICATION CODE
-	sendMail(requestBody.Email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
-
-	return c.Status(200).JSON(fiber.Map{
-		"message": "User registered successfully",
-	})
+	return protoSuccess(c, http.StatusOK, &types.ResponseSignUpUser{Message: "userRegistered"})
 
 }
+
 func logOutUser(c *fiber.Ctx) error {
 
 	var token = c.GetReqHeaders()["Authorization"][0]
@@ -229,20 +219,17 @@ func logOutUser(c *fiber.Ctx) error {
 	println("ROWS AFFECTED: ", res.RowsAffected(), res.Delete(), res.String())
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Unknown error",
-		})
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
 	}
 	if res.RowsAffected() == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid token",
-		})
+		return protoError(c, http.StatusBadRequest, "invalidToken")
+
 	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"message": "Logged out successfully",
-	})
+	return protoSuccess(c, http.StatusOK, &types.ResponseLogOutUser{Message: "userLoggedOut"})
 }
+
 func validateUser(c *fiber.Ctx) error {
 	valCode := c.Params("valId")
 	logger.Println("Validating: " + valCode)
@@ -257,58 +244,48 @@ func validateUser(c *fiber.Ctx) error {
 	err := row.Scan(&id, &userId, &code, &validUntil)
 	if err != nil {
 		logger.Println("ERROR 1: ", err)
-		return c.Status(400).JSON(fiber.Map{
-			"message": "Invalid verification code",
-		})
+		return protoError(c, http.StatusBadRequest, "verificationCodeInvalid")
 	}
 	logger.Println("ID: ", id, "USERID: ", userId, "CODE: ", code, "VALIDUNTIL: ", validUntil)
 
-	if err != nil {
-		logger.Println("ERROR 2: ", err)
-		return err
-	}
 	if time.Now().After(validUntil) {
 		verificationCode, err := addVerificationCode(c, userId)
 		if err != nil {
-			logger.Println("ERROR 3: ", err)
-			return err
+			return protoError(c, http.StatusInternalServerError, "internalError")
+
 		}
 		//GET EMAIL
 		row := dbpool.QueryRow(context.Background(), "SELECT email FROM users WHERE id = $1", userId)
 		var email string
 		err = row.Scan(&email)
 		if err != nil {
-			logger.Println("ERROR 4: ", err)
-			return err
+			return protoError(c, http.StatusInternalServerError, "internalError")
+
 		}
 		sendMail(email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
-		//TODO:Send email
 
-		return c.Status(400).JSON(fiber.Map{
-			"message": "Verification code is no longer valid, a new one has been sent to your email",
-		})
+		return protoError(c, http.StatusBadRequest, "verificationCodeOutdated")
+
 	}
 	//CHECK IF USER IS ALREADY VALIDATED
 	var isValidated bool
 	err = dbpool.QueryRow(context.Background(), "SELECT isValidated FROM users WHERE id = $1", userId).Scan(&isValidated)
 	if err != nil {
-		logger.Println("ERROR 3: ", err)
-		return err
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
 	}
 	if isValidated {
-		return c.Status(400).JSON(fiber.Map{
-			"message": "User is already validated",
-		})
+		return protoError(c, http.StatusBadRequest, "userAlreadyValidated")
 	}
 
 	_, err = dbpool.Exec(context.Background(), "UPDATE users SET isValidated = true WHERE id = $1", userId)
 	if err != nil {
-		logger.Println("ERROR 4: ", err)
-		return err
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
 	}
-	return c.Status(200).JSON(fiber.Map{
-		"message": "User validated successfully",
-	})
+
+	return protoSuccess(c, http.StatusOK, &types.ResponseValidateUser{Message: "userValidated"})
+
 }
 
 func generateRandomBytes(n uint32) ([]byte, error) {
@@ -378,8 +355,7 @@ func preparePassword(password string) (hashR string, saltR string, errR error) {
 	return b64Hash, b64Salt, nil
 }
 
-func comparePasswordAndHash(password string, hash string, salt string) (match bool, err error) {
-	// Extract the parameters, salt and derived key from the encoded password
+func comparePasswordAndHash(password string, hash string, salt string) (match bool) {
 	// hash.
 	password = pepper + password
 	saltBytes, _ := base64.RawStdEncoding.DecodeString(salt)
@@ -395,9 +371,9 @@ func comparePasswordAndHash(password string, hash string, salt string) (match bo
 	// that we are using the subtle.ConstantTimeCompare() function for this
 	// to help prevent timing attacks.
 	if subtle.ConstantTimeCompare(hashBytes, otherHash) == 1 {
-		return true, nil
+		return true
 	}
-	return false, nil
+	return false
 }
 
 func generateToken() (token string, snowflake Snowflake, err error) {

@@ -1,3 +1,4 @@
+const newLocal = this;
 export default {
 	appName: 'Beeper',
 	hello: 'cześć {{ name }}, jak się masz?',
@@ -13,30 +14,10 @@ export default {
 		logIn: 'Zaloguj się',
 		signUp: 'Zarejestruj się',
 	},
-	auth: {
-		usernameTooShort: 'Nazwa użytkownika musi mieć minimum 3 znaki',
-		usernameTooLong: 'Nazwa użytkownika nie może być dłuższa niż 64 znaki',
-		usernameNoSpecials: 'Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika',
-		usernameNoSpaces: 'Nazwa użytkownika nie może zawierać spacji',
-		usernameTaken: 'Ta nazwa użytkownika jest już zajęta',
 
-		passwordTooShort: 'Hasło musi mieć minimum 8 znaków',
-		passwordCapital: 'Hasło musi zawierać wielką literę',
-		passwordLetter: 'Hasło musi zawierać literę',
-		passwordNumber: 'Hasło musi zawierać cyfrę',
-		passwordNoSpaces: 'Hasło nie może zawierać spacji',
-
-		repeatPassword: 'Hasła muszą być takie same',
-
-		emailInvalid: 'Niepoprawny adres email',
-		emailTaken: 'Ten adres email jest już zajęty',
-	},
 	login: {
-		error: 'Email lub hasło jest niepoprawne',
-		empty: 'Email lub hasło jest puste',
 		logIn: 'Zaloguj się',
 		errorLabel: 'Błąd:',
-		unvalidated: 'Email nie został jeszcze zweryfikowany',
 		email: 'Email',
 		password: 'Hasło',
 		passwordRepeat: 'Powtórz hasło',
@@ -65,5 +46,46 @@ export default {
 		likes: 'Polubienia',
 		whatsHappening: 'Co się dzieje?',
 		post: 'Opublikuj',
+	},
+	authErrors: {
+		signupUsernameTooShort: 'Nazwa użytkownika musi mieć minimum 3 znaki',
+		signupUsernameTooLong: 'Nazwa użytkownika nie może być dłuższa niż 64 znaki',
+		signupUsernameNoSpecials: 'Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika',
+		signupUsernameNoSpaces: 'Nazwa użytkownika nie może zawierać spacji',
+		signupUsernameTaken: 'Ta nazwa użytkownika jest już zajęta',
+
+		signupPasswordTooShort: 'Hasło musi mieć minimum 8 znaków',
+		signupPasswordCapital: 'Hasło musi zawierać wielką literę',
+		signupPasswordLetter: 'Hasło musi zawierać literę',
+		signupPasswordNumber: 'Hasło musi zawierać cyfrę',
+		signupPasswordNoSpaces: 'Hasło nie może zawierać spacji',
+
+		signupPasswordRepeat: 'Hasła muszą być takie same',
+
+		signupEmailInvalid: 'Niepoprawny adres email',
+		signupEmailTaken: 'Ten adres email jest już zajęty',
+	},
+	errors: {
+		loginDataIncorrect: 'Email lub hasło jest niepoprawne',
+		loginFieldEmpty: 'Email lub hasło jest puste',
+		loginUnvalidated: 'Email nie został jeszcze zweryfikowany',
+		loginCantGenerateToken: 'Nie można wygenerować tokenu',
+		loginCantInsertToken: 'Nie można wstawić tokenu',
+		invalidRequest: 'Niepoprawne zapytanie',
+		internalError: 'Wewnętrzny błąd serwera',
+		internalErrorCrit: 'Krytyczny wewnętrzny błąd serwera',
+		unautohirized: 'Nie masz uprawnień do wykonania tej akcji',
+		cantUnmarshal: 'Dane zostały wysłane w niepoprawnym formacie',
+		invalidToken: 'Niepoprawny token',
+		verificationCodeInvalid: 'Niepoprawny kod weryfikacyjny',
+		//TODO: translate
+		verificationCodeOutdated: 'Verification code is no longer valid, a new one has been sent to your email',
+		userAlreadyValidated: 'Użytkownik jest już zweryfikowany',
+	},
+	success: {
+		userRegistered: 'Użytkownik zarejestrowany pomyślnie',
+		userLoggedIn: 'Zalogowano pomyślnie',
+		userLoggedOut: 'Wylogowano pomyślnie',
+		userValidated: 'Użytkownik zweryfikowany pomyślnie',
 	},
 };

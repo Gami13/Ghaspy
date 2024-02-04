@@ -7,6 +7,7 @@ import { IconAlertCircle } from '@tabler/icons-solidjs';
 import { AuthTransKeysT, AuthTransKeys, t, LoginTransKeysT } from '@/Translation';
 import { API_URL } from '@/constants';
 import { useAppState } from '@/AppState';
+
 const Login = () => {
 	const AppState = useAppState();
 	const navigate = useNavigate();
@@ -46,6 +47,7 @@ const Login = () => {
 						navigate('/');
 					});
 				} else {
+					let response = ResponseLogInUser;
 					res.json().then((data) => {
 						setErr(data.message);
 					});

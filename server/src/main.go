@@ -42,27 +42,6 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	return newFileName, nil
 }
 
-func uploadTest(c *fiber.Ctx) error {
-	logger.Println("UPLOAD TEST")
-
-	file, err := c.FormFile("file") // *multipart.FileHeader
-	if err != nil {
-		logger.Println(err)
-		return err
-	}
-	filename, err := saveFile(c, file)
-	if err != nil {
-		logger.Println(err)
-		return err
-	}
-	logger.Println("FILE SAVED", filename)
-	return c.Status(200).JSON(fiber.Map{
-		"message":  "File uploaded!",
-		"filename": filename,
-	})
-
-}
-
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -95,7 +74,6 @@ func main() {
 	app.Get("/validate/:valId", validateUser)
 	app.Post("/setDisplayName", setDisplayName)
 	app.Post("/setBio", setBio)
-	app.Post("/fileTest", uploadTest)
 	app.Post("/setDisplayName", setDisplayName)
 	app.Post("/toggleIsFollowingPublic", toggleIsFollowingPublic)
 	app.Post("/toggleIsFollowersPublic", toggleIsFollowersPublic)

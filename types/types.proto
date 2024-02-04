@@ -1,6 +1,7 @@
 syntax = "proto3";
 package main;
 
+option go_package = "types/";
 
 message RequestSignUpUser{
 	string username = 1;
@@ -52,6 +53,36 @@ message ResponseError {
   string message = 1;
 }
 
+message ResponseSetDisplayName {
+  string message = 1;
+}
+
+message ResponseLogInUser{
+	string token = 1;
+	string userID = 2;
+	string message = 3;
+}
+
+message ResponseSignUpUserError{
+	repeated string passwordErrors = 1;
+	repeated string emailErrors = 2;
+	repeated string usernameErrors = 3;
+	string message = 4;
+}
+
+message ResponseSignUpUser{
+	string message = 1;
+
+}
+
+message ResponseLogOutUser{
+	string message = 1;
+
+}
+message ResponseValidateUser{
+	string message = 1;
+
+}
 message SQLUser{
 	uint64 id = 1;
 	string username = 2;
