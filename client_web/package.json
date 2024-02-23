@@ -14,7 +14,9 @@
 		"@solidjs/router": "^0.10.6",
 		"@tabler/icons-solidjs": "^2.44.0",
 		"autoprefixer": "^10.4.16",
+		"long": "^5.2.3",
 		"lucide-solid": "^0.303.0",
+		"protobufjs": "^7.2.6",
 		"solid-js": "^1.8.7"
 	},
 	"devDependencies": {

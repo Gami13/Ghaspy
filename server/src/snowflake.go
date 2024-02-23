@@ -13,9 +13,9 @@ const MAX_TYPE = 15
 const BATCH_BITS = 17
 const MAX_BATCH = 131071
 
-var numberInBatch int64 = 0
+var numberInBatch uint64 = 0
 
-type SnowflakeType int
+type SnowflakeType uint16
 
 const (
 	SF_USER SnowflakeType = iota
@@ -41,23 +41,23 @@ func (s SnowflakeType) String() string {
 }
 
 type Snowflake struct {
-	ID            int64
+	ID            uint64
 	Date          time.Time
-	NumberInBatch int64
+	NumberInBatch uint64
 	IDType        SnowflakeType
 }
 
 func (s Snowflake) StringIDBin() string {
-	return strconv.FormatInt(s.ID, 2)
+	return strconv.FormatUint(s.ID, 2)
 }
 func (s Snowflake) StringIDDec() string {
-	return strconv.FormatInt(s.ID, 10)
+	return strconv.FormatUint(s.ID, 10)
 }
 
 func newSnowflake(IDType SnowflakeType) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 
-	var ID = ((((currentDate - epoch) << BATCH_BITS) | numberInBatch) << TYPE_BITS) | int64(IDType)
+	var ID = ((uint64((currentDate-epoch)<<BATCH_BITS) | numberInBatch) << TYPE_BITS) | uint64(IDType)
 
 	var snowflake = Snowflake{ID: ID,
 		Date: time.UnixMilli(currentDate),
@@ -75,9 +75,9 @@ func newSnowflake(IDType SnowflakeType) Snowflake {
 
 }
 
-func snowflakeFromInt(input int64) Snowflake {
+func snowflakeFromInt(input uint64) Snowflake {
 	return Snowflake{ID: input,
-		Date:          time.UnixMilli((input >> (TYPE_BITS + BATCH_BITS)) + epoch),
+		Date:          time.UnixMilli(int64(input>>(TYPE_BITS+BATCH_BITS)) + epoch),
 		NumberInBatch: input >> TYPE_BITS & MAX_BATCH,
 		IDType:        SnowflakeType(input & MAX_TYPE)}
 }

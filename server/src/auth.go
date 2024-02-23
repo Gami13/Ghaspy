@@ -33,7 +33,7 @@ func logInUser(c *fiber.Ctx) error {
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
-	var userId int64
+	var userId uint64
 	var salt string
 	var hash string
 	var isValidated bool
@@ -69,7 +69,7 @@ func logInUser(c *fiber.Ctx) error {
 	}
 	logger.Println("USER LOGGED IN: ", requestBody.Email)
 
-	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: strconv.FormatInt(userId, 10), Message: "userLoggedIn"})
+	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: userId, Message: "userLoggedIn"})
 
 }
 
@@ -238,7 +238,7 @@ func validateUser(c *fiber.Ctx) error {
 	row := dbpool.QueryRow(context.Background(), "SELECT id, userId, code, validUntil  FROM verifications WHERE code LIKE $1", valCode)
 
 	var id int64
-	var userId int64
+	var userId uint64
 	var code string
 	var validUntil time.Time
 	err := row.Scan(&id, &userId, &code, &validUntil)
@@ -307,7 +307,7 @@ func base64URL(data []byte) string {
 	return result
 }
 
-func addVerificationCode(c *fiber.Ctx, userId int64) (string, error) {
+func addVerificationCode(c *fiber.Ctx, userId uint64) (string, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
 	verificationId := newSnowflake(SF_VERIFICATION)
@@ -384,7 +384,7 @@ func generateToken() (token string, snowflake Snowflake, err error) {
 		return "", snowflake, err
 	}
 	token = base64URL(tokenBytes)
-	finalToken := strconv.FormatInt(snowflake.ID, 10) + "." + token
+	finalToken := strconv.FormatUint(snowflake.ID, 10) + "." + token
 	return finalToken, snowflake, nil
 }
 

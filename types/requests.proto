@@ -1,0 +1,35 @@
+syntax = "proto3";
+package main.requests;
+
+option go_package = "types/";
+
+message RequestSignUpUser {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+}
+
+message RequestLogInUser {
+  string email = 1;
+  string password = 2;
+  string deviceName = 3;
+}
+
+message RequestSetDisplayName { string displayName = 1; }
+
+message RequestSetBio { string bio = 1; }
+
+message RequestGetBookmarks { uint32 page = 1; }
+
+message RequestToggleBookmark { string postID = 1; }
+
+message RequestToggleLike { string postID = 1; }
+
+message RequestToggleFollow { string userID = 1; }
+
+message RequestDeletePost { string postID = 1; }
+
+message RequestGetPosts {
+  string username = 1;
+  uint32 page = 2;
+}

@@ -1,2 +1,2 @@
-protoc --ts_proto_out="./client_web/src" --go_out="./server/src" ./types/*.proto
+protoc --ts_proto_opt=esModuleInterop=true --ts_proto_opt=enumsAsLiterals=true --ts_proto_opt=forceLong=string --ts_proto_opt=outputJsonMethods=false --ts_proto_opt=env=browser --ts_proto_out="./client_web/src/types" --go_out="./server/src" --proto_path ./types ./types/*.proto 
 PAUSE

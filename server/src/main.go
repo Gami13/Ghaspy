@@ -33,7 +33,7 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 
 	snowflake := newSnowflake(SnowflakeType(SF_ATTACHMENT))
 
-	newFileName := strconv.FormatInt(snowflake.ID, 10) + "." + fileExtension
+	newFileName := strconv.FormatUint(snowflake.ID, 10) + "." + fileExtension
 	// Save the files to disk:
 	if err := c.SaveFile(file, fmt.Sprintf("C:\\uploads\\"+newFileName)); err != nil {
 		logger.Println(err)
@@ -81,8 +81,7 @@ func main() {
 	app.Post("/toggleIsLikesPublic", toggleIsLikesPublic)
 	app.Post("/setAvatar", setAvatar)
 	app.Post("/setBanner", setBanner)
-	app.Get("/profileId/:id", getProfileId)
-	app.Get("/profile/:name", getProfileUserName)
+	app.Get("/profile/:name", getProfile)
 	app.Get("/profile", getLoggedInUserProfile)
 	app.Post("/post", addPost)
 	app.Get("/postsChrono/:page", getPostsChronologically)
@@ -90,8 +89,8 @@ func main() {
 	app.Post("/toggleLike", toggleLike)
 	app.Post("/toggleFollow", toggleFollow)
 	app.Delete("/post", deletePost)
-	app.Get("/pins/:page", getPins)
-	app.Get("/postsProfile/:username/:page", getPosts)
+	// app.Get("/pins/:page", getPins)
+	app.Get("/postsProfile/:username/:page", getUserPostsChronologically)
 
 	app.Static("/attachment", "C:\\uploads")
 

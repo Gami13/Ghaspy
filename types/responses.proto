@@ -1,0 +1,95 @@
+syntax = "proto3";
+import "internal.proto";
+package main.responses;
+
+option go_package = "types/";
+
+message ResponseError { string message = 1; }
+
+message ResponseSetDisplayName { string message = 1; }
+
+message ResponseSetBio { string message = 1; }
+
+message ResponseToggleFollowersPublic {
+  string message = 1;
+  bool state = 2;
+}
+
+message ResponseToggleFollowingPublic {
+  string message = 1;
+  bool state = 2;
+}
+
+message ResponseTogglePostsPublic {
+  string message = 1;
+  bool state = 2;
+}
+
+message ResponseToggleLikesPublic {
+  string message = 1;
+  bool state = 2;
+}
+
+message ResponseSetAvatar {
+  string message = 1;
+  string url = 2;
+}
+
+message ResponseSetBanner {
+  string message = 1;
+  string url = 2;
+}
+message ResponseLogInUser {
+  string token = 1;
+  uint64 userID = 2;
+  string message = 3;
+}
+message ResponseGetProfile { internal.User profile = 1; }
+
+message ResponseSignUpUserError {
+  repeated string passwordErrors = 1;
+  repeated string emailErrors = 2;
+  repeated string usernameErrors = 3;
+  string message = 4;
+}
+message ResponseToggleBookmark { 
+  string message = 1; 
+  bool state = 2; 
+}
+
+message ResponseToggleLike { 
+  string message = 1; 
+  bool state = 2;
+}
+
+message ResponseToggleFollow { 
+  string message = 1; 
+  bool state = 2; 
+}
+
+message ResponseDeletePost { 
+  string message = 1; 
+  bool state = 2; 
+}
+
+message ResponseAddPost { 
+  string message = 1;
+  uint64 postID = 2;
+}
+
+message ResponseSignUpUser { string message = 1; }
+
+message ResponseLogOutUser { string message = 1; }
+message ResponseValidateUser { string message = 1; }
+
+message ResponseGetPostsChronologically{
+  repeated internal.Post posts = 1;
+  string message = 2;
+  uint32 pageNumber = 3;
+}
+
+message ResponseGetPostsChronologicallyByUser{
+  repeated internal.Post posts = 1;
+  string message = 2;
+  uint32 pageNumber = 3;
+}

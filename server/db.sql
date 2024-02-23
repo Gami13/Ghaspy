@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX usersIdIdx ON users (id);
+
 CREATE INDEX usernameIdx ON users (username);
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -31,7 +32,9 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 CREATE INDEX postsIdIdx ON posts (id);
+
 CREATE INDEX postsAuthorIdIdx ON posts (authorId);
+
 CREATE INDEX postsReplyToIdx ON posts (replyTo);
 
 CREATE TABLE IF NOT EXISTS likes (
@@ -41,6 +44,7 @@ CREATE TABLE IF NOT EXISTS likes (
 );
 
 CREATE INDEX likesUserIdx ON likes (userId);
+
 CREATE INDEX likesPostIdIdx ON likes (postId);
 
 CREATE TABLE IF NOT EXISTS follows (
@@ -50,6 +54,7 @@ CREATE TABLE IF NOT EXISTS follows (
 );
 
 CREATE INDEX followsFollowerIdx ON follows (followerId);
+
 CREATE INDEX followsFollowedIdx ON follows (followedId);
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -61,6 +66,7 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 CREATE INDEX msgsSenderIdx ON messages (senderId);
+
 CREATE INDEX msgsChatIdx ON messages (chatId);
 
 CREATE TABLE IF NOT EXISTS chats (
@@ -79,6 +85,7 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 );
 
 CREATE INDEX bookmarksUserIdx ON bookmarks (userId);
+
 CREATE INDEX bookmarksPostIdx ON bookmarks (postId);
 
 CREATE TABLE IF NOT EXISTS tokens (
@@ -89,6 +96,7 @@ CREATE TABLE IF NOT EXISTS tokens (
 );
 
 CREATE INDEX tokensUserIdx ON tokens (userId);
+
 CREATE INDEX tokensTokenIdx ON tokens (token);
 
 CREATE TABLE IF NOT EXISTS verifications (
@@ -99,6 +107,7 @@ CREATE TABLE IF NOT EXISTS verifications (
 );
 
 CREATE INDEX verifUserIdx ON verifications (userId);
+
 CREATE INDEX verifCodeIdx ON verifications (code);
 
 ALTER TABLE IF EXISTS public.bookmarks
@@ -165,3 +174,99 @@ ALTER TABLE IF EXISTS public.verifications
 ADD CONSTRAINT "userRestrict" FOREIGN KEY (userid) REFERENCES public.users (id) MATCH SIMPLE ON
 UPDATE NO ACTION ON
 DELETE NO ACTION NOT VALID;
+
+CREATE VIEW public.usersDetails AS
+SELECT id,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	(
+		SELECT count(l1.*) AS count
+		FROM likes l1
+		WHERE l1.userid = users.id
+	) AS countlikes,
+	(
+		SELECT count(p1.*) AS count
+		FROM posts p1
+		WHERE p1.authorid = users.id
+	) AS countposts,
+	(
+		SELECT count(f1.*) AS count
+		FROM follows f1
+		WHERE f1.followerid = users.id
+	) AS countisfollowing,
+	(
+		SELECT count(f2.*) AS count
+		FROM follows f2
+		WHERE f2.followedid = users.id
+	) AS countfollowedby
+FROM users;
+
+ALTER TABLE public.test OWNER TO postgres;
+
+--TEMPORARY STUFF
+SELECT posts.id,
+	"usersDetails".id as authorId,
+	"usersDetails".username,
+	"usersDetails".displayname,
+	"usersDetails".bio,
+	"usersDetails".avatar,
+	"usersDetails".banner,
+	"usersDetails".isfollowerspublic,
+	"usersDetails".isfollowingpublic,
+	"usersDetails".ispostspublic,
+	"usersDetails".islikespublic,
+	"usersDetails".countlikes,
+	"usersDetails".countposts,
+	"usersDetails".countisfollowing,
+	"usersDetails".countfollowedby,
+	posts.content,
+	posts.replyTo,
+	posts.quoteOf,
+	posts.attachments,
+	(
+		SELECT COUNT(*)
+		FROM likes l1
+		WHERE l1.postid = posts.id
+	) as postCountLikes,
+	(
+		SELECT COUNT(*)
+		FROM posts p1
+		WHERE p1.quoteof = posts.id
+	) AS postCountQuotes,
+	(
+		SELECT COUNT(*)
+		FROM posts p2
+		WHERE p2.replyto = posts.id
+	) AS postCountReplies,
+	(
+		SELECT CASE
+				WHEN COUNT(*) > 0 THEN true
+				ELSE false
+			END
+		FROM likes l1
+			JOIN tokens t1 ON t1.userid = l1.userid
+		WHERE posts.id = l1.postid
+			AND t1.token = $1
+	) AS isPostLiked,
+	(
+		SELECT CASE
+				WHEN COUNT(*) > 0 THEN true
+				ELSE false
+			END
+		FROM bookmarks b1
+			JOIN tokens t2 ON t2.userid = b1.userid
+		WHERE posts.id = b1.postid
+			AND t2.token = $1
+	) AS isPostBookmarked
+FROM posts
+	JOIN "usersDetails" ON posts.authorid = "usersDetails".id
+WHERE "usersDetails".username = $2
+ORDER BY posts.id DESC
+LIMIT 50 OFFSET $3
