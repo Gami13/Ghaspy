@@ -18,6 +18,15 @@ import Login from './components/Login/Login';
 import { onMount } from 'solid-js';
 import { API_URL } from './constants';
 import PinsBar from './components/PostBar/PinsBar';
+import * as stylex from '@stylexjs/stylex';
+
+const styles = stylex.create({
+	root: {
+		width: '100%',
+
+		backgroundColor: 'red',
+	},
+});
 
 type GetProfileResponse = {
 	id: bigint;
@@ -39,7 +48,7 @@ type GetProfileResponse = {
 	isLikesPublic: boolean;
 	isYourProfile: boolean;
 };
-const root = document.getElementById('root');
+const root = document.getElementsByTagName('body')[0];
 function App() {
 	const AppState = useAppState();
 
@@ -83,19 +92,21 @@ function App() {
 	}
 
 	return (
-		<AppStateProvider>
-			<Router>
-				<Route path="/" component={Main}>
-					<Route path="/" component={PostBar} />
-					<Route path="/:username" component={UserProfile} />
-					<Route path="login" component={Login} />
-					<Route path="signup" component={Signup} />
-					<Route path="pins" component={PinsBar} />
-				</Route>
-				<Route path="uploadTest" component={UploadTest} />
-				<Route path="avatarTest" component={AvatarTest} />
-			</Router>
-		</AppStateProvider>
+		<div {...stylex.props(styles.root)}>
+			<AppStateProvider>
+				<Router>
+					<Route path="/" component={Main}>
+						<Route path="/" component={PostBar} />
+						<Route path="/:username" component={UserProfile} />
+						<Route path="login" component={Login} />
+						<Route path="signup" component={Signup} />
+						<Route path="pins" component={PinsBar} />
+					</Route>
+					<Route path="uploadTest" component={UploadTest} />
+					<Route path="avatarTest" component={AvatarTest} />
+				</Router>
+			</AppStateProvider>
+		</div>
 	);
 }
 

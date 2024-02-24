@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import solidPlugin from 'vite-plugin-solid';
+import styleX from 'vite-plugin-stylex';
 export default defineConfig({
-	plugins: [solidPlugin(), tsconfigPaths()],
+	plugins: [solidPlugin(), tsconfigPaths(), styleX()],
 	server: {
 		port: 3000,
 	},

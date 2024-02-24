@@ -10,8 +10,8 @@ export const dictionaries = {
 } as const;
 
 export type Locale = keyof typeof dictionaries;
-export type AuthTransKeysT = keyof (typeof dictionaries)[Locale]['auth'];
-export const AuthTransKeys = Object.keys(dictionaries.en_US.auth) as AuthTransKeysT[];
+export type AuthTransKeysT = keyof (typeof dictionaries)[Locale]['authErrors'];
+export const AuthTransKeys = Object.keys(dictionaries.en_US.authErrors) as AuthTransKeysT[];
 export type LoginTransKeysT = keyof (typeof dictionaries)[Locale]['login'];
 export const LoginTransKeys = Object.keys(dictionaries.en_US.login) as LoginTransKeysT[];
 
