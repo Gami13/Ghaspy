@@ -1,63 +1,138 @@
-:root {
-	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
-
-	color-scheme: light dark;
-
-	/* Colors */
-	--primary: #ff8c00;
-	--secondary: #ffa500;
-	--accent: #ffd700;
-	--error: #ff0000;
-	--success: #00ff00;
-	--warning: #ffff00;
-	--purpiel: rgb(193, 129, 249);
-
-	--bg0: #000000;
-	--bg1: #131313;
-	--bg2: #1b1b1b;
-	--bg3: #262626;
-	--bg4: #303030;
-	--bg5: #3a3a3a;
-	--text: #e6e6e6;
-	color: var(--text);
-	--text0: #ffffff;
-	--text1: #cdcdcd;
-	--text2: rgb(152, 152, 152);
-	--text3: rgb(116, 116, 116);
-	--disabled-text: #71767b;
-	--lighter-disabled-text: #c4c4c4;
-	--tag-bgc: #202327; /* Colors */
-	--transition-speed: 0.25s;
-	--action-color: var(--text);
-	--default-border: 2px var(--bg2) solid;
-	--lighter-border: 2px var(--bg4) solid;
-	--action-border: 2px var(--action-color) solid;
-	--action-hover-color: #d3d3d3;
-}
-* {
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	min-width: 0;
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
-}
-/* Scrollbar */
-::-webkit-scrollbar {
-	width: 10px;
-}
-::-webkit-scrollbar-track {
-	background: var(--bg2);
-}
-::-webkit-scrollbar-thumb {
-	background: rgb(193, 129, 249);
-	border-radius: 10px;
 }
 
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+	margin-block-end: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+	list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+	scroll-behavior: smooth;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+	text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+	max-width: 100%;
+	display: block;
+	max-inline-size: 100%;
+	max-block-size: 100%;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+	-webkit-user-select: auto;
+}
+::marker {
+	content: initial;
+}
+:where([hidden]) {
+	display: none;
+}
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+	display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+	display: list-item;
+}
+
+::-webkit-file-upload-button {
+	-webkit-appearance: button; /* 1 */
+	font: inherit; /* 2 */
+}
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type='number']::-webkit-inner-spin-button,
+[type='number']::-webkit-outer-spin-button {
+	height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type='search'] {
+	-webkit-appearance: textfield; /* 1 */
+	outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type='search']::-webkit-search-decoration {
+	-webkit-appearance: none;
+}
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+	html:focus-within {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* Set core body defaults */
 body {
-	height: 100vh;
-	width: 100vw;
-	background-color: var(--bg0);
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	background-color: pink;
+	min-height: 100vh;
+	min-width: 100vw;
+	height: 100%;
+	width: 100%;
+	text-rendering: optimizeSpeed;
+	line-height: 1.5;
+	color: white;
 }
