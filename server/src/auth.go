@@ -370,10 +370,7 @@ func comparePasswordAndHash(password string, hash string, salt string) (match bo
 	// Check that the contents of the hashed passwords are identical. Note
 	// that we are using the subtle.ConstantTimeCompare() function for this
 	// to help prevent timing attacks.
-	if subtle.ConstantTimeCompare(hashBytes, otherHash) == 1 {
-		return true
-	}
-	return false
+	return subtle.ConstantTimeCompare(hashBytes, otherHash) == 1
 }
 
 func generateToken() (token string, snowflake Snowflake, err error) {

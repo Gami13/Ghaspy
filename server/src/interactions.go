@@ -68,11 +68,6 @@ func toggleIsFollowersPublic(c *fiber.Ctx) error {
 		return protoError(c, http.StatusUnauthorized, "unauthorized")
 	}
 
-	if (isFollowersPublic != true) && (isFollowersPublic != false) {
-
-		return protoError(c, http.StatusUnauthorized, "unauthorized")
-
-	}
 	return protoSuccess(c, http.StatusOK, &types.ResponseToggleFollowersPublic{Message: "isFollowersPublicToggled", State: isFollowersPublic})
 }
 
@@ -88,10 +83,6 @@ func toggleIsFollowingPublic(c *fiber.Ctx) error {
 		return protoError(c, http.StatusUnauthorized, "unauthorized")
 	}
 
-	if (isFollowingPublic != true) && (isFollowingPublic != false) {
-
-		return protoError(c, http.StatusUnauthorized, "unauthorized")
-	}
 	return protoSuccess(c, http.StatusOK, &types.ResponseToggleFollowingPublic{Message: "isFollowingPublicToggled", State: isFollowingPublic})
 }
 
@@ -107,10 +98,6 @@ func toggleIsPostsPublic(c *fiber.Ctx) error {
 		return protoError(c, http.StatusUnauthorized, "unauthorized")
 	}
 
-	if (isPostsPublic != true) && (isPostsPublic != false) {
-
-		return protoError(c, http.StatusUnauthorized, "unauthorized")
-	}
 	return protoSuccess(c, http.StatusOK, &types.ResponseTogglePostsPublic{Message: "isPostsPublicToggled", State: isPostsPublic})
 }
 
@@ -126,10 +113,6 @@ func toggleIsLikesPublic(c *fiber.Ctx) error {
 		return protoError(c, http.StatusUnauthorized, "unauthorized")
 	}
 
-	if (isLikesPublic != true) && (isLikesPublic != false) {
-
-		return protoError(c, http.StatusUnauthorized, "unauthorized")
-	}
 	return protoSuccess(c, http.StatusOK, &types.ResponseToggleLikesPublic{Message: "isLikesPublicToggled", State: isLikesPublic})
 }
 
