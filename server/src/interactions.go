@@ -210,7 +210,7 @@ func getProfile(c *fiber.Ctx) error {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
-	user.JoinedAt = snowflakeFromInt(user.ID).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+	user.JoinedAt = Snowflake(user.ID).GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 
 	return protoSuccess(c, http.StatusOK, &types.ResponseGetProfile{
 		Profile: &user,
@@ -230,7 +230,7 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
-	user.JoinedAt = snowflakeFromInt(user.ID).Date.Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+	user.JoinedAt = Snowflake(user.ID).GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 	user.IsYourProfile = true
 	user.IsFollowingYou = false
 	user.IsFollowedByYou = false
@@ -293,7 +293,7 @@ func addPost(c *fiber.Ctx) error {
 
 		}
 	}
-	postId := newSnowflake(SF_POST).ID
+	postId := newSnowflake(SF_POST)
 	println("POST ID", postId)
 	println("TOKEN", token)
 	println("CONTENT", content)
@@ -309,7 +309,7 @@ func addPost(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 
-	return protoSuccess(c, http.StatusOK, &types.ResponseAddPost{Message: "postAdded", PostID: postId})
+	return protoSuccess(c, http.StatusOK, &types.ResponseAddPost{Message: "postAdded", PostID: uint64(postId)})
 }
 
 func togglePin(c *fiber.Ctx) error {
@@ -337,7 +337,7 @@ func togglePin(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if count == 0 {
-		tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_BOOKMARK).ID, token, PostID)
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO bookmarks (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_BOOKMARK), token, PostID)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return protoError(c, http.StatusInternalServerError, "internalError")
@@ -386,7 +386,7 @@ func toggleLike(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if count == 0 {
-		tag, err := dbpool.Exec(c.Context(), "INSERT INTO likes (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_LIKE).ID, token, PostID)
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO likes (id, userId, postId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_LIKE), token, PostID)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return protoError(c, http.StatusInternalServerError, "internalError")
@@ -428,7 +428,7 @@ func toggleFollow(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if count == 0 {
-		tag, err := dbpool.Exec(c.Context(), "INSERT INTO follows (id, followerId, followedId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_FOLLOW).ID, token, UserID)
+		tag, err := dbpool.Exec(c.Context(), "INSERT INTO follows (id, followerId, followedId) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3)", newSnowflake(SF_FOLLOW), token, UserID)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return protoError(c, http.StatusInternalServerError, "internalError")

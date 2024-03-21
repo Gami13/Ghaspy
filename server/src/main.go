@@ -6,7 +6,6 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -33,7 +32,7 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 
 	snowflake := newSnowflake(SnowflakeType(SF_ATTACHMENT))
 
-	newFileName := strconv.FormatUint(snowflake.ID, 10) + "." + fileExtension
+	newFileName := snowflake.String() + "." + fileExtension
 	// Save the files to disk:
 	if err := c.SaveFile(file, fmt.Sprintf("C:\\uploads\\"+newFileName)); err != nil {
 		logger.Println(err)
