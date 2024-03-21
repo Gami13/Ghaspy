@@ -54,6 +54,7 @@ textarea,
 select {
 	font: inherit;
 	-webkit-user-select: auto;
+	user-select: auto;
 }
 ::marker {
 	content: initial;
@@ -98,6 +99,7 @@ summary {
 
 [type='search'] {
 	-webkit-appearance: textfield; /* 1 */
+	appearance: textfield;
 	outline-offset: -2px; /* 2 */
 }
 
@@ -124,6 +126,7 @@ summary {
 		scroll-behavior: auto !important;
 	}
 }
+@import url('https://fonts.googleapis.com/css?family=Inter:700|Poppins:400');
 
 /* Set core body defaults */
 body {
@@ -141,4 +144,46 @@ body {
 	text-rendering: optimizeSpeed;
 	line-height: 1.5;
 	color: white;
+}
+
+body {
+	font-family: 'Poppins';
+	font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+	font-family: 'Inter';
+	font-weight: 700;
+}
+
+html {
+	font-size: 100%;
+} /* 16px */
+
+h1 {
+	font-size: 3.366rem; /* 53.92px */
+}
+
+h2 {
+	font-size: 2.525rem; /* 40.32px */
+}
+
+h3 {
+	font-size: 1.894rem; /* 30.24px */
+}
+
+h4 {
+	font-size: 1.421rem; /* 22.72px */
+}
+
+h5 {
+	font-size: 1.066rem; /* 17.12px */
+}
+
+small {
+	font-size: 0.6rem; /* 9.6px */
 }

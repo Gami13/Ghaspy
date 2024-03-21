@@ -4,7 +4,7 @@ import { Route, Router } from '@solidjs/router';
 
 import './index.css';
 
-import { AppStateProvider, useAppState } from './AppState';
+import { AppStateProvider } from './AppState';
 
 import { Main } from './components/Main';
 //stylex example
@@ -25,8 +25,6 @@ import { Main } from './components/Main';
 const root = document.getElementsByTagName('body')[0];
 
 function App() {
-	const AppState = useAppState();
-
 	return (
 		<>
 			<AppStateProvider>
