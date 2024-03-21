@@ -1,7 +1,7 @@
 package main
 
 import (
-	"beeper_server/src/types"
+	"ghaspy_server/src/types"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"

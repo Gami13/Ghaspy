@@ -1,12 +1,13 @@
 package main
 
 import (
-	"beeper_server/src/types"
 	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"ghaspy_server/src/types"
+
 	"net/http"
 	"net/smtp"
 	"os"
@@ -197,7 +198,7 @@ func signUpUser(c *fiber.Ctx) error {
 	}
 	//SEND EMAIL WITH VERIFICATION CODE
 
-	err = sendMail(requestBody.Email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
+	err = sendMail(requestBody.Email, "Verify your email for Ghaspy", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
 
 	if err != nil {
 		return protoError(c, http.StatusInternalServerError, "internalError")
@@ -262,7 +263,7 @@ func validateUser(c *fiber.Ctx) error {
 			return protoError(c, http.StatusInternalServerError, "internalError")
 
 		}
-		sendMail(email, "Verify your email for Beeper", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
+		sendMail(email, "Verify your email for Ghaspy", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
 
 		return protoError(c, http.StatusBadRequest, "verificationCodeOutdated")
 

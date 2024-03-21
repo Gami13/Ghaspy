@@ -1,5 +1,5 @@
 export default {
-	appName: 'Beeper',
+	appName: 'Ghaspy',
 	hello: 'cześć {{ name }}, jak się masz?',
 	nav: {
 		home: 'Strona główna',
