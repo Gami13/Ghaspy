@@ -5,9 +5,9 @@
       "server": "localhost",
       "port": 5432,
       "driver": "PostgreSQL",
-      "name": "beeper",
-      "group": "beeper",
-      "database": "beeper",
+      "name": "ghaspy",
+      "group": "ghaspy",
+      "database": "ghaspy",
       "username": "postgres",
       "password": "root"
     }
