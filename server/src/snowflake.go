@@ -13,7 +13,7 @@ const MAX_TYPE = 15
 const BATCH_BITS = 17
 const MAX_BATCH = 131071
 
-var numberInBatch uint64 = 0
+var numberInBatch uint32 = 0
 
 type SnowflakeType uint16
 
@@ -40,44 +40,46 @@ func (s SnowflakeType) String() string {
 	return [...]string{"USER", "VERIFICATION", "POST", "LIKE", "FOLLOW", "MESSAGE", "ATTACHMENT", "BOOKMARK", "CHAT", "TOKEN", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER", "OTHER"}[s]
 }
 
-type Snowflake struct {
-	ID            uint64
-	Date          time.Time
-	NumberInBatch uint64
-	IDType        SnowflakeType
+type Snowflake uint64
+
+func (s Snowflake) String() string {
+	return strconv.FormatUint(uint64(s), 10)
 }
 
-func (s Snowflake) StringIDBin() string {
-	return strconv.FormatUint(s.ID, 2)
-}
-func (s Snowflake) StringIDDec() string {
-	return strconv.FormatUint(s.ID, 10)
+func (s Snowflake) StringBinary() string {
+	return strconv.FormatUint(uint64(s), 2)
 }
 
 func newSnowflake(IDType SnowflakeType) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 
-	var ID = ((uint64((currentDate-epoch)<<BATCH_BITS) | numberInBatch) << TYPE_BITS) | uint64(IDType)
-
-	var snowflake = Snowflake{ID: ID,
-		Date: time.UnixMilli(currentDate),
-
-		NumberInBatch: numberInBatch,
-		IDType:        IDType}
+	var ID = Snowflake(((uint64((currentDate-epoch)<<BATCH_BITS) | uint64(numberInBatch)) << TYPE_BITS) | uint64(IDType))
 
 	numberInBatch++
 	if numberInBatch == MAX_BATCH+1 {
 		numberInBatch = 0
 	}
-	println("GENERATED: ", snowflake.StringIDDec())
+	println("GENERATED: ", ID.String())
 
-	return snowflake
+	return ID
 
 }
 
-func snowflakeFromInt(input uint64) Snowflake {
-	return Snowflake{ID: input,
-		Date:          time.UnixMilli(int64(input>>(TYPE_BITS+BATCH_BITS)) + epoch),
-		NumberInBatch: input >> TYPE_BITS & MAX_BATCH,
-		IDType:        SnowflakeType(input & MAX_TYPE)}
+func SnowflakeFromInt(ID uint64) Snowflake {
+	return Snowflake(ID)
+}
+
+func (s Snowflake) GetType() SnowflakeType {
+	return SnowflakeType(uint64(s) & MAX_TYPE)
+}
+
+func (s Snowflake) GetTime() time.Time {
+	return time.UnixMilli(int64(s>>(TYPE_BITS+BATCH_BITS)) + epoch)
+}
+func (s Snowflake) GetTimestamp() uint64 {
+	return uint64(s>>(TYPE_BITS+BATCH_BITS)) + epoch
+}
+
+func (s Snowflake) GetBatch() uint32 {
+	return uint32(s >> TYPE_BITS & MAX_BATCH)
 }

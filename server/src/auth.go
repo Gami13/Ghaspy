@@ -63,7 +63,7 @@ func logInUser(c *fiber.Ctx) error {
 
 	}
 
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake.ID, userId, token, requestBody.DeviceName)
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake, userId, token, requestBody.DeviceName)
 	if err != nil {
 		return protoError(c, http.StatusBadRequest, "loginCantInsertToken")
 
