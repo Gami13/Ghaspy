@@ -12,7 +12,6 @@ import (
 	"net/smtp"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -185,13 +184,13 @@ func signUpUser(c *fiber.Ctx) error {
 
 	userId := newSnowflake(SF_USER)
 
-	verificationCode, err := addVerificationCode(c, userId.ID)
+	verificationCode, err := addVerificationCode(c, userId)
 	if err != nil {
 
 		return protoError(c, http.StatusInternalServerError, "internalError")
 
 	}
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId.ID, requestBody.Username, requestBody.Email, hash, salt, false)
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId, requestBody.Username, requestBody.Email, hash, salt, false)
 	if err != nil {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 
@@ -250,7 +249,7 @@ func validateUser(c *fiber.Ctx) error {
 	logger.Println("ID: ", id, "USERID: ", userId, "CODE: ", code, "VALIDUNTIL: ", validUntil)
 
 	if time.Now().After(validUntil) {
-		verificationCode, err := addVerificationCode(c, userId)
+		verificationCode, err := addVerificationCode(c, Snowflake(userId))
 		if err != nil {
 			return protoError(c, http.StatusInternalServerError, "internalError")
 
@@ -308,7 +307,7 @@ func base64URL(data []byte) string {
 	return result
 }
 
-func addVerificationCode(c *fiber.Ctx, userId uint64) (string, error) {
+func addVerificationCode(c *fiber.Ctx, userId Snowflake) (string, error) {
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
 	verificationId := newSnowflake(SF_VERIFICATION)
@@ -323,7 +322,7 @@ func addVerificationCode(c *fiber.Ctx, userId uint64) (string, error) {
 	//CURRENT TIME + 1 WEEK
 	//DESIRED FORMAT '2002-03-11 12:01AM'
 	validUntil := time.Now().AddDate(0, 0, 7).Format("2006-01-02 03:04PM")
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO verifications (id,userId, code, validUntil) VALUES ($1, $2, $3, $4)", verificationId.ID, userId, verificationCode, validUntil)
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO verifications (id,userId, code, validUntil) VALUES ($1, $2, $3, $4)", verificationId, userId, verificationCode, validUntil)
 
 	if err != nil {
 		logger.Println("VERIFICATION ERROR: ", err)
@@ -385,7 +384,7 @@ func generateToken() (token string, snowflake Snowflake, err error) {
 		return "", snowflake, err
 	}
 	token = base64URL(tokenBytes)
-	finalToken := strconv.FormatUint(snowflake.ID, 10) + "." + token
+	finalToken := snowflake.String() + "." + token
 	return finalToken, snowflake, nil
 }
 
