@@ -3,6 +3,8 @@ import * as stylex from '@stylexjs/stylex';
 // A constant can be used to avoid repeating the media query
 const DARK = '@media (prefers-color-scheme: dark)';
 
+//!THIS IS WRONG CAUSE EVERY GRADIENT GOES TO WHITE
+//TODO: FIX
 export const colors = stylex.defineVars({
 	text50: { default: '#f0f2f4', [DARK]: '#0b0c0f' },
 	text100: { default: '#e2e4e9', [DARK]: '#16181d' },
