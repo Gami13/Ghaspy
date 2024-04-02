@@ -4,6 +4,7 @@ import * as stylex from '@stylexjs/stylex';
 const DARK = '@media (prefers-color-scheme: dark)';
 
 //!THIS IS WRONG CAUSE EVERY GRADIENT GOES TO WHITE
+//Intended look https://www.realtimecolors.com/?colors=e8eaee-06070a-0066ff-183281-c549af&fonts=Inter-Poppins
 //TODO: FIX
 export const colors = stylex.defineVars({
 	text50: { default: '#f0f2f4', [DARK]: '#0b0c0f' },
