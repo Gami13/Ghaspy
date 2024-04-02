@@ -1,12 +1,12 @@
-import { render } from 'solid-js/web';
-import 'solid-devtools';
-import { Route, Router } from '@solidjs/router';
+import { render } from "solid-js/web";
+import "solid-devtools";
+import { Route, Router } from "@solidjs/router";
 
-import './index.css';
+import "./index.css";
 
-import { AppStateProvider } from './AppState';
+import { AppStateProvider } from "./AppState";
 
-import { Main } from './components/Main';
+import { Main } from "./components/Main";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -22,18 +22,18 @@ import { Main } from './components/Main';
 // 	},
 // });
 //<div {...stylex.attrs(styles.root)}>
-const root = document.getElementsByTagName('body')[0];
+const root = document.getElementsByTagName("body")[0];
 
 function App() {
 	return (
 		<>
 			<AppStateProvider>
 				<Router>
-					<Route path="/" component={Main}></Route>
+					<Route path="/" component={Main} />
 				</Router>
 			</AppStateProvider>
 		</>
 	);
 }
 
-render(() => <App />, root!);
+render(() => <App />, root);

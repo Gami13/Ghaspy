@@ -1,0 +1,39 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.6.3/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"nursery": {
+				"noDuplicateElseIf": "warn",
+				"noDuplicateJsonKeys": "warn",
+				"noUselessTernary": "warn"
+			},
+			"style": {
+				"useCollapsedElseIf": "warn",
+				"noDefaultExport": "error",
+				"useConsistentArrayType": "warn",
+				"useFilenamingConvention": {
+					"level": "warn",
+					"options": {
+						"filenameCases": ["camelCase", "PascalCase"]
+					}
+				},
+				"useShorthandAssign": "warn",
+				"useSingleCaseStatement": "warn"
+			},
+			"correctness": {
+				"noUndeclaredVariables": "error"
+			},
+			"complexity": {
+				"noVoid": "warn",
+				"useSimplifiedLogicExpression": "warn",
+				"noExcessiveCognitiveComplexity": "warn",
+				"noStaticOnlyClass": "warn"
+			},
+			"recommended": true
+		}
+	}
+}

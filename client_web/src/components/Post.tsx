@@ -1,15 +1,15 @@
-import { Post as PostType, User } from '@/types/internal';
-import stylex from '@stylexjs/stylex';
-import { Show } from 'solid-js';
-import { PostQuoteBig } from './PostQuoteBig';
-import { PostQuoteSmall } from './PostQuoteSmall';
-import { colors } from '../variables.stylex';
+import type { Post as PostType, User } from "@/types/internal";
+import stylex from "@stylexjs/stylex";
+import { Show } from "solid-js";
+import { PostQuoteBig } from "./PostQuoteBig";
+import { PostQuoteSmall } from "./PostQuoteSmall";
+import { colors } from "../variables.stylex";
 const styles = stylex.create({
 	post: {
-		width: '100%',
-		height: 'fit-content',
+		width: "100%",
+		height: "fit-content",
 		color: colors.text900,
-		display: 'flex',
+		display: "flex",
 	},
 });
 
@@ -41,13 +41,13 @@ export function Post(props: { post: PostType }) {
 				<li>{props.post.countReplies} Replies</li>
 				<li>{props.post.countQuotes} Quotes</li>
 				<li>
-					<button>Bookmark</button>
+					<button type="button">Bookmark</button>
 				</li>
 				<li>
-					<button>Share</button>
+					<button type="button">Share</button>
 				</li>
 				<li>
-					<button>Download</button>
+					<button type="button">Download</button>
 				</li>
 			</ol>
 		</article>
