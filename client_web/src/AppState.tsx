@@ -1,6 +1,7 @@
 import { JSXElement, createContext, createSignal, useContext } from "solid-js";
 import { Locale } from "./Translation";
 
+//TODO: use store instead of signals
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 const [locale, setLocale] = createSignal<Locale>("pl_PL");
 const [userToken, setUserToken] = createSignal<string>(""); // TODO: [userToken, setUserToken] = [null, null
