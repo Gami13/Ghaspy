@@ -1,6 +1,21 @@
 export default {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
+	relativeTime: {
+		future: "in {{in}}",
+		past: "{{ago}} ago",
+		s: "a few seconds",
+		m: "a minute",
+		mm: "{{x}} minutes",
+		h: "an hour",
+		hh: "{{x}} hours",
+		d: "a day",
+		dd: "{{x}} days",
+		M: "a month",
+		MM: "{{x}} months",
+		y: "a year",
+		yy: "{{x}} years",
+	},
 	nav: {
 		home: "Strona główna",
 		explore: "Odkrywaj",

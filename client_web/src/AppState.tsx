@@ -1,5 +1,10 @@
-import { JSXElement, createContext, createSignal, useContext } from "solid-js";
-import { Locale } from "./Translation";
+import {
+	type JSXElement,
+	createContext,
+	createSignal,
+	useContext,
+} from "solid-js";
+import type { Locale } from "./Translation";
 
 //TODO: use store instead of signals
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);

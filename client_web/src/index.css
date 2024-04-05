@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Inter:700|Inter:400|Inter:500|Poppins:400');
 /* Box sizing rules */
 *,
 *::before,
@@ -128,7 +129,6 @@ summary {
 		scroll-behavior: auto !important;
 	}
 }
-@import url('https://fonts.googleapis.com/css?family=Inter:700|Poppins:400');
 
 /* Set core body defaults */
 body {
@@ -144,7 +144,7 @@ body {
 	height: 100%;
 	width: 100%;
 	text-rendering: optimizeSpeed;
-	line-height: 1.5;
+	line-height: 1.2;
 	color: white;
 }
 
