@@ -7,6 +7,7 @@ import "./index.css";
 import { AppStateProvider } from "./AppState";
 
 import { Main } from "./components/Main";
+import { Pallete } from "./components/Pallete";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -30,6 +31,7 @@ function App() {
 			<AppStateProvider>
 				<Router>
 					<Route path="/" component={Main} />
+					<Route path="pallete" component={Pallete} />
 				</Router>
 			</AppStateProvider>
 		</>
