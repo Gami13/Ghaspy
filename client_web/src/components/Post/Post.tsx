@@ -1,10 +1,9 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
-import { useAppState } from "@/AppState";
 import { timeSince } from "@/Translation";
 import {
 	IconBookmark,
@@ -12,9 +11,9 @@ import {
 	IconHeart,
 	IconLink,
 	IconMessage,
-	IconQuote,
 	IconRepeat,
 } from "@tabler/icons-solidjs";
+import { Attachment } from "./Attachment";
 
 const styles = stylex.create({
 	post: {
@@ -26,7 +25,7 @@ const styles = stylex.create({
 		padding: "1em",
 		borderRadius: "1em",
 		flexDirection: "column",
-		gap: "1em",
+		gap: "0.75em",
 	},
 	header: {
 		gap: "0.5em",
@@ -70,6 +69,8 @@ const styles = stylex.create({
 		display: "flex",
 		justifyContent: "space-between",
 		paddingHorizontal: "1em",
+		color: colors.text500,
+		fontSize: "0.9em",
 	},
 	activityWrapper: {
 		display: "flex",
@@ -88,6 +89,17 @@ const styles = stylex.create({
 		":hover": {
 			color: colors.primary500,
 		},
+	},
+	attachments: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "flex-start",
+		gap: "0.5em",
+		paddingHorizontal: "1em",
+		width: "100%",
+	},
+	attachment: {
+		width: "100%",
 	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
@@ -118,7 +130,15 @@ export function Post(props: { post: PostType }) {
 			</header>
 			<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
 			<Show when={props.post.attachments.length > 0}>
-				<ul>{/* !TODO: implement */}</ul>
+				<ul {...stylex.attrs(styles.attachments)}>
+					<For each={props.post.attachments}>
+						{(attachment) => (
+							<li {...stylex.attrs(styles.attachment)}>
+								<Attachment link={attachment} />
+							</li>
+						)}
+					</For>
+				</ul>
 			</Show>
 			<Show when={hasQuote()}>
 				<Show when={isBigQuote()}>
