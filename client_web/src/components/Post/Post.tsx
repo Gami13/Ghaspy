@@ -1,6 +1,6 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { For, Show } from "solid-js";
+import { Show } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
@@ -13,7 +13,8 @@ import {
 	IconMessage,
 	IconRepeat,
 } from "@tabler/icons-solidjs";
-import { Attachment } from "./Attachment";
+import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
+import { AttachmentList } from "./AttachmentList";
 
 const styles = stylex.create({
 	post: {
@@ -90,17 +91,6 @@ const styles = stylex.create({
 			color: colors.primary500,
 		},
 	},
-	attachments: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "flex-start",
-		gap: "0.5em",
-		paddingHorizontal: "1em",
-		width: "100%",
-	},
-	attachment: {
-		width: "100%",
-	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
 export function Post(props: { post: PostType }) {
@@ -130,15 +120,7 @@ export function Post(props: { post: PostType }) {
 			</header>
 			<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
 			<Show when={props.post.attachments.length > 0}>
-				<ul {...stylex.attrs(styles.attachments)}>
-					<For each={props.post.attachments}>
-						{(attachment) => (
-							<li {...stylex.attrs(styles.attachment)}>
-								<Attachment link={attachment} />
-							</li>
-						)}
-					</For>
-				</ul>
+				<AttachmentList attachments={props.post.attachments} />
 			</Show>
 			<Show when={hasQuote()}>
 				<Show when={isBigQuote()}>
@@ -149,38 +131,21 @@ export function Post(props: { post: PostType }) {
 				</Show>
 			</Show>
 			<ol {...stylex.attrs(styles.statistics)}>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
-						<IconHeart />
-					</button>
-					{props.post.countLikes}
-				</li>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
-						<IconMessage />
-					</button>
-					{props.post.countReplies}
-				</li>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
-						<IconRepeat />
-					</button>
-					{props.post.countQuotes}
-				</li>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
-						<IconBookmark />
-					</button>
-				</li>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
-						<IconLink />
-					</button>
-				</li>
-				<li {...stylex.attrs(styles.activityWrapper)}>
-					<button type="button" {...stylex.attrs(styles.activityButton)}>
+				<InteractionButton icon={<IconHeart />} text={props.post.countLikes} />
+				<InteractionButton
+					icon={<IconMessage />}
+					text={props.post.countReplies}
+				/>
+				<InteractionButton
+					icon={<IconRepeat />}
+					text={props.post.countQuotes}
+				/>
+				<InteractionButton icon={<IconBookmark />} />
+				<InteractionButton icon={<IconLink />} />
+				<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
+					<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
 						<IconDownload />
-					</button>
+					</a>
 				</li>
 			</ol>
 		</article>

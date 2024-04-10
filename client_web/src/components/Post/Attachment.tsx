@@ -4,7 +4,7 @@ import stylex from "@stylexjs/stylex";
 import { onMount } from "solid-js";
 
 //! Post is safe to be asserted as defined
-
+const MAX_WIDTH = 510;
 const styles = stylex.create({
 	attachment: {
 		width: "100%",
@@ -28,9 +28,9 @@ export function Attachment(props: { link?: string }) {
 			const width = img.width;
 			const height = img.height;
 
-			if (height > 510) {
-				img.style.maxHeight = "510px";
-				const ratio = 510 / height;
+			if (height > MAX_WIDTH) {
+				img.style.maxHeight = `${MAX_WIDTH}px`;
+				const ratio = MAX_WIDTH / height;
 				img.style.width = `${width * ratio}px`;
 			}
 		}
