@@ -83,7 +83,8 @@ export const post1: PostType = {
 export const post2: PostType = {
 	ID: "3",
 	author: user0,
-	content: "look at the funny little kitten",
+	content:
+		"look at the funny little kitten i love him so so much and i really need some longer text here to test the small quote thingy please please hello",
 	replyToID: undefined,
 	quotedID: undefined,
 	replyTo: undefined,

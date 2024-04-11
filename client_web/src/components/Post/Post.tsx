@@ -64,7 +64,7 @@ const styles = stylex.create({
 		fontSize: "1.3em",
 	},
 	content: {
-		paddingHorizontal: "1em",
+		// paddingHorizontal: "1em",
 	},
 	statistics: {
 		display: "flex",
@@ -90,6 +90,12 @@ const styles = stylex.create({
 		":hover": {
 			color: colors.primary500,
 		},
+	},
+	main: {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5em",
+		paddingHorizontal: "1em",
 	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
@@ -118,36 +124,43 @@ export function Post(props: { post: PostType }) {
 					○ {timeSince(props.post.timePosted)}
 				</time>
 			</header>
-			<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
-			<Show when={props.post.attachments.length > 0}>
-				<AttachmentList attachments={props.post.attachments} />
-			</Show>
-			<Show when={hasQuote()}>
-				<Show when={isBigQuote()}>
-					<PostQuoteBig post={props.post.quoted} />
+			<main {...stylex.attrs(styles.main)}>
+				<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
+				<Show when={props.post.attachments.length > 0}>
+					<AttachmentList attachments={props.post.attachments} />
 				</Show>
-				<Show when={!isBigQuote()}>
-					<PostQuoteSmall post={props.post.quoted} />
+				<Show when={hasQuote()}>
+					<Show when={isBigQuote()}>
+						<PostQuoteBig post={props.post.quoted as PostType} />
+					</Show>
+					<Show when={!isBigQuote()}>
+						<PostQuoteSmall post={props.post.quoted as PostType} />
+					</Show>
 				</Show>
-			</Show>
-			<ol {...stylex.attrs(styles.statistics)}>
-				<InteractionButton icon={<IconHeart />} text={props.post.countLikes} />
-				<InteractionButton
-					icon={<IconMessage />}
-					text={props.post.countReplies}
-				/>
-				<InteractionButton
-					icon={<IconRepeat />}
-					text={props.post.countQuotes}
-				/>
-				<InteractionButton icon={<IconBookmark />} />
-				<InteractionButton icon={<IconLink />} />
-				<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
-					<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
-						<IconDownload />
-					</a>
-				</li>
-			</ol>
+			</main>
+			<footer>
+				<ol {...stylex.attrs(styles.statistics)}>
+					<InteractionButton
+						icon={<IconHeart />}
+						text={props.post.countLikes}
+					/>
+					<InteractionButton
+						icon={<IconMessage />}
+						text={props.post.countReplies}
+					/>
+					<InteractionButton
+						icon={<IconRepeat />}
+						text={props.post.countQuotes}
+					/>
+					<InteractionButton icon={<IconBookmark />} />
+					<InteractionButton icon={<IconLink />} />
+					<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
+						<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
+							<IconDownload />
+						</a>
+					</li>
+				</ol>
+			</footer>
 		</article>
 	);
 }
