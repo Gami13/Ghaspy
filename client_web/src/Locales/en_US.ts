@@ -4,7 +4,8 @@ export default {
 	relativeTime: {
 		future: "in {{in}}",
 		past: "{{ago}} ago",
-		s: "a few seconds",
+		s: "a second",
+		ss: "{{x}} seconds",
 		m: "a minute",
 		mm: "{{x}} minutes",
 		h: "an hour",

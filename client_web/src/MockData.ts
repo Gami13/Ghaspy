@@ -57,7 +57,7 @@ export const post0: PostType = {
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
-	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
+	timePosted: "Tue Sep 11 2001 14:14:20 GMT+0200 (CET)",
 	isLiked: true,
 	isBookmarked: true,
 } as PostType;

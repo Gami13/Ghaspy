@@ -26,7 +26,14 @@ export const t = i18n.chainedTranslator(
 	i18n.translator(dict, i18n.resolveTemplate),
 );
 
-export const timeSince = (date: string) => {
+export function formatDate(date: string): string {
+	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
+		dateStyle: "full",
+		timeStyle: "medium",
+	}).format(new Date(date));
+}
+
+export function timeSince(date: string): string {
 	const newDate = new Date(date);
 	const difference = new Date().getTime() - newDate.getTime();
 	const seconds = Math.floor(difference / 1000);
@@ -56,5 +63,6 @@ export const timeSince = (date: string) => {
 	if (minutes === 1)
 		return t.relativeTime.past({ ago: t.relativeTime.m({ x: minutes }) });
 	if (seconds > 1)
-		return t.relativeTime.past({ ago: t.relativeTime.s({ x: seconds }) });
-};
+		return t.relativeTime.past({ ago: t.relativeTime.ss({ x: seconds }) });
+	return t.relativeTime.past({ ago: t.relativeTime.s({ x: seconds }) });
+}

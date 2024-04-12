@@ -12,13 +12,15 @@ const styles = stylex.create({
 
 		objectFit: "contain",
 		borderRadius: "0.5em",
-		border: "1px solid",
 		borderColor: colors.text300,
 		// boxShadow: "0px 0px 0.5em rgba(0, 0, 0, 0.5)",
 	},
+	border: {
+		border: "1px solid",
+	},
 });
 
-export function Attachment(props: { link?: string }) {
+export function Attachment(props: { link?: string; border?: boolean }) {
 	//TODO: HANDLE OTHER FORMATS HERE
 
 	let img: HTMLImageElement | undefined;
@@ -38,7 +40,10 @@ export function Attachment(props: { link?: string }) {
 	return (
 		<img
 			ref={img}
-			{...stylex.attrs(styles.attachment)}
+			{...stylex.attrs(
+				styles.attachment,
+				props.border && true ? styles.border : null,
+			)}
 			src={props.link}
 			alt="Attachment"
 		/>

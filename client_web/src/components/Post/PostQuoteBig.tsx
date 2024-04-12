@@ -96,7 +96,7 @@ export function PostQuoteBig(props: { post: PostType }) {
 			<main {...stylex.attrs(styles.main)}>
 				<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
 				<Show when={props.post.attachments.length > 0}>
-					<AttachmentList attachments={props.post.attachments} />
+					<AttachmentList attachments={props.post.attachments} border={false} />
 				</Show>
 			</main>
 		</article>

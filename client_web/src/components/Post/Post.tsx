@@ -4,7 +4,7 @@ import { Show } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
-import { timeSince } from "@/Translation";
+import { formatDate, timeSince } from "@/Translation";
 import {
 	IconBookmark,
 	IconDownload,
@@ -102,6 +102,7 @@ const styles = stylex.create({
 export function Post(props: { post: PostType }) {
 	const isBigQuote = () => props.post.attachments.length === 0;
 	const hasQuote = () => props.post.quotedID !== undefined;
+
 	//stupid protobuf generates as optional even tho its required and will always be there
 	props.post.author = props.post.author as User;
 	return (
@@ -120,7 +121,10 @@ export function Post(props: { post: PostType }) {
 						@{props.post.author.username}
 					</h3>
 				</section>
-				<time {...stylex.attrs(styles.time)}>
+				<time
+					title={formatDate(props.post.timePosted)}
+					{...stylex.attrs(styles.time)}
+				>
 					○ {timeSince(props.post.timePosted)}
 				</time>
 			</header>

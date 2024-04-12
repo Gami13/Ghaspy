@@ -1,6 +1,6 @@
 import stylex from "@stylexjs/stylex";
 import { Post } from "./Post/Post";
-import type { Post as PostType, User } from "@/types/internal";
+import type { Post as PostType } from "@/types/internal";
 import { colors } from "../variables.stylex";
 import { posts } from "@/MockData";
 import { For } from "solid-js";

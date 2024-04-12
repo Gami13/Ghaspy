@@ -6,6 +6,7 @@ import { Attachment } from "./Attachment";
 type AttachmentListProps = {
 	attachments: Post["attachments"];
 	styling?: StyleXStyles;
+	border?: boolean;
 };
 const styles = stylex.create({
 	attachments: {
@@ -26,7 +27,7 @@ export function AttachmentList(props: AttachmentListProps) {
 			<For each={props.attachments}>
 				{(attachment) => (
 					<li {...stylex.attrs(styles.attachment)}>
-						<Attachment link={attachment} />
+						<Attachment link={attachment} border={props.border} />
 					</li>
 				)}
 			</For>
