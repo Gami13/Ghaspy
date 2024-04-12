@@ -9,21 +9,22 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@solid-primitives/i18n": "^2.0.1",
+		"@solid-primitives/i18n": "^2.1.1",
 		"@solidjs/meta": "^0.29.3",
-		"@solidjs/router": "^0.10.10",
+		"@solidjs/router": "^0.13.2",
 		"@stylexjs/stylex": "^0.5.1",
-		"@tabler/icons-solidjs": "^2.47.0",
+		"@tabler/icons-solidjs": "^3.2.0",
+		"@tanstack/solid-virtual": "^3.2.1",
 		"long": "^5.2.3",
 		"protobufjs": "^7.2.6",
-		"solid-js": "^1.8.15",
+		"solid-js": "^1.8.16",
 		"vite-plugin-stylex": "^0.5.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.6.3",
-		"@solid-devtools/overlay": "^0.29.3",
+		"@solid-devtools/overlay": "^0.30.1",
 		"@stylexjs/babel-plugin": "^0.5.1",
-		"solid-devtools": "^0.29.3",
+		"solid-devtools": "^0.30.1",
 		"typescript": "^5.3.3",
 		"vite": "^5.1.4",
 		"vite-plugin-solid": "^2.10.1",
