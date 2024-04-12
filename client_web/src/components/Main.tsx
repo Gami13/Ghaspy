@@ -31,7 +31,7 @@ export function Main() {
 		count,
 		getScrollElement: () => parentRef,
 		estimateSize: () => 90,
-		overscan: 5,
+		overscan: 50,
 	});
 
 	const items = virtualizer.getVirtualItems();
@@ -56,14 +56,13 @@ export function Main() {
 						top: 0,
 						left: 0,
 						width: "100%",
-						transform: `translateY(${items[0].start ? items[0].start : 0}px)`,
+						transform: `translateY(${items[0] ? items[0].start : 0}px)`,
 					}}
 				>
 					{items.map((virtualRow) => (
 						<div
 							data-index={virtualRow.index}
 							ref={(el) => queueMicrotask(() => virtualizer.measureElement(el))}
-							class={virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"}
 						>
 							<div style={{ padding: "10px 0" }}>
 								<div>Row {virtualRow.index}</div>
