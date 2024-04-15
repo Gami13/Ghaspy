@@ -1,14 +1,15 @@
 {
-  "name": "ghaspy",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "run-server": "cd server && air -c .air.toml",
-    "dev-web": "cd client_web && pnpm dev",
-    "generate-types": "./generateTypes.bat"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "ghaspy",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"run-server": "cd server && air -c .air.toml",
+		"dev-web": "cd client_web && pnpm dev",
+		"generate-types": "./generateTypes.bat",
+		"deps-web": "cd client_web && pnpm install"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
 }
