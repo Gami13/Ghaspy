@@ -1,5 +1,5 @@
 import stylex from "@stylexjs/stylex";
-import { colors } from "../../variables.stylex";
+import { colors, dimensions } from "../../variables.stylex";
 import { posts } from "@/MockData";
 import { createVirtualizer } from "@tanstack/solid-virtual";
 import type { Post as PostType } from "@/types/internal";
@@ -7,17 +7,12 @@ import { Post } from "./Post";
 const styles = stylex.create({
 	main: {
 		height: "100vh",
-		maxWidth: "600px",
-		width: "100%",
+		maxWidth: dimensions.postsMaxWidth,
+		minWidth: dimensions.postsMinWidth,
 		backgroundColor: colors.background50,
+		flexGrow: 10000,
 
 		overflowY: "auto",
-	},
-	wrapper: {
-		paddingBottom: "1em",
-		":last-child": {
-			paddingBottom: 0,
-		},
 	},
 });
 type PostListProps = {

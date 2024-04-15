@@ -23,11 +23,12 @@ export default {
 		alerts: "Powiadomienia",
 		inbox: "Wiadomości",
 		lists: "Listy",
-		pins: "Piny",
+		bookmarks: "Piny",
 		profile: "Profil",
 		more: "Więcej",
 		logIn: "Zaloguj się",
 		signUp: "Zarejestruj się",
+		settings: "Ustawienia",
 	},
 
 	login: {

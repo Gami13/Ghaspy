@@ -28,7 +28,7 @@ const styles = stylex.create({
 		flexDirection: "column",
 		gap: "0.75em",
 		//!Dont really like margin but i dont want to add a wrapper
-		marginBottom: "1em",
+		marginBottom: "0.5em",
 	},
 	header: {
 		gap: "0.5em",

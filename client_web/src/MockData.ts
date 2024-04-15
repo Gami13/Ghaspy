@@ -138,30 +138,4 @@ export const post4: PostType = {
 	isBookmarked: true,
 } as PostType;
 
-export const posts = [
-	post0,
-	post1,
-	post2,
-	post3,
-	post4,
-	post0,
-	post1,
-	post2,
-	post3,
-	post4,
-	post0,
-	post1,
-	post2,
-	post3,
-	post4,
-	post0,
-	post1,
-	post2,
-	post3,
-	post4,
-	post0,
-	post1,
-	post2,
-	post3,
-	post4,
-];
+export const posts = [post0, post1, post2, post3, post4];

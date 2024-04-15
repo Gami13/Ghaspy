@@ -39,3 +39,10 @@ export const colors = stylex.defineVars({
 	accent700: { default: "#ce5fbf" },
 	accent800: { default: "#d87dd0" },
 });
+
+export const dimensions = stylex.defineVars({
+	navMaxWidth: "400px",
+	postsMaxWidth: "600px",
+	postsMinWidth: "300px",
+	asideMaxWidth: "400px",
+});

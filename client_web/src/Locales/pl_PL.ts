@@ -24,9 +24,11 @@ export default {
 		alerts: "Powiadomienia",
 		inbox: "Wiadomości",
 		lists: "Listy",
-		pins: "Piny",
+		bookmarks: "Piny",
 		profile: "Profil",
 		more: "Więcej",
+		settings: "Ustawienia",
+
 		logIn: "Zaloguj się",
 		signUp: "Zarejestruj się",
 	},
