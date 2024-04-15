@@ -1,6 +1,6 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { Show } from "solid-js";
+import { Match, Show, Switch } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
@@ -102,11 +102,16 @@ const styles = stylex.create({
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
 export function Post(props: { post: PostType }) {
-	const isBigQuote = () => props.post.attachments.length === 0;
-	const hasQuote = () => props.post.quotedID !== undefined;
+	const quote = () =>
+		props.post.quoted != null
+			? props.post.attachments.length === 0
+				? "big"
+				: "small"
+			: null;
 
 	//stupid protobuf generates as optional even tho its required and will always be there
 	props.post.author = props.post.author as User;
+
 	return (
 		<article {...stylex.attrs(styles.post)}>
 			<header {...stylex.attrs(styles.header)}>
@@ -135,14 +140,14 @@ export function Post(props: { post: PostType }) {
 				<Show when={props.post.attachments.length > 0}>
 					<AttachmentList attachments={props.post.attachments} />
 				</Show>
-				<Show when={hasQuote()}>
-					<Show when={isBigQuote()}>
+				<Switch>
+					<Match when={quote() === "big"}>
 						<PostQuoteBig post={props.post.quoted as PostType} />
-					</Show>
-					<Show when={!isBigQuote()}>
+					</Match>
+					<Match when={quote() === "small"}>
 						<PostQuoteSmall post={props.post.quoted as PostType} />
-					</Show>
-				</Show>
+					</Match>
+				</Switch>
 			</main>
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
