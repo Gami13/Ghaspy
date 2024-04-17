@@ -22,7 +22,7 @@ export const InteractionButtonStyle = stylex.create({
 	},
 });
 export function InteractionButton(props: {
-	icon: JSX.Element;
+	icon: JSX.Element | Node;
 	text?: string | number;
 	onClick?: () => void;
 }) {
@@ -30,6 +30,7 @@ export function InteractionButton(props: {
 		<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
 			<button
 				type="button"
+				onclick={props.onClick}
 				{...stylex.attrs(InteractionButtonStyle.activityButton)}
 			>
 				{props.icon}

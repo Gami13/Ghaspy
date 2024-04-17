@@ -2,8 +2,11 @@ import stylex from "@stylexjs/stylex";
 import { colors, dimensions } from "../../variables.stylex";
 import { posts } from "@/MockData";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import type { Post as PostType } from "@/types/internal";
+import type { Post as PostType, User } from "@/types/internal";
 import { Post } from "./Post";
+import { PostWriter } from "./PostWriter";
+import { useAppState } from "@/AppState";
+import { Show } from "solid-js";
 const styles = stylex.create({
 	main: {
 		height: "100vh",
@@ -28,11 +31,15 @@ export function PostList(props: PostListProps) {
 		estimateSize: () => 300,
 		overscan: 0,
 	});
+	const AppState = useAppState();
 
 	const items = virtualizer.getVirtualItems();
 
 	return (
 		<div {...stylex.attrs(styles.main)} ref={parentRef} style={{}}>
+			<Show when={AppState.user() !== undefined}>
+				<PostWriter user={AppState.user() as User} />
+			</Show>
 			<div
 				style={{
 					height: `${virtualizer.getTotalSize()}px`,

@@ -5,43 +5,14 @@ import {
 	useContext,
 } from "solid-js";
 import type { Locale } from "./Translation";
+import type { User } from "./types/internal";
+import { user0 } from "./MockData";
 
 //TODO: use store instead of signals
 const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 const [locale, setLocale] = createSignal<Locale>("pl_PL");
 const [userToken, setUserToken] = createSignal<string>(""); // TODO: [userToken, setUserToken] = [null, null
-const [userName, setUserName] = createSignal<string | undefined>(undefined);
-const [userDisplayName, setUserDisplayName] = createSignal<string | undefined>(
-	undefined,
-);
-const [userAvatar, setUserAvatar] = createSignal<string | undefined>(undefined);
-const [userBanner, setUserBanner] = createSignal<string | undefined>(undefined);
-const [userBio, setUserBio] = createSignal<string | undefined>(undefined);
-const [userId, setUserId] = createSignal<string | undefined>(undefined);
-const [userFollowersCount, setUserFollowersCount] = createSignal<
-	number | undefined
->(undefined);
-const [userFollowingCount, setUserFollowingCount] = createSignal<
-	number | undefined
->(undefined);
-const [userPostsCount, setUserPostsCount] = createSignal<number | undefined>(
-	undefined,
-);
-const [userLikesCount, setUserLikesCount] = createSignal<number | undefined>(
-	undefined,
-);
-const [userIsFollowersPublic, setUserIsFollowersPublic] = createSignal<
-	boolean | undefined
->(undefined);
-const [userIsFollowingPublic, setUserIsFollowingPublic] = createSignal<
-	boolean | undefined
->(undefined);
-const [userIsPostsPublic, setUserIsPostsPublic] = createSignal<
-	boolean | undefined
->(undefined);
-const [userIsLikesPublic, setUserIsLikesPublic] = createSignal<
-	boolean | undefined
->(undefined);
+const [user, setUser] = createSignal<User | undefined>(user0);
 
 const localeJsFromat = () => {
 	const locale = useAppState().locale();
@@ -56,34 +27,8 @@ const ContextValue = {
 	localeJsFromat,
 	userToken,
 	setUserToken,
-	userName,
-	setUserName,
-	userDisplayName,
-	setUserDisplayName,
-	userAvatar,
-	setUserAvatar,
-	userBanner,
-	setUserBanner,
-	userBio,
-	setUserBio,
-	userId,
-	setUserId,
-	userFollowersCount,
-	setUserFollowersCount,
-	userFollowingCount,
-	setUserFollowingCount,
-	userPostsCount,
-	setUserPostsCount,
-	userLikesCount,
-	setUserLikesCount,
-	userIsFollowersPublic,
-	setUserIsFollowersPublic,
-	userIsFollowingPublic,
-	setUserIsFollowingPublic,
-	userIsPostsPublic,
-	setUserIsPostsPublic,
-	userIsLikesPublic,
-	setUserIsLikesPublic,
+	user,
+	setUser,
 };
 const AppState = createContext(ContextValue);
 export function AppStateProvider(props: {
