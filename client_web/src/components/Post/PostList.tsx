@@ -34,6 +34,10 @@ export function PostList(props: PostListProps) {
 	const AppState = useAppState();
 
 	const items = virtualizer.getVirtualItems();
+	/*PUT THIS ON TOP OF LIST SOMEHOW :3
+	 <Show when={AppState.user() !== undefined}>
+	<PostWriter user={AppState.user() as User} />
+	</Show>; */
 
 	return (
 		<div {...stylex.attrs(styles.main)} ref={parentRef} style={{}}>

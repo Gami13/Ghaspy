@@ -115,6 +115,7 @@ const styles = stylex.create({
 		flexDirection: "column",
 		gap: "0.5em",
 		paddingHorizontal: "1em",
+		position: "relative",
 	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
