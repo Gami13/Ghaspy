@@ -12,7 +12,7 @@
 		"@solid-primitives/i18n": "^2.1.1",
 		"@solidjs/meta": "^0.29.3",
 		"@solidjs/router": "^0.13.2",
-		"@stylexjs/stylex": "^0.5.1",
+		"@stylexjs/stylex": "^0.6.0",
 		"@tabler/icons-solidjs": "^3.2.0",
 		"@tanstack/solid-virtual": "^3.2.1",
 		"long": "^5.2.3",
