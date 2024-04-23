@@ -41,6 +41,23 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	return newFileName, nil
 }
 
+func processProfilePicture(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+
+	splits := strings.Split(file.Filename, ".")
+	//!DONT USE FILE EXTENSION, USE MIME TYPE
+	fileExtension := splits[len(splits)-1]
+	if fileExtension != "png" && fileExtension != "jpg" && fileExtension != "jpeg" && fileExtension != "webp" {
+		return "", fmt.Errorf("Invalid file type")
+	}
+
+	if file.Size > 4*1024*1024 {
+		return "", fmt.Errorf("File too large")
+	}
+
+	panic("Not implemented")
+
+}
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -61,10 +78,9 @@ func main() {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
-		AllowOrigins:     "*",
-		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders: "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
+		AllowOrigins: "*",
+		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
 
 	app.Post("/login", logInUser)
