@@ -1,4 +1,4 @@
-export default {
+export const en_US = {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
 	relativeTime: {
@@ -65,10 +65,8 @@ export default {
 	},
 	authErrors: {
 		signupUsernameTooShort: "Nazwa użytkownika musi mieć minimum 3 znaki",
-		signupUsernameTooLong:
-			"Nazwa użytkownika nie może być dłuższa niż 64 znaki",
-		signupUsernameNoSpecials:
-			"Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
+		signupUsernameTooLong: "Nazwa użytkownika nie może być dłuższa niż 64 znaki",
+		signupUsernameNoSpecials: "Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
 		signupUsernameNoSpaces: "Nazwa użytkownika nie może zawierać spacji",
 		signupUsernameTaken: "Ta nazwa użytkownika jest już zajęta",
 
@@ -96,8 +94,7 @@ export default {
 		cantUnmarshal: "Dane zostały wysłane w niepoprawnym formacie",
 		invalidToken: "Niepoprawny token",
 		verificationCodeInvalid: "Niepoprawny kod weryfikacyjny",
-		verificationCodeOutdated:
-			"Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
+		verificationCodeOutdated: "Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
 		userAlreadyValidated: "Użytkownik jest już zweryfikowany",
 		cantReadFile: "Nie można odczytać pliku",
 		badRequestNoUsername: "Nie podano nazwy użytkownika",
