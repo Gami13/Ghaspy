@@ -1,6 +1,8 @@
 import { colors } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
+import type { IconBell } from "@tabler/Icons-solidjs";
+import { JSXElement } from "solid-js";
 
 const styles = stylex.create({
 	navElement: {
@@ -28,14 +30,16 @@ const styles = stylex.create({
 		fontWeight: 500,
 	},
 });
-//ADD INTRINSIC ATTRIBUTES
-import type { IconBell } from "@tabler/Icons-solidjs";
+// Icon can be used as jsx component
 type IconType = typeof IconBell;
+
 export function NavigationListElement(props: {
 	Icon: IconType;
 	text: string;
 	href: string;
 }) {
+	//assert props.Icon is a jsx element
+
 	return (
 		<li {...stylex.attrs(styles.navElementWrapper)}>
 			<A {...stylex.attrs(styles.navElement)} href={props.href}>

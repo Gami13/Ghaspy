@@ -11,7 +11,6 @@ import {
 	IconUser,
 } from "@tabler/Icons-solidjs";
 import { NavigationListElement } from "./NavigationListElement";
-import { JSXElement } from "solid-js";
 
 const styles = stylex.create({
 	nav: {
@@ -36,38 +35,26 @@ export function Navigation() {
 		<nav {...stylex.attrs(styles.nav)}>
 			<h1> LOGOHERE </h1>
 			<ol {...stylex.attrs(styles.list)}>
+				<NavigationListElement Icon={IconHome} text={t.nav.home()} href="/" />
 				<NavigationListElement
-					Icon={IconHome as unknown as () => JSXElement}
-					text={t.nav.home()}
-					href="/"
-				/>
-				<NavigationListElement
-					Icon={IconCompass as unknown as () => JSXElement}
+					Icon={IconCompass}
 					text={t.nav.explore()}
 					href="/"
 				/>
+				<NavigationListElement Icon={IconBell} text={t.nav.alerts()} href="/" />
+				<NavigationListElement Icon={IconMail} text={t.nav.inbox()} href="/" />
 				<NavigationListElement
-					Icon={IconBell as unknown as () => JSXElement}
-					text={t.nav.alerts()}
-					href="/"
-				/>
-				<NavigationListElement
-					Icon={IconMail as unknown as () => JSXElement}
-					text={t.nav.inbox()}
-					href="/"
-				/>
-				<NavigationListElement
-					Icon={IconBookmark as unknown as () => JSXElement}
+					Icon={IconBookmark}
 					text={t.nav.bookmarks()}
 					href="/"
 				/>
 				<NavigationListElement
-					Icon={IconUser as unknown as () => JSXElement}
+					Icon={IconUser}
 					text={t.nav.profile()}
 					href="/"
 				/>
 				<NavigationListElement
-					Icon={IconSettings as unknown as () => JSXElement}
+					Icon={IconSettings}
 					text={t.nav.settings()}
 					href="/"
 				/>
