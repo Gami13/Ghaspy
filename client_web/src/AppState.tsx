@@ -1,15 +1,9 @@
-import {
-	type JSXElement,
-	createContext,
-	createSignal,
-	useContext,
-} from "solid-js";
+import { type JSXElement, createContext, createSignal, useContext } from "solid-js";
 import type { Locale } from "./Translation";
 import type { User } from "./types/internal";
 import { user0 } from "./MockData";
 
 //TODO: use store instead of signals
-const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 const [locale, setLocale] = createSignal<Locale>("pl_PL");
 const [userToken, setUserToken] = createSignal<string>(""); // TODO: [userToken, setUserToken] = [null, null
 const [user, setUser] = createSignal<User | undefined>(user0);
@@ -20,8 +14,7 @@ const localeJsFromat = () => {
 };
 
 const ContextValue = {
-	isLoggedIn,
-	setIsLoggedIn,
+	isLoggedIn: () => user() !== undefined,
 	locale,
 	setLocale,
 	localeJsFromat,
@@ -34,9 +27,7 @@ const AppState = createContext(ContextValue);
 export function AppStateProvider(props: {
 	children: JSXElement[] | JSXElement;
 }) {
-	return (
-		<AppState.Provider value={ContextValue}>{props.children}</AppState.Provider>
-	);
+	return <AppState.Provider value={ContextValue}>{props.children}</AppState.Provider>;
 }
 export function useAppState() {
 	return useContext(AppState);

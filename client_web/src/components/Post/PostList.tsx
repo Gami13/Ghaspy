@@ -6,9 +6,10 @@ import type { Post as PostType, User } from "@/types/internal";
 import { Post } from "./Post";
 import { PostWriter } from "./PostWriter";
 import { useAppState } from "@/AppState";
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 const styles = stylex.create({
 	main: {
+		paddingTop: "0.25em",
 		height: "100vh",
 		maxWidth: dimensions.postsMaxWidth,
 		minWidth: dimensions.postsMinWidth,
@@ -40,36 +41,42 @@ export function PostList(props: PostListProps) {
 	</Show>; */
 
 	return (
-		<div {...stylex.attrs(styles.main)} ref={parentRef} style={{}}>
-			<Show when={AppState.user() !== undefined}>
+		<main {...stylex.attrs(styles.main)}>
+			<Show when={AppState.isLoggedIn()}>
 				<PostWriter user={AppState.user() as User} />
 			</Show>
-			<div
-				style={{
-					height: `${virtualizer.getTotalSize()}px`,
-					width: "100%",
-					position: "relative",
-				}}
-			>
-				<div
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						width: "100%",
-						transform: `translateY(${items[0] ? items[0].start : 0}px)`,
-					}}
-				>
-					{items.map((virtualRow) => (
-						<div
-							data-index={virtualRow.index}
-							ref={(el) => queueMicrotask(() => virtualizer.measureElement(el))}
-						>
-							<Post post={props.posts[virtualRow.index]} />
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
+			<For each={props.posts}>{(post) => <Post post={post} />}</For>
+		</main>
+		// <div {...stylex.attrs(styles.main)} ref={parentRef} style={{}}>
+		// 	<Show when={AppState.user() !== undefined}>
+		// 		<PostWriter user={AppState.user() as User} />
+		// 	</Show>
+		// 	<div
+		// 		style={{
+		// 			height: `${virtualizer.getTotalSize()}px`,
+		// 			width: "100%",
+		// 			position: "relative",
+		// 		}}
+		// 	>
+		// 		<div
+		// 			style={{
+		// 				position: "absolute",
+		// 				top: 0,
+		// 				left: 0,
+		// 				width: "100%",
+		// 				transform: `translateY(${items[0] ? items[0].start : 0}px)`,
+		// 			}}
+		// 		>
+		// 			{items.map((virtualRow) => (
+		// 				<div
+		// 					data-index={virtualRow.index}
+		// 					ref={(el) => queueMicrotask(() => virtualizer.measureElement(el))}
+		// 				>
+		// 					<Post post={props.posts[virtualRow.index]} />
+		// 				</div>
+		// 			))}
+		// 		</div>
+		// 	</div>
+		// </div>
 	);
 }
