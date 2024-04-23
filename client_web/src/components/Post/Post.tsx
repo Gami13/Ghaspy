@@ -5,16 +5,10 @@ import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
 import { formatDate, timeSince } from "@/Translation";
-import {
-	IconBookmark,
-	IconDownload,
-	IconHeart,
-	IconLink,
-	IconMessage,
-	IconRepeat,
-} from "@tabler/icons-solidjs";
+
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
+import { TbBookmark, TbDownload, TbHeart, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
 
 const styles = stylex.create({
 	post: {
@@ -84,6 +78,7 @@ const styles = stylex.create({
 		display: "flex",
 		alignItems: "center",
 		gap: "0.5em",
+		fontSize: "2em",
 		border: "none",
 		backgroundColor: "transparent",
 		cursor: "pointer",
@@ -102,12 +97,7 @@ const styles = stylex.create({
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
 export function Post(props: { post: PostType }) {
-	const quote = () =>
-		props.post.quoted != null
-			? props.post.attachments.length === 0
-				? "big"
-				: "small"
-			: null;
+	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
 
 	//stupid protobuf generates as optional even tho its required and will always be there
 	props.post.author = props.post.author as User;
@@ -115,23 +105,12 @@ export function Post(props: { post: PostType }) {
 	return (
 		<article {...stylex.attrs(styles.post)}>
 			<header {...stylex.attrs(styles.header)}>
-				<img
-					{...stylex.attrs(styles.avatar)}
-					src={props.post.author.avatar}
-					alt={props.post.author.displayName}
-				/>
+				<img {...stylex.attrs(styles.avatar)} src={props.post.author.avatar} alt={props.post.author.displayName} />
 				<section {...stylex.attrs(styles.names)}>
-					<h2 {...stylex.attrs(styles.displayName)}>
-						{props.post.author.displayName}
-					</h2>
-					<h3 {...stylex.attrs(styles.username)}>
-						@{props.post.author.username}
-					</h3>
+					<h2 {...stylex.attrs(styles.displayName)}>{props.post.author.displayName}</h2>
+					<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 				</section>
-				<time
-					title={formatDate(props.post.timePosted)}
-					{...stylex.attrs(styles.time)}
-				>
+				<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>
 					○ {timeSince(props.post.timePosted)}
 				</time>
 			</header>
@@ -151,23 +130,14 @@ export function Post(props: { post: PostType }) {
 			</main>
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
-					<InteractionButton
-						icon={<IconHeart />}
-						text={props.post.countLikes}
-					/>
-					<InteractionButton
-						icon={<IconMessage />}
-						text={props.post.countReplies}
-					/>
-					<InteractionButton
-						icon={<IconRepeat />}
-						text={props.post.countQuotes}
-					/>
-					<InteractionButton icon={<IconBookmark />} />
-					<InteractionButton icon={<IconLink />} />
+					<InteractionButton icon={<TbHeart />} text={props.post.countLikes} />
+					<InteractionButton icon={<TbMessage />} text={props.post.countReplies} />
+					<InteractionButton icon={<TbRepeat />} text={props.post.countQuotes} />
+					<InteractionButton icon={<TbBookmark />} />
+					<InteractionButton icon={<TbLink />} />
 					<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
 						<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
-							<IconDownload />
+							<TbDownload />
 						</a>
 					</li>
 				</ol>

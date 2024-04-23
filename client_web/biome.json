@@ -3,8 +3,17 @@
 	"organizeImports": {
 		"enabled": true
 	},
+	"formatter": {
+		"enabled": true,
+		"attributePosition": "auto",
+		"indentStyle": "tab",
+		"indentWidth": 4,
+		"lineEnding": "lf",
+		"lineWidth": 160
+	},
 	"linter": {
 		"enabled": true,
+
 		"rules": {
 			"nursery": {
 				"noDuplicateElseIf": "warn",
