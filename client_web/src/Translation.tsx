@@ -26,25 +26,32 @@ export function formatDate(date: string): string {
 	}).format(new Date(date));
 }
 
+const SECOND = 1000;
+const SECONDS = SECOND * 1.5;
+
+const MINUTE = 60 * SECOND;
+const MINUTES = MINUTE * 1.5;
+const HOUR = 60 * MINUTE;
+const HOURS = HOUR * 1.5;
+const DAY = 24 * HOUR;
+const DAYS = DAY * 1.5;
+const MONTH = 30 * DAY;
+const MONTHS = MONTH * 1.5;
+const YEAR = 12 * MONTH;
+const YEARS = YEAR * 1.5;
+
 export function timeSince(date: string): string {
-	const newDate = new Date(date);
-	const difference = new Date().getTime() - newDate.getTime();
-	const seconds = Math.floor(difference / 1000);
-	const minutes = Math.floor(seconds / 60);
-	const hours = Math.floor(minutes / 60);
-	const days = Math.floor(hours / 24);
-	const months = Math.floor(days / 30);
-	const years = Math.floor(months / 12);
-	if (years > 1) return t.relativeTime.past({ ago: t.relativeTime.yy({ x: years }) });
-	if (years === 1) return t.relativeTime.past({ ago: t.relativeTime.y({ x: years }) });
-	if (months > 1) return t.relativeTime.past({ ago: t.relativeTime.MM({ x: months }) });
-	if (months === 1) return t.relativeTime.past({ ago: t.relativeTime.M({ x: months }) });
-	if (days > 1) return t.relativeTime.past({ ago: t.relativeTime.dd({ x: days }) });
-	if (days === 1) return t.relativeTime.past({ ago: t.relativeTime.d({ x: days }) });
-	if (hours > 1) return t.relativeTime.past({ ago: t.relativeTime.hh({ x: hours }) });
-	if (hours === 1) return t.relativeTime.past({ ago: t.relativeTime.h({ x: hours }) });
-	if (minutes > 1) return t.relativeTime.past({ ago: t.relativeTime.mm({ x: minutes }) });
-	if (minutes === 1) return t.relativeTime.past({ ago: t.relativeTime.m({ x: minutes }) });
-	if (seconds > 1) return t.relativeTime.past({ ago: t.relativeTime.ss({ x: seconds }) });
-	return t.relativeTime.past({ ago: t.relativeTime.s({ x: seconds }) });
+	const difference = new Date().getTime() - new Date(date).getTime();
+	if (difference >= YEARS) return t.relativeTime.past({ ago: t.relativeTime.yy({ x: Math.floor(difference / YEAR) }) });
+	if (difference >= YEAR) return t.relativeTime.past({ ago: t.relativeTime.y({ x: 1 }) });
+	if (difference >= MONTHS) return t.relativeTime.past({ ago: t.relativeTime.MM({ x: Math.floor(difference / MONTH) }) });
+	if (difference >= MONTH) return t.relativeTime.past({ ago: t.relativeTime.M({ x: 1 }) });
+	if (difference >= DAYS) return t.relativeTime.past({ ago: t.relativeTime.dd({ x: Math.floor(difference / DAY) }) });
+	if (difference >= DAY) return t.relativeTime.past({ ago: t.relativeTime.d({ x: 1 }) });
+	if (difference >= HOURS) return t.relativeTime.past({ ago: t.relativeTime.hh({ x: difference / HOUR }) });
+	if (difference >= HOUR) return t.relativeTime.past({ ago: t.relativeTime.h({ x: 1 }) });
+	if (difference >= MINUTES) return t.relativeTime.past({ ago: t.relativeTime.mm({ x: Math.floor(difference / MINUTE) }) });
+	if (difference >= MINUTE) return t.relativeTime.past({ ago: t.relativeTime.m({ x: 1 }) });
+	if (difference >= SECONDS) return t.relativeTime.past({ ago: t.relativeTime.ss({ x: Math.floor(difference / SECOND) }) });
+	return t.relativeTime.past({ ago: t.relativeTime.s({ x: Math.floor(difference / SECOND) }) });
 }

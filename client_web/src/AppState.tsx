@@ -4,8 +4,8 @@ import type { User } from "./types/internal";
 import { user0 } from "./MockData";
 
 //TODO: use store instead of signals
-const [locale, setLocale] = createSignal<Locale>("pl_PL");
-const [userToken, setUserToken] = createSignal<string>(""); // TODO: [userToken, setUserToken] = [null, null
+const [locale, setLocale] = createSignal<Locale>("en_US");
+const [userToken, setUserToken] = createSignal<string>("");
 const [user, setUser] = createSignal<User | undefined>(user0);
 
 const localeJsFromat = () => {
