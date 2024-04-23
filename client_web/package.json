@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build --isolate='ai'",
+		"build": "tsc && vite build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -13,6 +13,7 @@
 		"@solidjs/meta": "^0.29.3",
 		"@solidjs/router": "^0.13.2",
 		"@stylexjs/stylex": "^0.6.0",
+		"@tanstack/solid-query": "^5.32.0",
 		"@tanstack/solid-virtual": "^3.4.0",
 		"long": "^5.2.3",
 		"protobufjs": "^7.2.6",

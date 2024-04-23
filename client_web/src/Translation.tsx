@@ -28,7 +28,6 @@ export function formatDate(date: string): string {
 
 const SECOND = 1000;
 const SECONDS = SECOND * 1.5;
-
 const MINUTE = 60 * SECOND;
 const MINUTES = MINUTE * 1.5;
 const HOUR = 60 * MINUTE;
@@ -53,5 +52,5 @@ export function timeSince(date: string): string {
 	if (difference >= MINUTES) return t.relativeTime.past({ ago: t.relativeTime.mm({ x: Math.floor(difference / MINUTE) }) });
 	if (difference >= MINUTE) return t.relativeTime.past({ ago: t.relativeTime.m({ x: 1 }) });
 	if (difference >= SECONDS) return t.relativeTime.past({ ago: t.relativeTime.ss({ x: Math.floor(difference / SECOND) }) });
-	return t.relativeTime.past({ ago: t.relativeTime.s({ x: Math.floor(difference / SECOND) }) });
+	return t.relativeTime.past({ ago: t.relativeTime.s({ x: 1 }) });
 }
