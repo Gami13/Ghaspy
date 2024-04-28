@@ -93,7 +93,7 @@ export const en_US = {
 		cantUnmarshal: "Dane zostały wysłane w niepoprawnym formacie",
 		invalidToken: "Niepoprawny token",
 		verificationCodeInvalid: "Niepoprawny kod weryfikacyjny",
-		verificationCodeOutdated: "Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
+		verificationCodeOutdated: "Provided verification code is outdated, a new one has been sent to your email",
 		userAlreadyValidated: "Użytkownik jest już zweryfikowany",
 		cantReadFile: "Nie można odczytać pliku",
 		badRequestNoUsername: "Nie podano nazwy użytkownika",

@@ -18,6 +18,7 @@ export const colors = stylex.defineVars({
 	text800: { default: "#2b303b", [DARK]: "#c4c9d4" },
 	text900: { default: "#16181d", [DARK]: "#e2e4e9" },
 	text950: { default: "#0b0c0f", [DARK]: "#f0f2f4" },
+	textError: { default: "#ef4444" },
 
 	background50: { default: "#cbcbcb", [DARK]: "#0a0b10" },
 	background100: { default: "#b6b9c2", [DARK]: "#131620" },
@@ -45,4 +46,9 @@ export const dimensions = stylex.defineVars({
 	postsMaxWidth: "600px",
 	postsMinWidth: "300px",
 	asideMaxWidth: "400px",
+});
+
+export const transitions = stylex.defineVars({
+	duration: "150ms",
+	timing: "cubic-bezier(0,.5,.5,1)",
 });
