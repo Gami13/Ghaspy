@@ -8,6 +8,7 @@ import { AppStateProvider } from "./AppState";
 
 import { Main } from "./components/Main";
 import { Pallete } from "./components/Pallete";
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -25,14 +26,17 @@ import { Pallete } from "./components/Pallete";
 //<div {...stylex.attrs(styles.root)}>
 const root = document.getElementsByTagName("body")[0];
 
+const queryClient = new QueryClient();
 function App() {
 	return (
 		<>
 			<AppStateProvider>
-				<Router>
-					<Route path="/" component={Main} />
-					<Route path="pallete" component={Pallete} />
-				</Router>
+				<QueryClientProvider client={queryClient}>
+					<Router>
+						<Route path="/" component={Main} />
+						<Route path="pallete" component={Pallete} />
+					</Router>
+				</QueryClientProvider>
 			</AppStateProvider>
 		</>
 	);

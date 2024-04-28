@@ -1,8 +1,7 @@
-import { colors } from "../../variables.stylex";
+import { colors, transitions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
-import type { IconBell } from "@tabler/Icons-solidjs";
-import { JSXElement } from "solid-js";
+import type { TbBeach } from "solid-icons/tb";
 
 const styles = stylex.create({
 	navElement: {
@@ -11,30 +10,39 @@ const styles = stylex.create({
 		width: "100%",
 		justifyContent: "flex-start",
 		alignItems: "center",
-		color: colors.text900,
+		color: colors.text950,
 		textDecoration: "none",
 		gap: "1em",
+		height: "100%",
+		backgroundColor: {
+			":hover": colors.background100,
+		},
+
+		transitionDuration: transitions.duration,
+		transitionTimingFunction: transitions.timing,
+		padding: "1.0em",
+		borderRadius: "12em",
 	},
 	navElementWrapper: {
 		display: "flex",
 		flexDirection: "column",
 	},
 	navElementIcon: {
-		height: "2em",
-		width: "2em",
+		height: "1.75em",
+		width: "1.75em",
 		margin: 0,
 		fontSize: "1.2em",
 	},
 	navElementText: {
-		fontSize: "2em",
+		fontSize: "1.75em",
 		fontWeight: 500,
+		whiteSpace: "nowrap",
+		overflowX: "hidden",
 	},
 });
-// Icon can be used as jsx component
-type IconType = typeof IconBell;
 
-export function NavigationListElement(props: {
-	Icon: IconType;
+export function NavigationListLink(props: {
+	Icon: typeof TbBeach;
 	text: string;
 	href: string;
 }) {
