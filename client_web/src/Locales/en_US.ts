@@ -1,6 +1,7 @@
 export const en_US = {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
+	loading: "Ładowanie...",
 	relativeTime: {
 		future: "in {{in}}",
 		past: "{{ago}} ago",
@@ -33,9 +34,12 @@ export const en_US = {
 
 	login: {
 		logIn: "Zaloguj się",
+		logInDescription:
+			"Zaloguj się do swojego konta używając swojego adresu email i hasła",
 		errorLabel: "Błąd:",
 		email: "Email",
 		password: "Hasło",
+		emailExample: "przyklad@email.com",
 		passwordRepeat: "Powtórz hasło",
 		username: "Nazwa użytkownika",
 	},
@@ -65,8 +69,10 @@ export const en_US = {
 	},
 	authErrors: {
 		signupUsernameTooShort: "Nazwa użytkownika musi mieć minimum 3 znaki",
-		signupUsernameTooLong: "Nazwa użytkownika nie może być dłuższa niż 64 znaki",
-		signupUsernameNoSpecials: "Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
+		signupUsernameTooLong:
+			"Nazwa użytkownika nie może być dłuższa niż 64 znaki",
+		signupUsernameNoSpecials:
+			"Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
 		signupUsernameNoSpaces: "Nazwa użytkownika nie może zawierać spacji",
 		signupUsernameTaken: "Ta nazwa użytkownika jest już zajęta",
 
@@ -93,7 +99,8 @@ export const en_US = {
 		cantUnmarshal: "Dane zostały wysłane w niepoprawnym formacie",
 		invalidToken: "Niepoprawny token",
 		verificationCodeInvalid: "Niepoprawny kod weryfikacyjny",
-		verificationCodeOutdated: "Provided verification code is outdated, a new one has been sent to your email",
+		verificationCodeOutdated:
+			"Provided verification code is outdated, a new one has been sent to your email",
 		userAlreadyValidated: "Użytkownik jest już zweryfikowany",
 		cantReadFile: "Nie można odczytać pliku",
 		badRequestNoUsername: "Nie podano nazwy użytkownika",
@@ -105,7 +112,8 @@ export const en_US = {
 		badRequestNotNumber: "Provided value is not a number",
 		cantReadForm: "Cant read form data",
 		internalError: "Internal Server Error Occured",
-		internalErrorCrit: "We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience",
+		internalErrorCrit:
+			"We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience",
 	},
 	success: {
 		userRegistered: "Użytkownik zarejestrowany pomyślnie",

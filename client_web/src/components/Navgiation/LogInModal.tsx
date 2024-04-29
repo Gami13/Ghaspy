@@ -177,35 +177,34 @@ export function LogInModal(props: LogInModalProps) {
 				<header {...stylex.attrs(styles.header)}>
 					<h2 {...stylex.attrs(styles.title)}>
 						<TbBrandTwitterFilled />
-						Log In
+						{t.login.logIn()}
 					</h2>
 					<p {...stylex.attrs(styles.paragraph)}>
-						Log in to your account using the connected email and corrsponding
-						password
+						{t.login.logInDescription()}
 					</p>
 				</header>
 				<form onsubmit={onSubmit} {...stylex.attrs(styles.form)}>
 					<label for="email" {...stylex.attrs(styles.label)}>
-						Email
+						{t.login.email()}
 						<input
 							disabled={status.isLoading}
 							type="email"
 							name="email"
 							id="email"
 							{...stylex.attrs(styles.input)}
-							placeholder="example@email.com"
+							placeholder={t.login.emailExample()}
 						/>
 					</label>
 
 					<label for="password" {...stylex.attrs(styles.label)}>
-						Password
+						{t.login.password()}
 						<input
 							disabled={status.isLoading}
 							type="password"
 							id="password"
 							name="password"
 							{...stylex.attrs(styles.input)}
-							placeholder="Password"
+							placeholder={t.login.password()}
 						/>
 					</label>
 					{/* TODO: STYLE ERROR */}
@@ -220,8 +219,8 @@ export function LogInModal(props: LogInModalProps) {
 						type="submit"
 						{...stylex.attrs(styles.submit)}
 					>
-						<Show when={!status.isLoading} fallback={<>Loading...</>}>
-							Log In
+						<Show when={!status.isLoading} fallback={t.loading()}>
+							{t.login.logIn()}
 						</Show>
 					</button>
 				</form>

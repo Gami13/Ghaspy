@@ -5,7 +5,9 @@ import { createVirtualizer } from "@tanstack/solid-virtual";
 import { PostList } from "./Post/PostList";
 import { Navigation } from "./Navgiation/Navigation";
 import { getTokenFromCookie, useAppState } from "@/AppState";
-import { createEffect, onMount } from "solid-js";
+import { createEffect, onMount, Show } from "solid-js";
+import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
+import { ResponseGetProfile } from "@/types/responses";
 
 const styles = stylex.create({
 	wrapper: {
@@ -33,11 +35,25 @@ export function Main() {
 		if (token) {
 			console.log("TOKEN", token);
 			AppState.setUserToken(token);
-			//TODO: probably fetch user data here and set it to AppState
 		}
 	});
 	createEffect(() => {
 		console.log(`EFFECT${AppState.userToken()}`);
+		//TODO: probably fetch user data here and set it to AppState
+		if (AppState.userToken()) {
+			fetch(CURRENT_USER_DATA_ENDPOINT, {
+				method: "GET",
+				headers: {
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					Authorization: AppState.userToken()!,
+				},
+			})
+				.then((res) => res.arrayBuffer())
+				.then((data) => ResponseGetProfile.decode(new Uint8Array(data)))
+				.then((data) => {
+					AppState.setUser(data.profile);
+				});
+		}
 	});
 
 	console.log("WHAT");
