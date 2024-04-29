@@ -31,7 +31,7 @@ const localeJsFromat = () => {
 };
 
 const ContextValue = {
-	isLoggedIn: () => user()?.ID !== undefined,
+	isLoggedIn: () => userToken() !== undefined,
 	locale,
 	setLocale,
 	localeJsFromat,
