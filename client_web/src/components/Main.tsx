@@ -38,13 +38,11 @@ export function Main() {
 		}
 	});
 	createEffect(() => {
-		console.log(`EFFECT${AppState.userToken()}`);
-		//TODO: probably fetch user data here and set it to AppState
 		if (AppState.userToken()) {
 			fetch(CURRENT_USER_DATA_ENDPOINT, {
 				method: "GET",
 				headers: {
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					// biome-ignore lint/style/noNonNullAssertion: <didnt wanna do it other way>
 					Authorization: AppState.userToken()!,
 				},
 			})
@@ -52,6 +50,11 @@ export function Main() {
 				.then((data) => ResponseGetProfile.decode(new Uint8Array(data)))
 				.then((data) => {
 					AppState.setUser(data.profile);
+				})
+				.catch((err) => {
+					console.log("ERR", err);
+					AppState.setUserToken(undefined);
+					alert("TODO: You have been logged out due to an invalid token");
 				});
 		}
 	});
