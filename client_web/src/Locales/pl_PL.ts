@@ -1,6 +1,8 @@
-export default {
+export const pl_PL = {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
+	loading: "Ładowanie...",
+
 	relativeTime: {
 		future: "w {{in}}",
 		past: "{{ago}} temu",
@@ -35,8 +37,12 @@ export default {
 
 	login: {
 		logIn: "Zaloguj się",
+		logInDescription:
+			"Zaloguj się do swojego konta używając swojego adresu email i hasła",
 		errorLabel: "Błąd:",
 		email: "Email",
+		emailExample: "przyklad@email.com",
+
 		password: "Hasło",
 		passwordRepeat: "Powtórz hasło",
 		username: "Nazwa użytkownika",

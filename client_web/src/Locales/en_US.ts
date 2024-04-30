@@ -1,6 +1,7 @@
-export default {
+export const en_US = {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
+	loading: "Ładowanie...",
 	relativeTime: {
 		future: "in {{in}}",
 		past: "{{ago}} ago",
@@ -33,9 +34,12 @@ export default {
 
 	login: {
 		logIn: "Zaloguj się",
+		logInDescription:
+			"Zaloguj się do swojego konta używając swojego adresu email i hasła",
 		errorLabel: "Błąd:",
 		email: "Email",
 		password: "Hasło",
+		emailExample: "przyklad@email.com",
 		passwordRepeat: "Powtórz hasło",
 		username: "Nazwa użytkownika",
 	},
@@ -90,24 +94,26 @@ export default {
 		loginCantGenerateToken: "Nie można wygenerować tokenu",
 		loginCantInsertToken: "Nie można wstawić tokenu",
 		invalidRequest: "Niepoprawne zapytanie",
-		internalError: "Wewnętrzny błąd serwera",
-		internalErrorCrit: "Krytyczny wewnętrzny błąd serwera",
+
 		unauthorized: "Nie masz uprawnień do wykonania tej akcji",
 		cantUnmarshal: "Dane zostały wysłane w niepoprawnym formacie",
 		invalidToken: "Niepoprawny token",
 		verificationCodeInvalid: "Niepoprawny kod weryfikacyjny",
 		verificationCodeOutdated:
-			"Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
+			"Provided verification code is outdated, a new one has been sent to your email",
 		userAlreadyValidated: "Użytkownik jest już zweryfikowany",
 		cantReadFile: "Nie można odczytać pliku",
 		badRequestNoUsername: "Nie podano nazwy użytkownika",
 		badRequestQuoteOf: "Nie można odczytać podanego cytatu",
 		badRequestReplyTo: "Nie można odczytać podanej odpowiedzi",
-		badRequestContentTooLong: "Treść jest zbyt długa",
-		badRequestNoContent: "Treść jest pusta",
-		badRequestID: "Podane ID nie jest liczbą",
-		badRequestNotNumber: "Podane dane nie są liczbą",
-		cantReadForm: "Nie można odczytać formularza",
+		badRequestContentTooLong: "Provided content is too long",
+		badRequestNoContent: "Provided content is empty",
+		badRequestID: "Provided ID is not a valid ID",
+		badRequestNotNumber: "Provided value is not a number",
+		cantReadForm: "Cant read form data",
+		internalError: "Internal Server Error Occured",
+		internalErrorCrit:
+			"We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience",
 	},
 	success: {
 		userRegistered: "Użytkownik zarejestrowany pomyślnie",

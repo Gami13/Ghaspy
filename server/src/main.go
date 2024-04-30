@@ -41,6 +41,23 @@ func saveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	return newFileName, nil
 }
 
+func processProfilePicture(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+
+	splits := strings.Split(file.Filename, ".")
+	//!DONT USE FILE EXTENSION, USE MIME TYPE
+	fileExtension := splits[len(splits)-1]
+	if fileExtension != "png" && fileExtension != "jpg" && fileExtension != "jpeg" && fileExtension != "webp" {
+		return "", fmt.Errorf("Invalid file type")
+	}
+
+	if file.Size > 4*1024*1024 {
+		return "", fmt.Errorf("File too large")
+	}
+
+	panic("Not implemented")
+
+}
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -61,35 +78,34 @@ func main() {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
-		AllowOrigins:     "*",
-		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders: "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
+		AllowOrigins: "*",
+		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}))
 
-	app.Post("/login", logInUser)
-	app.Post("/logout", logOutUser)
-	app.Post("/signup", signUpUser)
+	app.Post("/log-in", logInUser)
+	app.Post("/log-out", logOutUser)
+	app.Post("/sign-up", signUpUser)
 	app.Get("/validate/:valId", validateUser)
-	app.Post("/setDisplayName", setDisplayName)
-	app.Post("/setBio", setBio)
-	app.Post("/setDisplayName", setDisplayName)
-	app.Post("/toggleIsFollowingPublic", toggleIsFollowingPublic)
-	app.Post("/toggleIsFollowersPublic", toggleIsFollowersPublic)
-	app.Post("/toggleIsPostsPublic", toggleIsPostsPublic)
-	app.Post("/toggleIsLikesPublic", toggleIsLikesPublic)
-	app.Post("/setAvatar", setAvatar)
-	app.Post("/setBanner", setBanner)
+	app.Patch("/display-name", setDisplayName)
+	app.Patch("/bio", setBio)
+	app.Patch("/display-name", setDisplayName)
+	app.Patch("/is-following-public", toggleIsFollowingPublic)
+	app.Patch("/is-followers-public", toggleIsFollowersPublic)
+	app.Patch("/is-posts-public", toggleIsPostsPublic)
+	app.Patch("/is-likes-public", toggleIsLikesPublic)
+	app.Patch("/avatar", setAvatar)
+	app.Patch("/banner", setBanner)
 	app.Get("/profile/:name", getProfile)
 	app.Get("/profile", getLoggedInUserProfile)
 	app.Post("/post", addPost)
-	app.Get("/postsChrono/:page", getPostsChronologically)
-	app.Post("/togglePin", togglePin)
-	app.Post("/toggleLike", toggleLike)
-	app.Post("/toggleFollow", toggleFollow)
+	app.Get("/posts-chrono/:page", getPostsChronologically)
+	app.Patch("/pin", togglePin)
+	app.Patch("/like", toggleLike)
+	app.Patch("/follow", toggleFollow)
 	app.Delete("/post", deletePost)
 	// app.Get("/pins/:page", getPins)
-	app.Get("/postsProfile/:username/:page", getUserPostsChronologically)
+	app.Get("/posts-profile/:username/:page", getUserPostsChronologically)
 
 	app.Static("/attachment", "C:\\uploads")
 
