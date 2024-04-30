@@ -61,9 +61,13 @@ export const pl_PL = {
 		likes: "Polubień",
 		you: "Ty",
 	},
-	signup: {
+	signUp: {
+		email: "Email",
+		password: "Hasło",
+		emailExample: "przyklad@email.com",
 		signUp: "Zarejestruj się",
 		requirements: "Wymagania",
+		description: "Zarejestruj się, aby korzystać z naszej platformy",
 	},
 	posts: {
 		posts: "Posty",
