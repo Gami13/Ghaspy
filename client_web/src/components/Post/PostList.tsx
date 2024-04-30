@@ -44,33 +44,7 @@ export function PostList(props: PostListProps) {
 			<Show when={AppState.isLoggedIn()}>
 				<PostWriter user={AppState.user() as User} />
 			</Show>
-			<For each={posts}>{(post) => <Post post={post} />}</For>
-			{/* <div
-				style={{
-					height: `${virtualizer.getTotalSize()}px`,
-					width: "100%",
-					position: "relative",
-				}}
-			>
-				<div
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						width: "100%",
-						transform: `translateY(${items[0] ? items[0].start : 0}px)`,
-					}}
-				>
-					{items.map((virtualRow) => (
-						<div
-							data-index={virtualRow.index}
-							ref={(el) => queueMicrotask(() => virtualizer.measureElement(el))}
-						>
-							<Post post={props.posts[virtualRow.index]} />
-						</div>
-					))}
-				</div>
-			</div> */}
-		</div>
+			<For each={props.posts}>{(post) => <Post post={post} />}</For>
+		</main>
 	);
 }
