@@ -1,6 +1,8 @@
 export const pl_PL = {
 	appName: "Ghaspy",
 	hello: "cześć {{ name }}, jak się masz?",
+	loading: "Ładowanie...",
+
 	relativeTime: {
 		future: "w {{in}}",
 		past: "{{ago}} temu",
@@ -35,8 +37,12 @@ export const pl_PL = {
 
 	login: {
 		logIn: "Zaloguj się",
+		logInDescription:
+			"Zaloguj się do swojego konta używając swojego adresu email i hasła",
 		errorLabel: "Błąd:",
 		email: "Email",
+		emailExample: "przyklad@email.com",
+
 		password: "Hasło",
 		passwordRepeat: "Powtórz hasło",
 		username: "Nazwa użytkownika",
@@ -67,8 +73,10 @@ export const pl_PL = {
 	},
 	authErrors: {
 		signupUsernameTooShort: "Nazwa użytkownika musi mieć minimum 3 znaki",
-		signupUsernameTooLong: "Nazwa użytkownika nie może być dłuższa niż 64 znaki",
-		signupUsernameNoSpecials: "Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
+		signupUsernameTooLong:
+			"Nazwa użytkownika nie może być dłuższa niż 64 znaki",
+		signupUsernameNoSpecials:
+			"Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
 		signupUsernameNoSpaces: "Nazwa użytkownika nie może zawierać spacji",
 		signupUsernameTaken: "Ta nazwa użytkownika jest już zajęta",
 
@@ -96,7 +104,8 @@ export const pl_PL = {
 		cantUnmarshal: "Dane zostały wysłane w niepoprawnym formacie",
 		invalidToken: "Niepoprawny token",
 		verificationCodeInvalid: "Niepoprawny kod weryfikacyjny",
-		verificationCodeOutdated: "Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
+		verificationCodeOutdated:
+			"Kod weryfikacyjny nie jest już prawidłowy, nowy kod został wysłany na pocztę elektroniczną",
 		userAlreadyValidated: "Użytkownik jest już zweryfikowany",
 		cantReadFile: "Nie można odczytać pliku",
 		badRequestNoUsername: "Nie podano nazwy użytkownika",
