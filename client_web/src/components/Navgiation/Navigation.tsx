@@ -30,11 +30,36 @@ const styles = stylex.create({
 		backgroundColor: colors.background50,
 		padding: "0.75em",
 	},
-
+	navElement: {
+		fontSize: "1em",
+		display: "flex",
+		width: "100%",
+		justifyContent: "flex-start",
+		alignItems: "center",
+		color: colors.text900,
+		textDecoration: "none",
+		gap: "0.5em",
+	},
+	navElementWrapper: {
+		display: "flex",
+		flexDirection: "column",
+	},
+	navElementIcon: {
+		height: "2em",
+		width: "2em",
+		margin: 0,
+	},
+	navElementText: {
+		fontSize: "2em",
+	},
 	list: {
 		display: "flex",
 		flexDirection: "column",
-		gap: "0.25em",
+		gap: "1em",
+		padding: "0.5em",
+	},
+	currentPageIconColor: {
+		
 	},
 });
 
