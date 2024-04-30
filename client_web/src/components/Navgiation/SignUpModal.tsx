@@ -3,9 +3,9 @@ import { Modal } from "../Modal";
 import { colors, transitions } from "../../variables.stylex";
 import { createMutation, createQuery } from "@tanstack/solid-query";
 import { ResponseError, ResponsesignUpUser } from "@/types/responses";
-import { RequestsignUpUser } from "@/types/requests";
+import { RequestSignUpUser } from "@/types/requests";
 import { createStore, produce } from "solid-js/store";
-import { sign_IN_ENDPOINT } from "@/constants";
+import { SIGN_UP_ENDPOINT } from "@/constants";
 import { t, type SignUpTransKeysT } from "@/Translation";
 import { TbBrandTwitter, TbBrandTwitterFilled } from "solid-icons/tb";
 import { saveTokenToCookie, useAppState } from "@/AppState";
@@ -131,15 +131,15 @@ export function signUpModal(props: signUpModalProps) {
 		const password = formData.get("password") as string;
 		setStatus("isLoading", true);
 
-		const body = RequestsignUpUser.encode(
-			RequestsignUpUser.create({
+		const body = RequestSignUpUser.encode(
+			RequestSignUpUser.create({
 				email,
 				password,
 				deviceName: `web${navigator.userAgent}`,
 			}),
 		).finish();
 		console.log("fetching");
-		const response = await fetch(sign_IN_ENDPOINT, {
+		const response = await fetch(SIGN_UP_ENDPOINT, {
 			method: "POST",
 			body: body,
 		});
@@ -149,7 +149,7 @@ export function signUpModal(props: signUpModalProps) {
 			console.log("error");
 			const error = ResponseError.decode(data);
 			setStatus(
-				produce((status) => {
+				produce((status: RequestStatus) => {
 					status.isLoading = false;
 					status.isError = true;
 					status.error = error.message as SignUpTransKeysT;
@@ -160,7 +160,7 @@ export function signUpModal(props: signUpModalProps) {
 		console.log("success");
 		const success = ResponsesignUpUser.decode(data);
 		setStatus(
-			produce((status) => {
+			produce((status: RequestStatus) => {
 				status.isLoading = false;
 				status.isSuccess = true;
 			}),
