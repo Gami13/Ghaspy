@@ -3,7 +3,7 @@ import stylex from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import type { TbBeach } from "solid-icons/tb";
 
-const styles = stylex.create({
+export const NavigationListItemStyle = stylex.create({
 	navElement: {
 		fontSize: "1em",
 		display: "flex",
@@ -20,7 +20,8 @@ const styles = stylex.create({
 
 		transitionDuration: transitions.duration,
 		transitionTimingFunction: transitions.timing,
-		padding: "1.0em",
+		padding: "0.75em",
+		paddingHorizontal: "1.25em",
 		borderRadius: "12em",
 	},
 	navElementWrapper: {
@@ -37,6 +38,7 @@ const styles = stylex.create({
 		fontSize: "1.75em",
 		fontWeight: 500,
 		whiteSpace: "nowrap",
+		lineHeight: 1.5,
 		overflowX: "hidden",
 	},
 });
@@ -46,14 +48,16 @@ export function NavigationListLink(props: {
 	text: string;
 	href: string;
 }) {
-	//assert props.Icon is a jsx element
-
 	return (
-		<li {...stylex.attrs(styles.navElementWrapper)}>
-			<A {...stylex.attrs(styles.navElement)} href={props.href}>
-				{/* YES IT CAN SHUT UP */}
-				<props.Icon {...stylex.attrs(styles.navElementIcon)} />
-				<span {...stylex.attrs(styles.navElementText)}>{props.text}</span>
+		<li {...stylex.attrs(NavigationListItemStyle.navElementWrapper)}>
+			<A
+				{...stylex.attrs(NavigationListItemStyle.navElement)}
+				href={props.href}
+			>
+				<props.Icon {...stylex.attrs(NavigationListItemStyle.navElementIcon)} />
+				<span {...stylex.attrs(NavigationListItemStyle.navElementText)}>
+					{props.text}
+				</span>
 			</A>
 		</li>
 	);

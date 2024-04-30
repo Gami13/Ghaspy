@@ -46,36 +46,5 @@ export function PostList(props: PostListProps) {
 			</Show>
 			<For each={props.posts}>{(post) => <Post post={post} />}</For>
 		</main>
-		// <div {...stylex.attrs(styles.main)} ref={parentRef} style={{}}>
-		// 	<Show when={AppState.user() !== undefined}>
-		// 		<PostWriter user={AppState.user() as User} />
-		// 	</Show>
-		// 	<div
-		// 		style={{
-		// 			height: `${virtualizer.getTotalSize()}px`,
-		// 			width: "100%",
-		// 			position: "relative",
-		// 		}}
-		// 	>
-		// 		<div
-		// 			style={{
-		// 				position: "absolute",
-		// 				top: 0,
-		// 				left: 0,
-		// 				width: "100%",
-		// 				transform: `translateY(${items[0] ? items[0].start : 0}px)`,
-		// 			}}
-		// 		>
-		// 			{items.map((virtualRow) => (
-		// 				<div
-		// 					data-index={virtualRow.index}
-		// 					ref={(el) => queueMicrotask(() => virtualizer.measureElement(el))}
-		// 				>
-		// 					<Post post={props.posts[virtualRow.index]} />
-		// 				</div>
-		// 			))}
-		// 		</div>
-		// 	</div>
-		// </div>
 	);
 }
