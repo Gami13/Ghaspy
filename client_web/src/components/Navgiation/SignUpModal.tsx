@@ -1,15 +1,13 @@
 import stylex from "@stylexjs/stylex";
 import { Modal } from "../Modal";
 import { colors, transitions } from "../../variables.stylex";
-import { createMutation, createQuery } from "@tanstack/solid-query";
-import { ResponseError, ResponsesignUpUser } from "@/types/responses";
-import { RequestSignUpUser } from "@/types/requests";
-import { createStore, produce } from "solid-js/store";
-import { SIGN_UP_ENDPOINT } from "@/constants";
-import { t, type SignUpTransKeysT } from "@/Translation";
-import { TbBrandTwitter, TbBrandTwitterFilled } from "solid-icons/tb";
-import { saveTokenToCookie, useAppState } from "@/AppState";
-import { Show } from "solid-js";
+import { useAppState } from "@/AppState";
+import { ProtoFetch } from "@/ProtoFetch";
+import { ResponseLogInUser } from "@/types/responses";
+
+import { LOG_IN_ENDPOINT } from "@/constants";
+import { RequestLogInUser } from "@/types/requests";
+import { onMount } from "solid-js";
 
 const styles = stylex.create({
 	main: {
@@ -101,128 +99,28 @@ const styles = stylex.create({
 	},
 });
 
-type RequestStatus = {
-	isLoading: boolean;
-	isError: boolean;
-	error: SignUpTransKeysT | undefined;
-	isSuccess: boolean;
-};
-
-type signUpModalProps = {
+type SignUpModalProps = {
 	onOutsideClick: () => void;
 };
-export function signUpModal(props: signUpModalProps) {
+export function SignUpModal(props: SignUpModalProps) {
 	const AppState = useAppState();
-	const [status, setStatus] = createStore<RequestStatus>({
-		isLoading: false,
-		isError: false,
-		error: undefined,
-		isSuccess: false,
-	});
-	async function onSubmit(
-		event: Event & {
-			currentTarget: HTMLFormElement;
-		},
-	) {
-		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
 
-		const email = formData.get("email") as string;
-		const password = formData.get("password") as string;
-		setStatus("isLoading", true);
-
-		const body = RequestSignUpUser.encode(
-			RequestSignUpUser.create({
-				email,
-				password,
-				deviceName: `web${navigator.userAgent}`,
-			}),
-		).finish();
-		console.log("fetching");
-		const response = await fetch(SIGN_UP_ENDPOINT, {
+	const proto = new ProtoFetch<RequestLogInUser, ResponseLogInUser>(RequestLogInUser, ResponseLogInUser);
+	onMount(() => {
+		proto.Query(LOG_IN_ENDPOINT, {
 			method: "POST",
-			body: body,
+			body: proto.createBody({
+					email: "gamiofficial0@gmail.com",
+					password: "Haslo123",
+					deviceName: `web${navigator.userAgent}`,
+				})
+		
 		});
-		console.log("fetched");
-		const data = new Uint8Array(await response.arrayBuffer());
-		if (!response.ok) {
-			console.log("error");
-			const error = ResponseError.decode(data);
-			setStatus(
-				produce((status: RequestStatus) => {
-					status.isLoading = false;
-					status.isError = true;
-					status.error = error.message as SignUpTransKeysT;
-				}),
-			);
-			return;
-		}
-		console.log("success");
-		const success = ResponsesignUpUser.decode(data);
-		setStatus(
-			produce((status: RequestStatus) => {
-				status.isLoading = false;
-				status.isSuccess = true;
-			}),
-		);
-		//TODO: use success
-		AppState.setUserToken(success.token);
-
-		saveTokenToCookie(success.token);
-		props.onOutsideClick();
-	}
-
+	});
 	return (
 		<Modal onOutsideClick={props.onOutsideClick}>
 			<main {...stylex.attrs(styles.main)}>
-				<header {...stylex.attrs(styles.header)}>
-					<h2 {...stylex.attrs(styles.title)}>
-						<TbBrandTwitterFilled />
-						{t.signUp.signUp()}
-					</h2>
-					<p {...stylex.attrs(styles.paragraph)}>{t.signUp.description()}</p>
-				</header>
-				<form onsubmit={onSubmit} {...stylex.attrs(styles.form)}>
-					<label for="email" {...stylex.attrs(styles.label)}>
-						{t.signUp.email()}
-						<input
-							disabled={status.isLoading}
-							type="email"
-							name="email"
-							id="email"
-							{...stylex.attrs(styles.input)}
-							placeholder={t.signUp.emailExample()}
-						/>
-					</label>
-
-					<label for="password" {...stylex.attrs(styles.label)}>
-						{t.signUp.password()}
-						<input
-							disabled={status.isLoading}
-							type="password"
-							id="password"
-							name="password"
-							{...stylex.attrs(styles.input)}
-							placeholder={t.signUp.password()}
-						/>
-					</label>
-					{/* TODO: STYLE ERROR */}
-					<Show when={status.isError}>
-						<span {...stylex.attrs(styles.error)}>
-							{t.authErrors[status.error as SignUpTransKeysT]()}
-						</span>
-					</Show>
-
-					<button
-						disabled={status.isLoading}
-						type="submit"
-						{...stylex.attrs(styles.submit)}
-					>
-						<Show when={!status.isLoading} fallback={t.loading()}>
-							{t.signUp.signUp()}
-						</Show>
-					</button>
-				</form>
+				<p>{JSON.stringify(proto.state)}</p>
 			</main>
 		</Modal>
 	);

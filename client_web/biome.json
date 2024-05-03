@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.6.3/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.7.2/schema.json",
 	"organizeImports": {
 		"enabled": true
 	},
@@ -9,7 +9,8 @@
 		"indentStyle": "tab",
 		"indentWidth": 4,
 		"lineEnding": "lf",
-		"lineWidth": 160
+		"lineWidth": 160,
+		"formatWithErrors": true
 	},
 	"linter": {
 		"enabled": true,
@@ -17,10 +18,11 @@
 		"rules": {
 			"nursery": {
 				"noDuplicateElseIf": "warn",
-				"noDuplicateJsonKeys": "warn",
-				"noUselessTernary": "warn"
+				"noDuplicateJsonKeys": "warn"
+
 			},
 			"style": {
+				
 				"useCollapsedElseIf": "warn",
 				"noDefaultExport": "error",
 				"useConsistentArrayType": "warn",
@@ -35,12 +37,14 @@
 			},
 			"correctness": {
 				"noUndeclaredVariables": "error"
+				
 			},
 			"complexity": {
 				"noVoid": "warn",
 				"useSimplifiedLogicExpression": "warn",
 				"noExcessiveCognitiveComplexity": "warn",
-				"noStaticOnlyClass": "warn"
+				"noStaticOnlyClass": "warn",
+				"noUselessTernary": "warn"
 			},
 			"recommended": true
 		}

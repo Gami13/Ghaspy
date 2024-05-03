@@ -10,21 +10,21 @@ import (
 
 func protoError(c *fiber.Ctx, status int, message string) error {
 	logger.Println("ERROR: ", message)
-	marshaled, err := proto.Marshal(&types.ResponseError{Message: message})
+	marshalled, err := proto.Marshal(&types.ResponseError{Message: message})
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return (c.Status(http.StatusInternalServerError).SendString("internalErrorCrit"))
 	}
 
-	return c.Status(status).Send(marshaled)
+	return c.Status(status).Send(marshalled)
 }
 
 func protoSuccess(c *fiber.Ctx, status int, data proto.Message) error {
-	marshaled, err := proto.Marshal(data)
+	marshalled, err := proto.Marshal(data)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return (c.Status(http.StatusInternalServerError).SendString("internalErrorCrit"))
 	}
 
-	return c.Status(status).Send(marshaled)
+	return c.Status(status).Send(marshalled)
 }
