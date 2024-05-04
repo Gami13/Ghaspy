@@ -22,6 +22,7 @@ import (
 )
 
 func logInUser(c *fiber.Ctx) error {
+
 	requestBody := types.RequestLogInUser{}
 
 	err := proto.Unmarshal(c.Body(), &requestBody)

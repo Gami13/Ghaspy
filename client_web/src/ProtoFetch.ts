@@ -14,7 +14,7 @@ type ProtoFetchType<ReturnType> = {
 	isError: boolean;
 	isCriticalError: boolean;
 	isSuccess: boolean;
-	error: ErrorTransKeys | undefined;
+	error: undefined | ErrorTransKeys;
 	data: ReturnType | undefined;
 };
 
@@ -23,6 +23,7 @@ export class ProtoFetch<RequestType, ReturnType> {
 	state: Store<ProtoFetchType<ReturnType>>;
 	encoder: Coder<RequestType> | undefined;
 	decoder: Coder<ReturnType>;
+	controller: AbortController | undefined
 	constructor(encoder: Coder<RequestType> | undefined, decoder: Coder<ReturnType>) {
 		this.encoder = encoder;
 		this.decoder = decoder;
@@ -34,20 +35,52 @@ export class ProtoFetch<RequestType, ReturnType> {
 			error: undefined,
 			data: undefined,
 		});
+		
 		this.state = this.store[0];
 	}
 
 	createBody<I extends Exact<DeepPartial<RequestType>, I>>(base?: I): Uint8Array {
 		if (this.encoder !== undefined) {
+			
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			return this.encoder.encode(this.encoder.create(base ?? ({} as any))).finish();
 		}
+		console.log("No encoder")
 		return new Uint8Array();
 	}
 
 	async Query(url: string, init: RequestInit) {
 		this.store[1]("isLoading", true);
-		const response = await fetch(url, init);
+		console.log("Querying")
+		if(this.controller)
+			{
+				this.controller.abort();
+				this.controller = undefined;
+			
+				console.log("Aborted")
+
+			}
+
+		this.controller = new AbortController();
+		init.signal = this.controller.signal;
+		
+		const response = await fetch(url, init).catch(e=>{
+			if(e.name === "AbortError")
+			{
+				
+				return;
+			}
+		})
+		console.log("response", response)
+		if(!response)
+		{
+			console.log("Returning abort")
+			return;
+		}
+	
+		this.controller = undefined;
+		
+		
 		const bodyAsString = await response.clone().text();
 		if (bodyAsString === "internalErrorCrit") {
 			this.store[1]("isLoading", false);
