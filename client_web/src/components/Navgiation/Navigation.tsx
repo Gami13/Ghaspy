@@ -4,18 +4,9 @@ import stylex from "@stylexjs/stylex";
 
 import { NavigationListLink } from "./NavigationListLink";
 
-import {
-	TbBell,
-	TbBookmark,
-	TbCompass,
-	TbHome,
-	TbLock,
-	TbMail,
-	TbSettings,
-	TbUser,
-} from "solid-icons/tb";
+import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
-import { useAppState } from "@/AppState";
+import { logOut, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
 import { Portal } from "solid-js/web";
 import { LogInModal } from "./LogInModal";
@@ -58,9 +49,7 @@ const styles = stylex.create({
 		gap: "1em",
 		padding: "0.5em",
 	},
-	currentPageIconColor: {
-		
-	},
+	currentPageIconColor: {},
 });
 
 export function Navigation() {
@@ -114,19 +103,19 @@ export function Navigation() {
 				>
 					<NavigationListLink Icon={TbBell} text={t.nav.alerts()} href="/" />
 					<NavigationListLink Icon={TbMail} text={t.nav.inbox()} href="/" />
-					<NavigationListLink
-						Icon={TbBookmark}
-						text={t.nav.bookmarks()}
-						href="/"
-					/>
+					<NavigationListLink Icon={TbBookmark} text={t.nav.bookmarks()} href="/" />
 					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href="/" />
+					<NavigationListButton
+						Icon={TbDoorExit}
+						text={t.nav.logOut()}
+						onClick={() => {
+							console.log("starting");
+							logOut();
+						}}
+					/>
 				</Show>
 
-				<NavigationListLink
-					Icon={TbSettings}
-					text={t.nav.settings()}
-					href="/"
-				/>
+				<NavigationListLink Icon={TbSettings} text={t.nav.settings()} href="/" />
 			</ol>
 		</nav>
 	);

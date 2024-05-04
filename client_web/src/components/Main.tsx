@@ -1,13 +1,13 @@
 import stylex from "@stylexjs/stylex";
 import { colors, dimensions } from "../variables.stylex";
 import { posts } from "@/MockData";
-import { createVirtualizer } from "@tanstack/solid-virtual";
 import { PostList } from "./Post/PostList";
 import { Navigation } from "./Navgiation/Navigation";
-import { getTokenFromCookie, useAppState } from "@/AppState";
-import { createEffect, onMount, Show } from "solid-js";
+import { getTokenFromCookie, saveTokenToCookie, useAppState } from "@/AppState";
+import { createEffect, onMount } from "solid-js";
 import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
 import { ResponseGetProfile } from "@/types/responses";
+import { ProtoFetch } from "@/ProtoFetch";
 
 const styles = stylex.create({
 	wrapper: {
@@ -39,22 +39,27 @@ export function Main() {
 	});
 	createEffect(() => {
 		if (AppState.userToken()) {
-			fetch(CURRENT_USER_DATA_ENDPOINT, {
+			const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined,ResponseGetProfile)
+			proto.Query(CURRENT_USER_DATA_ENDPOINT,{
 				method: "GET",
 				headers: {
 					// biome-ignore lint/style/noNonNullAssertion: <didnt wanna do it other way>
 					Authorization: AppState.userToken()!,
-				},
-			})
-				.then((res) => res.arrayBuffer())
-				.then((data) => ResponseGetProfile.decode(new Uint8Array(data)))
-				.then((data) => {
-					AppState.setUser(data.profile);
+				}}).then((data) => {
+					if (data?.isSuccess && data.data?.profile!==undefined)
+						{
+							AppState.setUser(data.data.profile);
+							
+							return
+						}
+					AppState.setUserToken(undefined);
+					saveTokenToCookie("");
+					alert("TODO: You have been logged out due to an invalid token");
+
 				})
 				.catch((err) => {
 					console.log("ERR", err);
-					AppState.setUserToken(undefined);
-					alert("TODO: You have been logged out due to an invalid token");
+		
 				});
 		}
 	});

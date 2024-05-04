@@ -42,7 +42,7 @@ export function PostList(props: PostListProps) {
 	return (
 		<main {...stylex.attrs(styles.main)}>
 			<Show when={AppState.isLoggedIn()}>
-				<PostWriter user={AppState.user() as User} />
+				<PostWriter user={AppState.user} />
 			</Show>
 			<For each={props.posts}>{(post) => <Post post={post} />}</For>
 		</main>

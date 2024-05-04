@@ -1,7 +1,7 @@
 import { createStore, type SetStoreFunction, type Store } from "solid-js/store";
-import _m0 from "protobufjs/minimal";
+import type _m0 from "protobufjs/minimal";
 import type { ErrorTransKeys } from "./Translation";
-import { DeepPartial, Exact } from "./types/requests";
+import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
 
 type Coder<Type> = {
@@ -21,9 +21,9 @@ type ProtoFetchType<ReturnType> = {
 export class ProtoFetch<RequestType, ReturnType> {
 	private store: [get: Store<ProtoFetchType<ReturnType>>, set: SetStoreFunction<ProtoFetchType<ReturnType>>];
 	state: Store<ProtoFetchType<ReturnType>>;
-	encoder: Coder<RequestType>;
+	encoder: Coder<RequestType> | undefined;
 	decoder: Coder<ReturnType>;
-	constructor(encoder: Coder<RequestType>, decoder: Coder<ReturnType>) {
+	constructor(encoder: Coder<RequestType> | undefined, decoder: Coder<ReturnType>) {
 		this.encoder = encoder;
 		this.decoder = decoder;
 		this.store = createStore<ProtoFetchType<ReturnType>>({
@@ -38,36 +38,37 @@ export class ProtoFetch<RequestType, ReturnType> {
 	}
 
 	createBody<I extends Exact<DeepPartial<RequestType>, I>>(base?: I): Uint8Array {
-		return this.encoder.encode(this.encoder.create(base ?? ({} as any))).finish();
-	
+		if (this.encoder !== undefined) {
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			return this.encoder.encode(this.encoder.create(base ?? ({} as any))).finish();
+		}
+		return new Uint8Array();
 	}
-
 
 	async Query(url: string, init: RequestInit) {
 		this.store[1]("isLoading", true);
 		const response = await fetch(url, init);
 		const bodyAsString = await response.clone().text();
-		if(bodyAsString=="internalErrorCrit")
-			{
-				this.store[1]("isLoading", false);
-				this.store[1]("isError", true);
-				this.store[1]("isCriticalError", true);
-				return;
-			}
+		if (bodyAsString === "internalErrorCrit") {
+			this.store[1]("isLoading", false);
+			this.store[1]("isError", true);
+			this.store[1]("isCriticalError", true);
+			this.store[1]("error", "internalErrorCrit" as ErrorTransKeys);
+			return;
+		}
 		const data = new Uint8Array(await response.arrayBuffer());
-		
+
 		if (!response.ok) {
-	
 			const error = ResponseError.decode(data);
 			this.store[1]("isError", true);
 			this.store[1]("error", error.message as ErrorTransKeys);
 			this.store[1]("isLoading", false);
-			return
+			return;
 		}
 		const success = this.decoder.decode(data);
 		this.store[1]("isSuccess", true);
 		this.store[1]("data", success);
 		this.store[1]("isLoading", false);
-
+		return this.state;
 	}
 }

@@ -110,11 +110,10 @@ export function SignUpModal(props: SignUpModalProps) {
 		proto.Query(LOG_IN_ENDPOINT, {
 			method: "POST",
 			body: proto.createBody({
-					email: "gamiofficial0@gmail.com",
-					password: "Haslo123",
-					deviceName: `web${navigator.userAgent}`,
-				})
-		
+				email: "Email",
+				password: "Password",
+				deviceName: `web${navigator.userAgent}`,
+			}),
 		});
 	});
 	return (

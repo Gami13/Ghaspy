@@ -84,7 +84,7 @@ func main() {
 	}))
 
 	app.Post("/log-in", logInUser)
-	app.Post("/log-out", logOutUser)
+	app.Delete("/log-out", logOutUser)
 	app.Post("/sign-up", signUpUser)
 	app.Get("/validate/:valId", validateUser)
 	app.Patch("/display-name", setDisplayName)
