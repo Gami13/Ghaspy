@@ -126,8 +126,7 @@ export function LogInModal(props: LogInModalProps) {
 					<LogInInput type="password" name="password" placeholder={t.login.password()} label={t.login.password()} disabled={proto.state.isLoading} />
 
 					<Show when={proto.state.isError}>
-						{/* @ts-ignore really dumb and cant narrow type even if you try to */}
-						<span {...stylex.attrs(styles.error)}>{ t.errors[proto.state.error]()}</span>
+						<span {...stylex.attrs(styles.error)}>{t.errors[proto.state.error as ErrorTransKeys]()}</span>
 					</Show>
 
 					<button disabled={proto.state.isLoading} type="submit" {...stylex.attrs(styles.submit)}>
