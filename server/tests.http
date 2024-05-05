@@ -48,7 +48,7 @@ Content-Type: "application/json"
 
 ###FAILED LOGOUT
 
-POST {{apiURL}}/logout
+POST {{apiURL}}/log-out
 Authorization: yesss
 
 

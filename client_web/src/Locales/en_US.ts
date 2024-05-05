@@ -33,15 +33,21 @@ export const en_US = {
 		logOut: "Wyloguj",
 	},
 
-	login: {
+	auth: {
 		logIn: "Zaloguj się",
 		logInDescription: "Zaloguj się do swojego konta używając swojego adresu email i hasła",
 		errorLabel: "Błąd:",
+		passwordRepeat: "Powtórz hasło",
+		username: "Nazwa użytkownika",
+		usernameExample: "JohnDoe",
 		email: "Email",
 		password: "Hasło",
 		emailExample: "przyklad@email.com",
-		passwordRepeat: "Powtórz hasło",
-		username: "Nazwa użytkownika",
+		signUp: "Zarejestruj się",
+		signUpDescription: "Zarejestruj się, aby korzystać z naszej platformy",
+			signUpSuccessful: "Zarejestrowano",
+
+		signUpSuccessfulDescription: "Potwierdź swoje konto używajając linku w wiadomości, które otrzymałeś na swój adres email",
 	},
 	profile: {
 		edit: "Edytuj Profil",
@@ -57,39 +63,31 @@ export const en_US = {
 		likes: "Polubień",
 		you: "Ty",
 	},
-	signUp: {
-		email: "Email",
-		password: "Hasło",
-		emailExample: "przyklad@email.com",
-		signUp: "Zarejestruj się",
-		requirements: "Wymagania",
-		description: "Zarejestruj się, aby korzystać z naszej platformy",
-	},
+
 	posts: {
 		posts: "Posty",
 		likes: "Polubienia",
 		whatsHappening: "Co się dzieje?",
 		post: "Opublikuj",
 	},
-	authErrors: {
-		signupUsernameTooShort: "Nazwa użytkownika musi mieć minimum 3 znaki",
-		signupUsernameTooLong: "Nazwa użytkownika nie może być dłuższa niż 64 znaki",
-		signupUsernameNoSpecials: "Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
-		signupUsernameNoSpaces: "Nazwa użytkownika nie może zawierać spacji",
-		signupUsernameTaken: "Ta nazwa użytkownika jest już zajęta",
 
-		signupPasswordTooShort: "Hasło musi mieć minimum 8 znaków",
-		signupPasswordCapital: "Hasło musi zawierać wielką literę",
-		signupPasswordLetter: "Hasło musi zawierać literę",
-		signupPasswordNumber: "Hasło musi zawierać cyfrę",
-		signupPasswordNoSpaces: "Hasło nie może zawierać spacji",
-
-		signupPasswordRepeat: "Hasła muszą być takie same",
-
-		signupEmailInvalid: "Niepoprawny adres email",
-		signupEmailTaken: "Ten adres email jest już zajęty",
-	},
 	errors: {
+		usernameTooShort: "Nazwa użytkownika musi mieć minimum 3 znaki",
+		usernameTooLong: "Nazwa użytkownika nie może być dłuższa niż 64 znaki",
+		usernameNoSpecials: "Tylko te znaki specjalne: , . - _ są dozwolone w nazwie użytkownika",
+		usernameNoSpaces: "Nazwa użytkownika nie może zawierać spacji",
+		usernameTaken: "Ta nazwa użytkownika jest już zajęta",
+
+		passwordTooShort: "Hasło musi mieć minimum 8 znaków",
+		passwordCapital: "Hasło musi zawierać wielką literę",
+		passwordLetter: "Hasło musi zawierać literę",
+		passwordNumber: "Hasło musi zawierać cyfrę",
+		passwordNoSpaces: "Hasło nie może zawierać spacji",
+
+		passwordRepeat: "Hasła muszą być takie same",
+
+		emailInvalid: "Niepoprawny adres email",
+		emailTaken: "Ten adres email jest już zajęty",
 		loginDataIncorrect: "Email lub hasło jest niepoprawne",
 		loginFieldEmpty: "Email lub hasło jest puste",
 		loginUnvalidated: "Email nie został jeszcze zweryfikowany",
@@ -116,7 +114,7 @@ export const en_US = {
 		internalErrorCrit: "We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience",
 	},
 	success: {
-		userRegistered: "Użytkownik zarejestrowany pomyślnie",
+		userSignedUp: "Użytkownik zarejestrowany pomyślnie",
 		userLoggedIn: "Zalogowano pomyślnie",
 		userLoggedOut: "Wylogowano pomyślnie",
 		userValidated: "Użytkownik zweryfikowany pomyślnie",

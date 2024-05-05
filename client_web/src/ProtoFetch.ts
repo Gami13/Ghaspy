@@ -3,6 +3,8 @@ import type _m0 from "protobufjs/minimal";
 import type { ErrorTransKeys } from "./Translation";
 import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
+import { batch } from "solid-js";
+
 
 type Coder<Type> = {
 	encode(message: Type, writer?: _m0.Writer): _m0.Writer;
@@ -65,17 +67,13 @@ export class ProtoFetch<RequestType, ReturnType> {
 		init.signal = this.controller.signal;
 		
 		const response = await fetch(url, init).catch(e=>{
-			if(e.name === "AbortError")
-			{
-				
-				return;
-			}
+			if(e.name === "AbortError") return
 		})
 		console.log("response", response)
 		if(!response)
 		{
 			console.log("Returning abort")
-			return;
+			return this.state;
 		}
 	
 		this.controller = undefined;
@@ -83,25 +81,36 @@ export class ProtoFetch<RequestType, ReturnType> {
 		
 		const bodyAsString = await response.clone().text();
 		if (bodyAsString === "internalErrorCrit") {
+			console.log("ProtoFetch internalErrorCrit")
+			batch(()=>{
 			this.store[1]("isLoading", false);
 			this.store[1]("isError", true);
 			this.store[1]("isCriticalError", true);
 			this.store[1]("error", "internalErrorCrit" as ErrorTransKeys);
-			return;
+		})
+
+			return this.state;
+
 		}
 		const data = new Uint8Array(await response.arrayBuffer());
 
 		if (!response.ok) {
 			const error = ResponseError.decode(data);
+			batch(()=>{
+
 			this.store[1]("isError", true);
-			this.store[1]("error", error.message as ErrorTransKeys);
-			this.store[1]("isLoading", false);
-			return;
+			this.store[1]("error", error.message as ErrorTransKeys)
+			this.store[1]("isLoading", false)})
+			return this.state;
+
 		}
+		console.log("ProtoFetch success")
 		const success = this.decoder.decode(data);
+		batch(()=>{
 		this.store[1]("isSuccess", true);
 		this.store[1]("data", success);
 		this.store[1]("isLoading", false);
+		})
 		return this.state;
 	}
 }

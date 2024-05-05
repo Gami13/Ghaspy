@@ -117,21 +117,21 @@ export function LogInModal(props: LogInModalProps) {
 				<header {...stylex.attrs(styles.header)}>
 					<h2 {...stylex.attrs(styles.title)}>
 						<TbBrandTwitterFilled />
-						{t.login.logIn()}
+						{t.auth.logIn()}
 					</h2>
-					<p {...stylex.attrs(styles.paragraph)}>{t.login.logInDescription()}</p>
+					<p {...stylex.attrs(styles.paragraph)}>{t.auth.logInDescription()}</p>
 				</header>
 				<form onsubmit={onSubmit} {...stylex.attrs(styles.form)}>
-					<LogInInput type="email" name="email" placeholder={t.login.emailExample()} label={t.login.email()} disabled={proto.state.isLoading} />
-					<LogInInput type="password" name="password" placeholder={t.login.password()} label={t.login.password()} disabled={proto.state.isLoading} />
+					<LogInInput type="email" name="email" placeholder={t.auth.emailExample()} label={t.auth.email()} disabled={proto.state.isLoading} />
+					<LogInInput type="password" name="password" placeholder={t.auth.password()} label={t.auth.password()} disabled={proto.state.isLoading} />
 
-					<Show when={proto.state.isError}>
+					<Show when={proto.state.isError && (proto.state.error !== undefined)}>
 						<span {...stylex.attrs(styles.error)}>{t.errors[proto.state.error as ErrorTransKeys]()}</span>
 					</Show>
 
 					<button disabled={proto.state.isLoading} type="submit" {...stylex.attrs(styles.submit)}>
 						<Show when={!proto.state.isLoading} fallback={t.loading()}>
-							{t.login.logIn()}
+							{t.auth.logIn()}
 						</Show>
 					</button>
 				</form>

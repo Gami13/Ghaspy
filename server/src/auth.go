@@ -140,12 +140,15 @@ func signUpUser(c *fiber.Ctx) error {
 		emailErrors = append(emailErrors, "emailInvalid")
 	}
 
-	if len(passwordErrors) > 0 || len(usernameErrors) > 0 || len(emailErrors) > 0 {
-		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
-			PasswordErrors: passwordErrors,
-			UsernameErrors: usernameErrors,
-			EmailErrors:    emailErrors,
-		})
+	if len(passwordErrors) > 0 {
+		return protoError(c, http.StatusBadRequest, passwordErrors[0])
+
+	}
+	if len(usernameErrors) > 0 {
+		return protoError(c, http.StatusBadRequest, usernameErrors[0])
+	}
+	if len(emailErrors) > 0 {
+		return protoError(c, http.StatusBadRequest, emailErrors[0])
 
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
@@ -157,9 +160,7 @@ func signUpUser(c *fiber.Ctx) error {
 	}
 	if rowAmount != 0 {
 		//TODO: IF USERNAME IS TAKEN BUT ISNT VERIFIED, AND THE VERIFICATION CODE IS NO LONGER VALID, DELETE THE USER AND REGISTER A NEW ONE
-		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
-			UsernameErrors: []string{"usernameTaken"},
-		})
+		return protoError(c, http.StatusBadRequest, "usernameTaken")
 
 	}
 
@@ -170,9 +171,7 @@ func signUpUser(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	if rowAmount != 0 {
-		return protoSuccess(c, http.StatusBadRequest, &types.ResponseSignUpUserError{
-			EmailErrors: []string{"emailTaken"},
-		})
+		return protoError(c, http.StatusBadRequest, "emailTaken")
 
 	}
 
@@ -184,6 +183,11 @@ func signUpUser(c *fiber.Ctx) error {
 	logger.Println("HASH: ", hash, "SALT: ", salt)
 
 	userId := newSnowflake(SF_USER)
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId, requestBody.Username, requestBody.Email, hash, salt, false)
+	if err != nil {
+		return protoError(c, http.StatusInternalServerError, "internalError")
+
+	}
 
 	verificationCode, err := addVerificationCode(c, userId)
 	if err != nil {
@@ -191,18 +195,16 @@ func signUpUser(c *fiber.Ctx) error {
 		return protoError(c, http.StatusInternalServerError, "internalError")
 
 	}
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO users (id, username, email, password,salt,isValidated) VALUES ($1, $2, $3,$4,$5,$6)", userId, requestBody.Username, requestBody.Email, hash, salt, false)
-	if err != nil {
-		return protoError(c, http.StatusInternalServerError, "internalError")
+	logger.Println("VERIFICATION CODE: ", verificationCode)
 
-	}
 	//SEND EMAIL WITH VERIFICATION CODE
+	//
 
-	err = sendMail(requestBody.Email, "Verify your email for Ghaspy", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
+	// err = sendMail(requestBody.Email, "Verify your email for Ghaspy", "Verify your account by clicking this link: "+os.Getenv("FRONTEND_URL")+"/validate/"+verificationCode)
 
-	if err != nil {
-		return protoError(c, http.StatusInternalServerError, "internalError")
-	}
+	// if err != nil {
+	// return protoError(c, http.StatusInternalServerError, "internalError")
+	// }
 
 	return protoSuccess(c, http.StatusOK, &types.ResponseSignUpUser{Message: "userRegistered"})
 

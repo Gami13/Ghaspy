@@ -126,9 +126,12 @@ export const ResponseError = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseError {
+
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseError();
+
+
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -145,6 +148,7 @@ export const ResponseError = {
       }
       reader.skipType(tag & 7);
     }
+
     return message;
   },
 

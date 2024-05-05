@@ -10,12 +10,9 @@ export const dictionaries = {
 } as const;
 
 export type Locale = keyof typeof dictionaries;
-export type SignUpTransKeysT =
-	keyof (typeof dictionaries)[Locale]["authErrors"];
-export const SignUpTransKeys = Object.keys(
-	dictionaries.en_US.authErrors,
-) as SignUpTransKeysT[];
+
 export type ErrorTransKeys = keyof (typeof dictionaries)[Locale]["errors"];
+export type SuccessTransKeys = keyof (typeof dictionaries)[Locale]["success"];
 
 const AppState = useAppState();
 const dict = createMemo(() => i18n.flatten(dictionaries[AppState.locale()]));

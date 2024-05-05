@@ -11,5 +11,25 @@
       "username": "postgres",
       "password": "root"
     }
-  ]
+  ],
+  "peacock.color": "#310a45",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#511072",
+    "activityBar.background": "#511072",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#8c6314",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#511072",
+    "statusBar.background": "#310a45",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#511072",
+    "statusBarItem.remoteBackground": "#310a45",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#310a45",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#310a4599",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  }
 }
