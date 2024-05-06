@@ -85,7 +85,7 @@ type SignUpModalProps = {
 export function SignUpModal(props: SignUpModalProps) {
 	const proto = new ProtoFetch<RequestSignUpUser, ResponseSignUpUser>(RequestSignUpUser, ResponseSignUpUser);
 	const [error, setError] = createSignal<ErrorTransKeys | undefined>(undefined);
-	const [hasSignedUp, setHasSignedUp] = createSignal(true);
+	const [hasSignedUp, setHasSignedUp] = createSignal(false);
 
 	function onSubmit(
 		event: Event & {
