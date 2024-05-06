@@ -48,7 +48,8 @@ export const user1: User = {
 export const post0: PostType = {
 	ID: "1",
 	author: user0,
-	content: `i think if a goth girl with big boobs whispered "do you like that?" in my ear while giving me a Denny's syrupy special i would cum so hard that the rest of my life from that moment on would feel like post nut clarity`,
+	// content: `i think if a goth girl with big boobs whispered "do you like that?" in my ear while giving me a Denny's syrupy special i would cum so hard that the rest of my life from that moment on would feel like post nut clarity`,
+	content: `I am a man of god living in a state of complete clarity and purity, my will power is beyond any goth, furry gamis on my way. I will terminate gami because he is definitely a furry even though he is lying about it and I will not let him get away with it.`,
 	replyToID: undefined,
 	quotedID: undefined,
 	replyTo: undefined,
