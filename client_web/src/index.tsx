@@ -3,7 +3,7 @@ import "solid-devtools";
 import { Route, Router } from "@solidjs/router";
 
 import "./index.css";
-
+import PostDetail from "./components/Post/PostDetail";
 import { AppStateProvider } from "./AppState";
 
 import { Main } from "./components/Main";
@@ -36,6 +36,8 @@ function App() {
 						<Route path="/" component={Main} />
 						<Route path="/pallete" component={Pallete} />
 						<Route path="validate/:token" component={ValidatePage} />
+						<Route path="/:username/:postID" component={PostDetail} />
+
 					</Router>
 				
 			</AppStateProvider>
