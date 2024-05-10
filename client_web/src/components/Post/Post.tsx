@@ -70,7 +70,7 @@ const styles = stylex.create({
   statistics: {
     display: "flex",
     justifyContent: "space-between",
-    paddingHorizontal: "1em",
+    padding: "0.5em",
     color: colors.text500,
     fontSize: "0.9em",
   },

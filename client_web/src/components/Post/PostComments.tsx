@@ -1,5 +1,3 @@
-import { posts } from "@/MockData";
-import { useParams } from "@solidjs/router";
 import { For } from "solid-js";
 import { Post } from "./Post";
 import type { Post as PostType } from "@/types/internal";
@@ -12,6 +10,7 @@ const styles = stylex.create({
     display: "flex",
     flexDirection: "column",
     gap: "1em",
+    paddingHorizontal: "2em",
   }, //pierwszy post zostaje w miejscu, po usunięciu scroluje sie razem z komentarzami
   coment: {
     backgroundColor: colors.background100,

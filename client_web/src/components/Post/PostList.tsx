@@ -8,14 +8,17 @@ import { useAppState } from "@/AppState";
 import { For, Show } from "solid-js";
 const styles = stylex.create({
   main: {
-    paddingTop: "0.25em",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1em",
+
     height: "100vh",
     maxWidth: dimensions.postsMaxWidth,
     minWidth: dimensions.postsMinWidth,
     backgroundColor: colors.background50,
     flexGrow: 10000,
-
     overflowY: "auto",
+    padding: "0.5em 0",
   },
 });
 type PostListProps = {

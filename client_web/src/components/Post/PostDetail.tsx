@@ -5,6 +5,7 @@ import PostComments from "./PostComments";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import ReplyToPost from "./ReplyToPost";
+import { useAppState } from "@/AppState";
 
 const styles = stylex.create({
   main: {
@@ -27,6 +28,7 @@ const styles = stylex.create({
 
 export default function PostDetail() {
   const params = useParams();
+  const AppState = useAppState();
 
   console.log(params.username);
   console.log(params);
@@ -39,7 +41,7 @@ export default function PostDetail() {
   return (
     <main {...stylex.attrs(styles.main)}>
       <Post styling={styles.header} post={post} />
-      <ReplyToPost post={post} />
+      <ReplyToPost user={AppState.user} post={post} />
       <PostComments coments={comments} />
     </main>
   );
