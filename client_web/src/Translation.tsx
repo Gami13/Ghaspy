@@ -11,12 +11,14 @@ export const dictionaries = {
 
 export type Locales = keyof typeof dictionaries;
 
-export type ErrorTransKeys = keyof (typeof dictionaries)[Locales]["errors"];
-export type SuccessTransKeys = keyof (typeof dictionaries)[Locales]["success"];
-
+export type ErrorTransKeys = keyof (typeof dictionaries)["pl_PL"]["errors"];
+export type SuccessTransKeys = keyof (typeof dictionaries)["pl_PL"]["success"];
+//TODO: Put this thingy in a component so it can be cleaned up
 const AppState = useAppState();
-const dict = createMemo(() => i18n.flatten(dictionaries[AppState.locale()]));
-export const t = i18n.chainedTranslator(dictionaries[AppState.locale()], i18n.translator(dict, i18n.resolveTemplate));
+
+//Remember to change to en_US when I finish translating
+const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.pl_PL), i18n.flatten(dictionaries[AppState.locale()])));
+export const t = i18n.chainedTranslator(dictionaries.pl_PL, i18n.translator(dict, i18n.resolveTemplate));
 
 export function formatDate(date: string): string {
 	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
