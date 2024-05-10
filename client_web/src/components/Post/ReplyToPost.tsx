@@ -1,7 +1,8 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-
+import { Show } from "solid-js";
 import { colors } from "../../variables.stylex";
+import { useAppState } from "@/AppState";
 
 const styles = stylex.create({
   replyBox: {
@@ -36,34 +37,36 @@ const styles = stylex.create({
     fontWeight: 500,
     color: colors.text500,
   },
-  reply: {
+  replyBtn: {
     backgroundColor: colors.primary500,
-    width: "10em",
+    minWidth: "fit-content",
     height: "fit-content",
-    padding: "1em",
-    borderRadius: "1em",
-    fontSize: "1em",
-    fontWeight: 600,
+    padding: "0.5em",
+    borderRadius: "0.75em",
+    fontSize: "1.25em",
+    fontWeight: 500,
+    letterSpacing: "0.025em",
   },
 });
-export default function ReplyToPost(props: { post: PostType }) {
-  props.post.author = props.post.author as User;
-
+export default function ReplyToPost(props: { user: User; post: PostType }) {
+  const AppState = useAppState();
   return (
-    <div {...stylex.attrs(styles.replyBox)}>
-      <img
-        {...stylex.attrs(styles.avatar)}
-        src={props.post.author.avatar}
-        alt={props.post.author.displayName}
-      />
-      <span {...stylex.attrs(styles.replyContent)}>
-        Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur
-        adipisicing elit. Excepturi quos nemo optio a ratione animi deleniti. Ea
-        adipisci voluptatum iusto, est in nobis quam. Quasi quisquam voluptatem
-        fugit iste consequatur!
-      </span>
-      {/* TODO: Gami zrób to niewolniku */}
-      <button {...stylex.attrs(styles.reply)}>Reply</button>
-    </div>
+    <Show when={AppState.isLoggedIn()}>
+      <div {...stylex.attrs(styles.replyBox)}>
+        <img
+          {...stylex.attrs(styles.avatar)}
+          src={props.user.avatar}
+          alt={props.user.displayName}
+        />
+        <span {...stylex.attrs(styles.replyContent)}>
+          Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur
+          adipisicing elit. Excepturi quos nemo optio a ratione animi deleniti.
+          Ea adipisci voluptatum iusto, est in nobis quam. Quasi quisquam
+          voluptatem fugit iste consequatur!
+        </span>
+        {/* TODO: Gami zrób to niewolniku */}
+        <button {...stylex.attrs(styles.replyBtn)}>Reply</button>
+      </div>
+    </Show>
   );
 }

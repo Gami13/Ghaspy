@@ -1,15 +1,11 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { createSignal, Match, Show, Switch } from "solid-js";
-import { PostQuoteBig } from "./PostQuoteBig";
+import { createSignal, Show } from "solid-js";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
-import { formatDate, timeSince } from "@/Translation";
-
-import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
-import { AttachmentList } from "./AttachmentList";
 import { PostWriterAttachmentList } from "./PostWriterAttachments";
 import { TbPhoto } from "solid-icons/tb";
+import { InteractionButton } from "./InteractionButton";
 
 const styles = stylex.create({
   post: {
@@ -112,7 +108,7 @@ const styles = stylex.create({
 //! Use Small quote if original and quote have media, otherwise use Big quote
 export function PostWriter(props: { user: User; quote?: PostType }) {
   //stupid protobuf generates as optional even tho its required and will always be
-  const [attachments, setAttachments] = createSignal<string[]>([]);
+  const [attachments, _setAttachments] = createSignal<string[]>([]);
   const [renderPlaceholder, setRenderPlaceholder] = createSignal(true);
   const [content, setContent] = createSignal("");
 

@@ -1,5 +1,3 @@
-import { posts } from "@/MockData";
-import { useParams } from "@solidjs/router";
 import { For } from "solid-js";
 import { Post } from "./Post";
 import type { Post as PostType } from "@/types/internal";
