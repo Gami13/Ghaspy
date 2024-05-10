@@ -25,8 +25,6 @@ const styles = stylex.create({
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
-
-
 	},
 	navElement: {
 		fontSize: "1em",
@@ -60,14 +58,13 @@ const styles = stylex.create({
 		padding: { default: "0.5em", "@media (max-width: 900px)": "0.5em 0" },
 
 		// width: 0,
-		
 	},
-	logo:{
+	logo: {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	settings:{
+	settings: {
 		position: "absolute",
 
 		height: "fit-content",
@@ -78,11 +75,10 @@ const styles = stylex.create({
 });
 
 export function Navigation() {
-	
 	const AppState = useAppState();
 	const [isLoggingIn, setIsLoggingIn] = createSignal(false);
 	const [isSigningUp, setIsSigningUp] = createSignal(false);
-		return (
+	return (
 		<nav {...stylex.attrs(styles.nav)}>
 			<h1 {...stylex.attrs(styles.logo)}>G</h1>
 			<ol {...stylex.attrs(styles.list)}>
@@ -142,6 +138,8 @@ export function Navigation() {
 				</Show>
 
 				<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
+				<button onClick={() => AppState.setLocale("pl_PL")}>pl_PL</button>
+				<button onClick={() => AppState.setLocale("en_US")}>en_US</button>
 			</ol>
 		</nav>
 	);

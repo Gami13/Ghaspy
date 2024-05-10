@@ -1,10 +1,5 @@
-import {
-  type JSXElement,
-  createContext,
-  createSignal,
-  useContext,
-} from "solid-js";
-import type { Locale } from "./Translation";
+import { type JSXElement, createContext, createSignal, useContext } from "solid-js";
+import type { Locales } from "./Translation";
 import { User } from "./types/internal";
 import { ProtoFetch } from "./ProtoFetch";
 import { ResponseLogOutUser } from "./types/responses";
@@ -49,7 +44,7 @@ export function logOut() {
 }
 
 //TODO: use store instead of signals
-const [locale, setLocale] = createSignal<Locale>("en_US");
+const [locale, setLocale] = createSignal<Locales>("en_US");
 const [userToken, setUserToken] = createSignal<string | undefined>(undefined);
 const [user, setUser] = createStore<User>(User.create({}));
 
@@ -59,14 +54,14 @@ const localeJsFromat = () => {
 };
 
 const ContextValue = {
-  isLoggedIn: () => user.username.length > 0,
-  locale,
-  setLocale,
-  localeJsFromat,
-  userToken,
-  setUserToken,
-  user,
-  setUser,
+	isLoggedIn: () => user.username.length > 0,
+	locale,
+	setLocale,
+	localeJsFromat,
+	userToken,
+	setUserToken,
+	user,
+	setUser,
 };
 const AppState = createContext(ContextValue);
 export function AppStateProvider(props: {
