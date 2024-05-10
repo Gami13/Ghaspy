@@ -24,7 +24,7 @@ const styles = stylex.create({
 		flexGrow: 120,
 		maxWidth: dimensions.asideMaxWidth,
 		backgroundColor: colors.background50,
-		display: { default: "block", "@media (max-width: 900px)": "none" },
+		display: { default: "block", "@media (max-width: 950px)": "none" },
 	},
 });
 

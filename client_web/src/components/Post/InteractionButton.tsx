@@ -25,6 +25,7 @@ export const InteractionButtonStyle = stylex.create({
 export function InteractionButton(props: {
   icon: JSX.Element | Node;
   text?: string | number;
+  isToggled?: boolean;
   onClick?: () => void;
 }) {
   return (

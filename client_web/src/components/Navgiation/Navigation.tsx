@@ -17,9 +17,16 @@ const styles = stylex.create({
 		width: "1px",
 		height: "100vh",
 		flexGrow: 500,
+		minWidth: "75px",
 		maxWidth: dimensions.navMaxWidth,
 		backgroundColor: colors.background50,
-		padding: "0.75em",
+		padding: { default: "0.75em", "@media (max-width: 900px)": "0.75em 0" },
+
+		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
+
+
 	},
 	navElement: {
 		fontSize: "1em",
@@ -34,31 +41,50 @@ const styles = stylex.create({
 	navElementWrapper: {
 		display: "flex",
 		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	navElementIcon: {
 		height: "2em",
 		width: "2em",
+		aspectRatio: "1/1",
 		margin: 0,
 	},
 	navElementText: {
-		fontSize: "2em",
+		fontSize: "1.5em",
 	},
 	list: {
 		display: "flex",
 		flexDirection: "column",
 		gap: "1em",
-		padding: "0.5em",
+		padding: { default: "0.5em", "@media (max-width: 900px)": "0.5em 0" },
+
+		// width: 0,
+		
+	},
+	logo:{
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	settings:{
+		position: "absolute",
+
+		height: "fit-content",
+		width: "fit-content",
+		bottom: 0,
 	},
 	currentPageIconColor: {},
 });
 
 export function Navigation() {
+	
 	const AppState = useAppState();
 	const [isLoggingIn, setIsLoggingIn] = createSignal(false);
 	const [isSigningUp, setIsSigningUp] = createSignal(false);
-	return (
+		return (
 		<nav {...stylex.attrs(styles.nav)}>
-			<h1> LOGOHERE </h1>
+			<h1 {...stylex.attrs(styles.logo)}>G</h1>
 			<ol {...stylex.attrs(styles.list)}>
 				<NavigationListLink Icon={TbHome} text={t.nav.home()} href="/" />
 				<NavigationListLink Icon={TbCompass} text={t.nav.explore()} href="/" />
@@ -115,7 +141,7 @@ export function Navigation() {
 					/>
 				</Show>
 
-				<NavigationListLink Icon={TbSettings} text={t.nav.settings()} href="/" />
+				<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
 			</ol>
 		</nav>
 	);

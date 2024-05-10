@@ -62,6 +62,55 @@ export const post0: PostType = {
 	isLiked: true,
 	isBookmarked: true,
 } as PostType;
+export const reply0:PostType={
+	ID:"1337",
+	author:user1,
+	content:"hello",
+	replyToID:"1",
+	quotedID:undefined,
+	replyTo: post0,
+	quoted:undefined,
+	attachments:[],
+	countLikes: 4800,
+	countReplies: 57,
+	countQuotes: 293,
+	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
+	isLiked: true,
+	isBookmarked: true,
+} as PostType;
+export const reply1:PostType={
+	ID:"1337",
+	author:user1,
+	content:"hello",
+	replyToID:"1",
+	quotedID:undefined,
+	replyTo: post0,
+	quoted:undefined,
+	attachments:[],
+	countLikes: 4800,
+	countReplies: 57,
+	countQuotes: 293,
+	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
+	isLiked: true,
+	isBookmarked: true,
+} as PostType;
+export const reply3:PostType={
+	ID:"1337",
+	author:user1,
+	content:"hello",
+	replyToID:"1",
+	quotedID:undefined,
+	replyTo: post0,
+	quoted:undefined,
+	attachments:[],
+	countLikes: 4800,
+	countReplies: 57,
+	countQuotes: 293,
+	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
+	isLiked: true,
+	isBookmarked: true,
+} as PostType;
+
 export const post1: PostType = {
 	ID: "2",
 	author: user1,
@@ -157,4 +206,8 @@ export const posts = [
 	post4,
 	post0,
 	post1,
+	reply0,
+	reply1,
+	reply0,
+	reply3
 ];

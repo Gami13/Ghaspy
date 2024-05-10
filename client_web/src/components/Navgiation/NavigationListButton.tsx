@@ -1,6 +1,6 @@
 import stylex from "@stylexjs/stylex";
 import type { TbBeach } from "solid-icons/tb";
-import { NavigationListItemStyle } from "./NavigationListLink";
+import { NavigationListItemStyle } from "./style";
 
 export function NavigationListButton(props: {
 	Icon: typeof TbBeach;
