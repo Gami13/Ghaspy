@@ -3,13 +3,14 @@ import "solid-devtools";
 import { Route, Router } from "@solidjs/router";
 
 import "./index.css";
-import PostDetail from "./components/Post/PostDetail";
+import { PostDetail } from "./components/Post/PostDetail";
 import { AppStateProvider } from "./AppState";
 
-import { Main } from "./components/Main";
+import { NavWrapper } from "./components/NavWrapper";
 import { Pallete } from "./components/Pallete";
 
 import { ValidatePage } from "./components/ValidatePage";
+import { Main } from "./components/Main";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -31,15 +32,14 @@ function App() {
 	return (
 		<>
 			<AppStateProvider>
-			
-					<Router>
+				<Router>
+					<Route path="/" component={NavWrapper}>
 						<Route path="/" component={Main} />
 						<Route path="/pallete" component={Pallete} />
 						<Route path="validate/:token" component={ValidatePage} />
 						<Route path="/:username/:postID" component={PostDetail} />
-
-					</Router>
-				
+					</Route>
+				</Router>
 			</AppStateProvider>
 		</>
 	);
