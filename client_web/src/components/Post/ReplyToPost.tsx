@@ -50,6 +50,8 @@ const styles = stylex.create({
 	},
 });
 export function ReplyToPost(props: { post: PostType }) {
+	//user image is wrong
+	//todo: replace with that from appstate
 	return (
 		<div {...stylex.attrs(styles.replyBox)}>
 			<UserAvatar user={props.post.author as User} {...stylex.attrs(styles.avatar)} />
