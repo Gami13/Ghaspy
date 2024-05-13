@@ -47,11 +47,11 @@ func processProfilePicture(c *fiber.Ctx, file *multipart.FileHeader) (string, er
 	//!DONT USE FILE EXTENSION, USE MIME TYPE
 	fileExtension := splits[len(splits)-1]
 	if fileExtension != "png" && fileExtension != "jpg" && fileExtension != "jpeg" && fileExtension != "webp" {
-		return "", fmt.Errorf("Invalid file type")
+		return "", fmt.Errorf("invalid file type")
 	}
 
 	if file.Size > 4*1024*1024 {
-		return "", fmt.Errorf("File too large")
+		return "", fmt.Errorf("file too large")
 	}
 
 	panic("Not implemented")

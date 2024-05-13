@@ -1,9 +1,7 @@
 import stylex from "@stylexjs/stylex";
 import { colors, dimensions } from "../variables.stylex";
-import { posts } from "@/MockData";
-import { PostList } from "./Post/PostList";
 import { Navigation } from "./Navgiation/Navigation";
-import { getTokenFromCookie, saveTokenToCookie, useAppState } from "@/AppState";
+import { getTokenFromCookie, useAppState } from "@/AppState";
 import { children, createEffect, onMount } from "solid-js";
 import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
 import { ResponseGetProfile } from "@/types/responses";
@@ -28,6 +26,7 @@ const styles = stylex.create({
 	},
 });
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function NavWrapper(props: any) {
 	const c = children(() => props.children);
 	const AppState = useAppState();
@@ -52,11 +51,12 @@ export function NavWrapper(props: any) {
 				.then((data) => {
 					if (data?.isSuccess && data.data?.profile !== undefined) {
 						AppState.setUser(data.data.profile);
-
+						//!TYPE IS MISSING PREFFERED LANGUAGE
+						//TODO: ADD TYPE
 						return;
 					}
 					AppState.setUserToken(undefined);
-					saveTokenToCookie("");
+					// saveTokenToCookie("");
 					alert("TODO: You have been logged out due to an invalid token");
 				})
 				.catch((err) => {

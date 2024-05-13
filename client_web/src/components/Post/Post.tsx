@@ -10,6 +10,9 @@ import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
 import { TbBookmark, TbDownload, TbHeart, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
 import type { StyleXStyles } from "@stylexjs/stylex";
+import { A } from "@solidjs/router";
+import { UserAvatar } from "../UserAvatar";
+import { getDisplayName } from "@/utils";
 const styles = stylex.create({
 	post: {
 		width: "100%",
@@ -92,6 +95,9 @@ const styles = stylex.create({
 		gap: "0.5em",
 		paddingHorizontal: "1em",
 	},
+	link: {
+		textDecoration: "none",
+	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
 export function Post(props: { post: PostType; styling?: StyleXStyles }) {
@@ -102,9 +108,9 @@ export function Post(props: { post: PostType; styling?: StyleXStyles }) {
 	return (
 		<article {...stylex.attrs(styles.post, props.styling)}>
 			<header {...stylex.attrs(styles.header)}>
-				<img {...stylex.attrs(styles.avatar)} src={props.post.author.avatar} alt={props.post.author.displayName} />
+				<UserAvatar user={props.post.author} styles={styles.avatar} />
 				<section {...stylex.attrs(styles.names)}>
-					<h2 {...stylex.attrs(styles.displayName)}>{props.post.author.displayName}</h2>
+					<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
 					<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 				</section>
 				<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>

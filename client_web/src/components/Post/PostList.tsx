@@ -5,7 +5,8 @@ import type { Post as PostType } from "@/types/internal";
 import { Post } from "./Post";
 import { PostWriter } from "./PostWriter";
 import { useAppState } from "@/AppState";
-import { For, Show } from "solid-js";
+import { For, onMount, Show } from "solid-js";
+import { A } from "@solidjs/router";
 const styles = stylex.create({
 	main: {
 		paddingTop: "0.25em",
@@ -14,11 +15,16 @@ const styles = stylex.create({
 		minWidth: dimensions.postsMinWidth,
 		backgroundColor: colors.background50,
 		flexGrow: 10000,
+	},
+	list: {
+		height: "100%",
 		display: "flex",
 		flexDirection: "column",
 		gap: "0.5em",
-
 		overflowY: "auto",
+	},
+	link: {
+		textDecoration: "none",
 	},
 });
 type PostListProps = {
@@ -36,18 +42,34 @@ export function PostList(props: PostListProps) {
 	//   });
 	const AppState = useAppState();
 
-	//   const items = virtualizer.getVirtualItems();
-	/*PUT THIS ON TOP OF LIST SOMEHOW :3
-	 <Show when={AppState.user() !== undefined}>
-	<PostWriter user={AppState.user() as User} />
-	</Show>; */
+	let listRef: HTMLUListElement | undefined;
 
+	function scrollControl(e: Event) {
+		AppState.setScrollPosition((e.target as HTMLElement).scrollTop);
+	}
+
+	onMount(() => {
+		const scroll = AppState.scrollPostition();
+		if (scroll !== undefined && listRef !== undefined) {
+			listRef.scrollTop = scroll;
+		}
+	});
 	return (
 		<main {...stylex.attrs(styles.main)}>
-			<Show when={AppState.isLoggedIn()}>
-				<PostWriter user={AppState.user} />
-			</Show>
-			<For each={props.posts}>{(post) => <Post post={post} />}</For>
+			<ul {...stylex.attrs(styles.list)} ref={listRef} onScroll={scrollControl}>
+				<Show when={AppState.isLoggedIn()}>
+					<PostWriter user={AppState.user} />
+				</Show>
+				<For each={props.posts}>
+					{(post) => (
+						<li>
+							<A href={`/${post.author?.username}/${post.ID}`} {...stylex.attrs(styles.link)}>
+								<Post post={post} />
+							</A>
+						</li>
+					)}
+				</For>
+			</ul>
 		</main>
 	);
 }

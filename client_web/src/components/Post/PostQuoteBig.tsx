@@ -4,6 +4,9 @@ import stylex from "@stylexjs/stylex";
 import { Show } from "solid-js";
 import { AttachmentList } from "./AttachmentList";
 import { colors } from "../../variables.stylex";
+import { A } from "@solidjs/router";
+import { getDisplayName } from "@/utils";
+import { UserAvatar } from "../UserAvatar";
 //! Post is safe to be asserted as defined
 const styles = stylex.create({
 	post: {
@@ -70,35 +73,31 @@ const styles = stylex.create({
 		gap: "0.5em",
 		paddingHorizontal: "0.5em",
 	},
+	link: {
+		textDecoration: "none",
+	},
 });
+
 export function PostQuoteBig(props: { post: PostType }) {
 	props.post.author = props.post.author as User;
 	return (
-		<article {...stylex.attrs(styles.post)}>
-			<header {...stylex.attrs(styles.header)}>
-				<img
-					{...stylex.attrs(styles.avatar)}
-					src={props.post.author.avatar}
-					alt={props.post.author.displayName}
-				/>
-				<section {...stylex.attrs(styles.names)}>
-					<h2 {...stylex.attrs(styles.displayName)}>
-						{props.post.author.displayName}
-					</h2>
-					<h3 {...stylex.attrs(styles.username)}>
-						@{props.post.author.username}
-					</h3>
-				</section>
-				<time {...stylex.attrs(styles.time)}>
-					○ {timeSince(props.post.timePosted)}
-				</time>
-			</header>
-			<main {...stylex.attrs(styles.main)}>
-				<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
-				<Show when={props.post.attachments.length > 0}>
-					<AttachmentList attachments={props.post.attachments} border={false} />
-				</Show>
-			</main>
-		</article>
+		<A href={`/${props.post.author.username}/${props.post.ID}`} {...stylex.attrs(styles.link)}>
+			<article {...stylex.attrs(styles.post)}>
+				<header {...stylex.attrs(styles.header)}>
+					<UserAvatar user={props.post.author} styles={styles.avatar} />
+					<section {...stylex.attrs(styles.names)}>
+						<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
+						<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
+					</section>
+					<time {...stylex.attrs(styles.time)}>○ {timeSince(props.post.timePosted)}</time>
+				</header>
+				<main {...stylex.attrs(styles.main)}>
+					<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
+					<Show when={props.post.attachments.length > 0}>
+						<AttachmentList attachments={props.post.attachments} border={false} />
+					</Show>
+				</main>
+			</article>
+		</A>
 	);
 }

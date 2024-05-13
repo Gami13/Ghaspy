@@ -1,17 +1,16 @@
 import { posts } from "@/MockData";
 import { useParams } from "@solidjs/router";
 import { Post } from "./Post";
-import { PostComments } from "./PostComments";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
-import ReplyToPost from "./ReplyToPost";
+import { ReplyToPost } from "./ReplyToPost";
 import { For } from "solid-js";
 
 const styles = stylex.create({
 	main: {
 		padding: "0.25em 1em",
 		height: "100vh",
-		gap: "1em",
+		gap: "0.5	em",
 		maxWidth: dimensions.comentsMaxWidth,
 		minWidth: dimensions.comentsMinWidth,
 		backgroundColor: colors.background50,
@@ -45,8 +44,6 @@ export function PostDetail() {
 			<Post styling={styles.header} post={post} />
 			<ReplyToPost post={post} />
 			<For each={comments}>{(comment) => <Post styling={styles.comment} post={comment} />}</For>
-
-			{/* <PostComments coments={comments} /> */}
 		</main>
 	);
 }
