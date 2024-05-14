@@ -4,7 +4,17 @@ import stylex from "@stylexjs/stylex";
 
 import { NavigationListLink } from "./NavigationListLink";
 
-import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
+import {
+	TbBell,
+	TbBookmark,
+	TbCompass,
+	TbDoorExit,
+	TbHome,
+	TbLock,
+	TbMail,
+	TbSettings,
+	TbUser,
+} from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
 import { logOut, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
@@ -13,6 +23,7 @@ import { LogInModal } from "./LogInModal";
 import { SignUpModal } from "./SignUpModal";
 const styles = stylex.create({
 	nav: {
+		display: "flex",
 		flexShrink: 0,
 		width: "1px",
 		height: "100vh",
@@ -23,7 +34,7 @@ const styles = stylex.create({
 		padding: { default: "0.75em", "@media (max-width: 900px)": "0.75em 0" },
 
 		flexDirection: "column",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		alignItems: "center",
 	},
 	navElement: {
@@ -125,7 +136,11 @@ export function Navigation() {
 				>
 					<NavigationListLink Icon={TbBell} text={t.nav.alerts()} href="/" />
 					<NavigationListLink Icon={TbMail} text={t.nav.inbox()} href="/" />
-					<NavigationListLink Icon={TbBookmark} text={t.nav.bookmarks()} href="/" />
+					<NavigationListLink
+						Icon={TbBookmark}
+						text={t.nav.bookmarks()}
+						href="/"
+					/>
 					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href="/" />
 					<NavigationListButton
 						Icon={TbDoorExit}
@@ -137,7 +152,12 @@ export function Navigation() {
 					/>
 				</Show>
 
-				<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
+				<NavigationListLink
+					Icon={TbSettings}
+					{...stylex.attrs(styles.settings)}
+					text={t.nav.settings()}
+					href="/"
+				/>
 				<button onClick={() => AppState.setLocale("pl_PL")}>pl_PL</button>
 				<button onClick={() => AppState.setLocale("en_US")}>en_US</button>
 			</ol>

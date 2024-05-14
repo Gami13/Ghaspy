@@ -9,17 +9,18 @@ import { For } from "solid-js";
 
 const styles = stylex.create({
 	main: {
-		padding: "0.25em 1em",
+		padding: "0.25em 0.5em",
 		height: "100vh",
-		gap: "1em",
-		maxWidth: dimensions.comentsMaxWidth,
-		minWidth: dimensions.comentsMinWidth,
+		gap: "0.5em",
+		maxWidth: dimensions.postsMaxWidth,
+		minWidth: dimensions.postsMinWidth,
 		backgroundColor: colors.background50,
 		flexGrow: 10000,
 		display: "flex",
 		flexDirection: "column",
 
 		overflowY: "auto",
+		scrollbarGutter: "stable both-edges",
 	},
 	header: {
 		backgroundColor: colors.background100,
@@ -44,7 +45,9 @@ export function PostDetail() {
 		<main {...stylex.attrs(styles.main)}>
 			<Post styling={styles.header} post={post} />
 			<ReplyToPost post={post} />
-			<For each={comments}>{(comment) => <Post styling={styles.comment} post={comment} />}</For>
+			<For each={comments}>
+				{(comment) => <Post styling={styles.comment} post={comment} />}
+			</For>
 
 			{/* <PostComments coments={comments} /> */}
 		</main>

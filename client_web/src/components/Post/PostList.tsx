@@ -8,7 +8,7 @@ import { useAppState } from "@/AppState";
 import { For, Show } from "solid-js";
 const styles = stylex.create({
 	main: {
-		paddingTop: "0.25em",
+		padding: "0.25em 0.5em",
 		height: "100vh",
 		maxWidth: dimensions.postsMaxWidth,
 		minWidth: dimensions.postsMinWidth,
@@ -17,6 +17,7 @@ const styles = stylex.create({
 		display: "flex",
 		flexDirection: "column",
 		gap: "0.5em",
+		scrollbarGutter: "stable both-edges",
 
 		overflowY: "auto",
 	},

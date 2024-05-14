@@ -42,12 +42,10 @@ export const colors = stylex.defineVars({
 });
 
 export const dimensions = stylex.defineVars({
-	navMaxWidth: { default: "400px", "@media (max-width: 900px)": "100px" },
-	postsMaxWidth:{ default: "600px", "@media (max-width: 900px)": "800px" },
-	postsMinWidth: "300px",
-	asideMaxWidth: "400px",
-	comentsMaxWidth:"700px",
-	comentsMinWidth: "500px",
+	navMaxWidth: { default: "300px", "@media (max-width: 900px)": "100px" },
+	postsMaxWidth: { default: "700px", "@media (max-width: 900px)": "800px" },
+	postsMinWidth: "350px",
+	asideMaxWidth: "300px",
 });
 
 export const transitions = stylex.defineVars({
