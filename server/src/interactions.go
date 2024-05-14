@@ -206,7 +206,7 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 	var token = c.GetReqHeaders()["Authorization"][0]
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	row := dbpool.QueryRow(c.Context(), `SELECT "usersDetails".id,"usersDetails".username,"usersDetails".displayname,"usersDetails".bio,"usersDetails".avatar,"usersDetails".banner,"usersDetails".isfollowerspublic,"usersDetails".isfollowingpublic, "usersDetails".ispostspublic,"usersDetails".islikespublic,"usersDetails".countlikes,"usersDetails".countposts,"usersDetails".countisfollowing,"usersDetails".countfollowedby FROM "usersDetails" JOIN tokens ON tokens.userid = "usersDetails".id WHERE tokens.token = $1`, token)
+	row := dbpool.QueryRow(c.Context(), `SELECT usersDetails.id,usersDetails.username,usersDetails.displayname,usersDetails.bio,usersDetails.avatar,usersDetails.banner,usersDetails.isfollowerspublic,usersDetails.isfollowingpublic, usersDetails.ispostspublic,usersDetails.islikespublic,usersDetails.countlikes,usersDetails.countposts,usersDetails.countisfollowing,usersDetails.countfollowedby FROM usersDetails JOIN tokens ON tokens.userid = usersDetails.id WHERE tokens.token = $1`, token)
 	var user types.User
 	err := row.Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Avatar, &user.Banner, &user.IsFollowersPublic, &user.IsFollowingPublic, &user.IsPostsPublic, &user.IsLikesPublic, &user.CountLikes, &user.CountPosts, &user.CountFollowing, &user.CountFollowers)
 	if err != nil {
@@ -225,6 +225,9 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 
 func addPost(c *fiber.Ctx) error {
 	logger.Println("ADD POST")
+	if len(c.GetReqHeaders()) < 1 {
+		return protoError(c, http.StatusUnauthorized, "unauthorized")
+	}
 	var token = c.GetReqHeaders()["Authorization"][0]
 	form, err := c.MultipartForm()
 	if err != nil { /* handle error */
@@ -550,7 +553,7 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	}
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	rows, err := dbpool.Query(c.Context(), `SELECT posts.id, "usersDetails".id as authorId, "usersDetails".username, "usersDetails".displayname, "usersDetails".bio, "usersDetails".avatar, "usersDetails".banner, "usersDetails".isfollowerspublic, "usersDetails".isfollowingpublic, "usersDetails".ispostspublic, "usersDetails".islikespublic, "usersDetails".countlikes, "usersDetails".countposts, "usersDetails".countisfollowing, "usersDetails".countfollowedby, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, ( SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id ) as postCountLikes, ( SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id ) AS postCountQuotes, ( SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id ) AS postCountReplies, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM likes l1  JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid  AND t1.token = $1 ) AS isPostLiked, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM bookmarks b1  JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid  AND t2.token = $1 ) AS isPostBookmarked FROM posts JOIN "usersDetails" ON posts.authorid = "usersDetails".id ORDER BY posts.id DESC LIMIT 50 OFFSET $2`, token, 50*pageInt)
+	rows, err := dbpool.Query(c.Context(), `SELECT posts.id, usersDetails.id as authorId, usersDetails.username, usersDetails.displayname, usersDetails.bio, usersDetails.avatar, usersDetails.banner, usersDetails.isfollowerspublic, usersDetails.isfollowingpublic, usersDetails.ispostspublic, usersDetails.islikespublic, usersDetails.countlikes, usersDetails.countposts, usersDetails.countisfollowing, usersDetails.countfollowedby, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, ( SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id ) as postCountLikes, ( SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id ) AS postCountQuotes, ( SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id ) AS postCountReplies, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM likes l1  JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid  AND t1.token = $1 ) AS isPostLiked, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM bookmarks b1  JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid  AND t2.token = $1 ) AS isPostBookmarked FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id ORDER BY posts.id DESC LIMIT 50 OFFSET $2`, token, 50*pageInt)
 
 	if err != nil {
 		logger.Println("ERROR: ", err)
@@ -594,7 +597,7 @@ func getUserPostsChronologically(c *fiber.Ctx) error {
 		return protoError(c, http.StatusBadRequest, "badRequestNoUsername")
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	rows, err := dbpool.Query(c.Context(), `SELECT posts.id,"usersDetails".id as authorId,"usersDetails".username,"usersDetails".displayname,"usersDetails".bio,"usersDetails".avatar,"usersDetails".banner,"usersDetails".isfollowerspublic,"usersDetails".isfollowingpublic,"usersDetails".ispostspublic,"usersDetails".islikespublic,"usersDetails".countlikes,"usersDetails".countposts,"usersDetails".countisfollowing,"usersDetails".countfollowedby,posts.content,posts.replyTo,posts.quoteOf,posts.attachments,(SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id) as postCountLikes,(SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id) AS postCountQuotes,(SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id) AS postCountReplies,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM likes l1 JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid AND t1.token = $1) AS isPostLiked,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM bookmarks b1 JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid AND t2.token = $1) AS isPostBookmarked FROM posts JOIN "usersDetails" ON posts.authorid = "usersDetails".id WHERE "usersDetails".username = $2 ORDER BY posts.id DESC LIMIT 50 OFFSET $3`, token, username, 50*pageInt)
+	rows, err := dbpool.Query(c.Context(), `SELECT posts.id,usersDetails.id as authorId,usersDetails.username,usersDetails.displayname,usersDetails.bio,usersDetails.avatar,usersDetails.banner,usersDetails.isfollowerspublic,usersDetails.isfollowingpublic,usersDetails.ispostspublic,usersDetails.islikespublic,usersDetails.countlikes,usersDetails.countposts,usersDetails.countisfollowing,usersDetails.countfollowedby,posts.content,posts.replyTo,posts.quoteOf,posts.attachments,(SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id) as postCountLikes,(SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id) AS postCountQuotes,(SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id) AS postCountReplies,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM likes l1 JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid AND t1.token = $1) AS isPostLiked,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM bookmarks b1 JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid AND t2.token = $1) AS isPostBookmarked FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id WHERE usersDetails.username = $2 ORDER BY posts.id DESC LIMIT 50 OFFSET $3`, token, username, 50*pageInt)
 
 	if err != nil {
 		logger.Println("ERROR: ", err)

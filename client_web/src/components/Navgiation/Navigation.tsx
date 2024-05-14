@@ -36,6 +36,7 @@ const styles = stylex.create({
 		flexDirection: "column",
 		justifyContent: "flex-start",
 		alignItems: "center",
+		overflowY: "auto",
 	},
 	navElement: {
 		fontSize: "1em",
@@ -67,6 +68,7 @@ const styles = stylex.create({
 		flexDirection: "column",
 		gap: "1em",
 		padding: { default: "0.5em", "@media (max-width: 900px)": "0.5em 0" },
+		height: "100%",
 
 		// width: 0,
 	},
@@ -136,12 +138,8 @@ export function Navigation() {
 				>
 					<NavigationListLink Icon={TbBell} text={t.nav.alerts()} href="/" />
 					<NavigationListLink Icon={TbMail} text={t.nav.inbox()} href="/" />
-					<NavigationListLink
-						Icon={TbBookmark}
-						text={t.nav.bookmarks()}
-						href="/"
-					/>
-					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href="/" />
+					<NavigationListLink Icon={TbBookmark} text={t.nav.bookmarks()} href="/" />
+					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href={`/${AppState.user.username}`} />
 					<NavigationListButton
 						Icon={TbDoorExit}
 						text={t.nav.logOut()}
@@ -152,14 +150,13 @@ export function Navigation() {
 					/>
 				</Show>
 
-				<NavigationListLink
-					Icon={TbSettings}
-					{...stylex.attrs(styles.settings)}
-					text={t.nav.settings()}
-					href="/"
-				/>
-				<button onClick={() => AppState.setLocale("pl_PL")}>pl_PL</button>
-				<button onClick={() => AppState.setLocale("en_US")}>en_US</button>
+				<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
+				<button type="button" onClick={() => AppState.setLocale("pl_PL")}>
+					pl_PL
+				</button>
+				<button type="button" onClick={() => AppState.setLocale("en_US")}>
+					en_US
+				</button>
 			</ol>
 		</nav>
 	);

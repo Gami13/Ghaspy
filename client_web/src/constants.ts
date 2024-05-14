@@ -4,3 +4,4 @@ export const LOG_IN_ENDPOINT = `${API_URL}/log-in`;
 export const SIGN_UP_ENDPOINT = `${API_URL}/sign-up`;
 export const LOG_OUT_ENDPOINT = `${API_URL}/log-out`;
 export const CURRENT_USER_DATA_ENDPOINT = `${API_URL}/profile`;
+export const POST_ENDPOINT = `${API_URL}/post`;

@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS posts (
 	authorId bigint NOT NULL,
 	content TEXT DEFAULT '',
 	replyTo bigint DEFAULT '0',
+	threadStart bigint DEFAULT '0',
 	quoteOf bigint DEFAULT '0',
-	score integer NOT NULL DEFAULT '0',
 	attachments VARCHAR [] DEFAULT '{}'
 );
 
@@ -155,16 +155,6 @@ ADD CONSTRAINT "authorRestrict" FOREIGN KEY (authorid) REFERENCES public.users (
 UPDATE NO ACTION ON
 DELETE NO ACTION NOT VALID;
 
-ALTER TABLE IF EXISTS public.posts
-ADD CONSTRAINT "replyRestrict" FOREIGN KEY (replyto) REFERENCES public.posts (id) MATCH SIMPLE ON
-UPDATE NO ACTION ON
-DELETE NO ACTION NOT VALID;
-
-ALTER TABLE IF EXISTS public.posts
-ADD CONSTRAINT "quoteRestrict" FOREIGN KEY (quoteof) REFERENCES public.posts (id) MATCH SIMPLE ON
-UPDATE NO ACTION ON
-DELETE NO ACTION NOT VALID;
-
 ALTER TABLE IF EXISTS public.tokens
 ADD CONSTRAINT "userRestrict" FOREIGN KEY (userid) REFERENCES public.users (id) MATCH SIMPLE ON
 UPDATE NO ACTION ON
@@ -208,65 +198,19 @@ SELECT id,
 	) AS countfollowedby
 FROM users;
 
-ALTER TABLE public.test OWNER TO postgres;
-
---TEMPORARY STUFF
-SELECT posts.id,
-	"usersDetails".id as authorId,
-	"usersDetails".username,
-	"usersDetails".displayname,
-	"usersDetails".bio,
-	"usersDetails".avatar,
-	"usersDetails".banner,
-	"usersDetails".isfollowerspublic,
-	"usersDetails".isfollowingpublic,
-	"usersDetails".ispostspublic,
-	"usersDetails".islikespublic,
-	"usersDetails".countlikes,
-	"usersDetails".countposts,
-	"usersDetails".countisfollowing,
-	"usersDetails".countfollowedby,
-	posts.content,
-	posts.replyTo,
-	posts.quoteOf,
-	posts.attachments,
-	(
-		SELECT COUNT(*)
-		FROM likes l1
-		WHERE l1.postid = posts.id
-	) as postCountLikes,
-	(
-		SELECT COUNT(*)
-		FROM posts p1
-		WHERE p1.quoteof = posts.id
-	) AS postCountQuotes,
-	(
-		SELECT COUNT(*)
-		FROM posts p2
-		WHERE p2.replyto = posts.id
-	) AS postCountReplies,
-	(
-		SELECT CASE
-				WHEN COUNT(*) > 0 THEN true
-				ELSE false
-			END
-		FROM likes l1
-			JOIN tokens t1 ON t1.userid = l1.userid
-		WHERE posts.id = l1.postid
-			AND t1.token = $1
-	) AS isPostLiked,
-	(
-		SELECT CASE
-				WHEN COUNT(*) > 0 THEN true
-				ELSE false
-			END
-		FROM bookmarks b1
-			JOIN tokens t2 ON t2.userid = b1.userid
-		WHERE posts.id = b1.postid
-			AND t2.token = $1
-	) AS isPostBookmarked
-FROM posts
-	JOIN "usersDetails" ON posts.authorid = "usersDetails".id
-WHERE "usersDetails".username = $2
-ORDER BY posts.id DESC
-LIMIT 50 OFFSET $3
+SELECT usersDetails.id,
+	usersDetails.username,
+	usersDetails.displayname,
+	usersDetails.bio,
+	usersDetails.avatar,
+	usersDetails.banner,
+	usersDetails.isfollowerspublic,
+	usersDetails.isfollowingpublic,
+	usersDetails.ispostspublic,
+	usersDetails.islikespublic,
+	usersDetails.countlikes,
+	usersDetails.countposts,
+	usersDetails.countisfollowing,
+	usersDetails.countfollowedby
+FROM usersDetails
+	JOIN tokens ON tokens.userid = usersDetails.id

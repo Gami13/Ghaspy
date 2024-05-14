@@ -4,7 +4,7 @@ import { colors, transitions } from "../../variables.stylex";
 import { ResponseSignUpUser } from "@/types/responses";
 import { RequestSignUpUser } from "@/types/requests";
 import { SIGN_UP_ENDPOINT } from "@/constants";
-import { SuccessTransKeys, t, type ErrorTransKeys } from "@/Translation";
+import { type SuccessTransKeys, t, type ErrorTransKeys } from "@/Translation";
 import { TbBrandTwitterFilled } from "solid-icons/tb";
 import { createEffect, createSignal, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
@@ -20,14 +20,14 @@ const styles = stylex.create({
 		padding: "2em",
 		gap: "1.5em",
 		justifyContent: "flex-start",
-		alignItems:"flex-start"
+		alignItems: "flex-start",
 	},
 	header: {
 		gap: "0.5em",
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "flex-start",
-		alignItems:"flex-start"
+		alignItems: "flex-start",
 	},
 	title: {
 		display: "flex",
@@ -41,6 +41,7 @@ const styles = stylex.create({
 		display: "flex",
 		flexDirection: "column",
 		gap: "1.25em",
+		width: "100%",
 	},
 
 	submit: {
@@ -111,10 +112,10 @@ export function SignUpModal(props: SignUpModalProps) {
 				password: password,
 				username: username,
 			}),
-		})
+		});
 	}
 	createEffect(() => {
-		console.log("ERROR:",proto.state.error)
+		console.log("ERROR:", proto.state.error);
 		if (proto.state.isSuccess && proto.state.data?.message === ("userRegistered" as SuccessTransKeys)) {
 			console.log("success");
 
@@ -135,7 +136,6 @@ export function SignUpModal(props: SignUpModalProps) {
 								</h2>
 								<p {...stylex.attrs(styles.paragraph)}>{t.auth.signUpSuccessfulDescription()}</p>
 							</header>
-					
 						</>
 					}
 				>
@@ -171,10 +171,9 @@ export function SignUpModal(props: SignUpModalProps) {
 							disabled={proto.state.isLoading}
 						/>
 
-						<Show when={proto.state.isError || error() !== undefined || proto.state.error !== undefined}> 
+						<Show when={proto.state.isError || error() !== undefined || proto.state.error !== undefined}>
 							<span {...stylex.attrs(styles.error)}>
-								{
-								(t.errors[(proto.state.error !== undefined ? proto.state.error : error()) as ErrorTransKeys]())}
+								{t.errors[(proto.state.error !== undefined ? proto.state.error : error()) as ErrorTransKeys]()}
 							</span>
 						</Show>
 

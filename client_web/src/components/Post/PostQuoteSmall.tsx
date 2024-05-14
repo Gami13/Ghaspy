@@ -5,6 +5,9 @@ import { Show } from "solid-js";
 import { AttachmentList } from "./AttachmentList";
 import { colors } from "../../variables.stylex";
 import { AttachmentListSmall } from "./AttachmentListSmall";
+import { A } from "@solidjs/router";
+import { getDisplayName } from "@/utils";
+import { UserAvatar } from "../UserAvatar";
 //! Post is safe to be asserted as defined
 const styles = stylex.create({
 	post: {
@@ -70,35 +73,30 @@ const styles = stylex.create({
 		gap: "0.5em",
 		// paddingHorizontal: "1em",
 	},
+	link: {
+		textDecoration: "none",
+	},
 });
 export function PostQuoteSmall(props: { post: PostType }) {
 	props.post.author = props.post.author as User;
 	return (
-		<article {...stylex.attrs(styles.post)}>
-			<header {...stylex.attrs(styles.header)}>
-				<img
-					{...stylex.attrs(styles.avatar)}
-					src={props.post.author.avatar}
-					alt={props.post.author.displayName}
-				/>
+		<A href={`/${props.post.author.username}/${props.post.ID}`} {...stylex.attrs(styles.link)}>
+			<article {...stylex.attrs(styles.post)}>
+				<header {...stylex.attrs(styles.header)}>
+					<UserAvatar user={props.post.author} styles={styles.avatar} />
 
-				<h2 {...stylex.attrs(styles.displayName)}>
-					{props.post.author.displayName}
-				</h2>
-				<h3 {...stylex.attrs(styles.username)}>
-					@{props.post.author.username}
-				</h3>
+					<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
+					<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 
-				<time {...stylex.attrs(styles.time)}>
-					○ {timeSince(props.post.timePosted)}
-				</time>
-			</header>
-			<main {...stylex.attrs(styles.main)}>
-				<Show when={props.post.attachments.length > 0}>
-					<AttachmentListSmall attachments={props.post.attachments} />
-				</Show>
-				<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
-			</main>
-		</article>
+					<time {...stylex.attrs(styles.time)}>○ {timeSince(props.post.timePosted)}</time>
+				</header>
+				<main {...stylex.attrs(styles.main)}>
+					<Show when={props.post.attachments.length > 0}>
+						<AttachmentListSmall attachments={props.post.attachments} />
+					</Show>
+					<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
+				</main>
+			</article>
+		</A>
 	);
 }

@@ -5,10 +5,8 @@ export const user0: User = {
 	username: "oncloud_e",
 	displayName: "Cloudy 🌥️ (estrogen angel)",
 	bio: "transgender sweetheart, 'belle delpeen' • acab • 18+ • ig: oncloud.e ✨ e-girl on e, and e is for estrogen ✨",
-	avatar:
-		"https://pbs.twimg.com/profile_images/1587518488704270337/l0Mjwips_400x400.jpg",
-	banner:
-		"https://pbs.twimg.com/profile_banners/1477117070512898054/1662244386/1500x500",
+	avatar: "138319988185366534.jpg",
+	banner: "https://pbs.twimg.com/profile_banners/1477117070512898054/1662244386/1500x500",
 	countLikes: 8008,
 	countPosts: 69,
 	countFollowers: 420,
@@ -27,10 +25,8 @@ export const user1: User = {
 	username: "sapphic_siren",
 	displayName: "Sapphic Siren 🌈",
 	bio: "cringy little person who likes to write and draw. she/her",
-	avatar:
-		"https://pbs.twimg.com/profile_images/1711677491142594560/UUZ48b1u_400x400.jpg",
-	banner:
-		"https://pbs.twimg.com/profile_banners/1477117070512898054/1662244386/1500x500",
+	avatar: "https://pbs.twimg.com/profile_images/1711677491142594560/UUZ48b1u_400x400.jpg",
+	banner: "https://pbs.twimg.com/profile_banners/1477117070512898054/1662244386/1500x500",
 	countLikes: 8008,
 	countPosts: 69,
 	countFollowers: 420,
@@ -49,7 +45,8 @@ export const post0: PostType = {
 	ID: "1",
 	author: user0,
 	// content: `i think if a goth girl with big boobs whispered "do you like that?" in my ear while giving me a Denny's syrupy special i would cum so hard that the rest of my life from that moment on would feel like post nut clarity`,
-	content: `I am a man of god living in a state of complete clarity and purity, my will power is beyond any goth, furry gamis on my way. I will terminate gami because he is definitely a furry even though he is lying about it and I will not let him get away with it.`,
+	content:
+		"I am a man of god living in a state of complete clarity and purity, my will power is beyond any goth, furry gamis on my way. I will terminate gami because he is definitely a furry even though he is lying about it and I will not let him get away with it.",
 	replyToID: undefined,
 	quotedID: undefined,
 	replyTo: undefined,
@@ -62,15 +59,15 @@ export const post0: PostType = {
 	isLiked: true,
 	isBookmarked: true,
 } as PostType;
-export const reply0:PostType={
-	ID:"1337",
-	author:user1,
-	content:"hello",
-	replyToID:"1",
-	quotedID:undefined,
+export const reply0: PostType = {
+	ID: "1337",
+	author: user1,
+	content: "hello",
+	replyToID: "1",
+	quotedID: undefined,
 	replyTo: post0,
-	quoted:undefined,
-	attachments:[],
+	quoted: undefined,
+	attachments: [],
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
@@ -78,15 +75,15 @@ export const reply0:PostType={
 	isLiked: true,
 	isBookmarked: true,
 } as PostType;
-export const reply1:PostType={
-	ID:"1337",
-	author:user1,
-	content:"hello",
-	replyToID:"1",
-	quotedID:undefined,
+export const reply1: PostType = {
+	ID: "1337",
+	author: user1,
+	content: "hello",
+	replyToID: "1",
+	quotedID: undefined,
 	replyTo: post0,
-	quoted:undefined,
-	attachments:[],
+	quoted: undefined,
+	attachments: [],
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
@@ -94,15 +91,15 @@ export const reply1:PostType={
 	isLiked: true,
 	isBookmarked: true,
 } as PostType;
-export const reply3:PostType={
-	ID:"1337",
-	author:user1,
-	content:"hello",
-	replyToID:"1",
-	quotedID:undefined,
+export const reply3: PostType = {
+	ID: "1337",
+	author: user1,
+	content: "hello",
+	replyToID: "1",
+	quotedID: undefined,
 	replyTo: post0,
-	quoted:undefined,
-	attachments:[],
+	quoted: undefined,
+	attachments: [],
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
@@ -133,15 +130,12 @@ export const post1: PostType = {
 export const post2: PostType = {
 	ID: "3",
 	author: user0,
-	content:
-		"look at the funny little kitten i love him so so much and i really need some longer text here to test the small quote thingy please please hello",
+	content: "look at the funny little kitten i love him so so much and i really need some longer text here to test the small quote thingy please please hello",
 	replyToID: undefined,
 	quotedID: undefined,
 	replyTo: undefined,
 	quoted: undefined,
-	attachments: [
-		"https://pbs.twimg.com/media/GKkD0WHWQAAfyaY?format=jpg&name=large",
-	],
+	attachments: ["https://pbs.twimg.com/media/GKkD0WHWQAAfyaY?format=jpg&name=large"],
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
@@ -177,9 +171,7 @@ export const post4: PostType = {
 	quotedID: "3",
 	replyTo: undefined,
 	quoted: post2,
-	attachments: [
-		"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1UsseJLum7bkeD5q2e78A5FOb0BBENJSZNMQqy4fQXQ&s",
-	],
+	attachments: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1UsseJLum7bkeD5q2e78A5FOb0BBENJSZNMQqy4fQXQ&s"],
 	countLikes: 4800,
 	countReplies: 57,
 	countQuotes: 293,
@@ -209,5 +201,5 @@ export const posts = [
 	reply0,
 	reply1,
 	reply0,
-	reply3
+	reply3,
 ];
