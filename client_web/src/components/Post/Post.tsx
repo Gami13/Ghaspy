@@ -100,7 +100,7 @@ const styles = stylex.create({
 	},
 });
 //! Use Small quote if original and quote have media, otherwise use Big quote
-export function Post(props: { post: PostType; styling?: StyleXStyles }) {
+export function Post(props: { post: PostType & { author: User }; styling?: StyleXStyles }) {
 	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
 	//stupid protobuf generates as optional even tho its required and will always be there
 	props.post.author = props.post.author as User;

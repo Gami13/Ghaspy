@@ -4,7 +4,14 @@ import { Post } from "./Post";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { ReplyToPost } from "./ReplyToPost";
-import { createEffect, createResource, createSignal, For, Show } from "solid-js";
+import {
+	createEffect,
+	createMemo,
+	createResource,
+	createSignal,
+	For,
+	Show,
+} from "solid-js";
 
 const styles = stylex.create({
 	main: {
@@ -35,24 +42,23 @@ export function PostDetail() {
 	console.log(params.username);
 	console.log(params);
 
-	const [data, postUtils] = createResource(() => posts.find((x) => x.author?.username === params.username && x.ID === params.postID));
+	const data = createMemo(() =>
+		posts.find(
+			(x) => x.author?.username === params.username && x.ID === params.postID,
+		),
+	);
 
-	const [comments, commentsUtils] = createResource(() => posts.filter((x) => x.replyToID === params.postID));
-	createEffect(() => {
-		//!LOAD BEARING COMMENT
-
-		console.log(params.postID);
-		postUtils.refetch();
-		commentsUtils.refetch();
-	});
-	//!ZADANIE BOJOWE DLA @pietruszka123
-	//Post doesnt refresh author avatar for some reason
+	const comments = createMemo(() =>
+		posts.filter((x) => x.replyToID === params.postID),
+	);
 
 	return (
 		<main {...stylex.attrs(styles.main)}>
 			<Post styling={styles.header} post={data()} />
 			<ReplyToPost post={data()} />
-			<For each={comments()}>{(comment) => <Post styling={styles.comment} post={comment} />}</For>
+			<For each={comments()}>
+				{(comment) => <Post styling={styles.comment} post={comment} />}
+			</For>
 		</main>
 	);
 }
