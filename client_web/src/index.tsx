@@ -11,6 +11,7 @@ import { Pallete } from "./components/Pallete";
 
 import { ValidatePage } from "./components/ValidatePage";
 import { Main } from "./components/Main";
+import { onMount } from "solid-js";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -29,6 +30,22 @@ import { Main } from "./components/Main";
 const root = document.getElementsByTagName("body")[0];
 
 function App() {
+	onMount(() => {
+		window.addEventListener(
+			"dragover",
+			(e) => {
+				e.preventDefault();
+			},
+			false,
+		);
+		window.addEventListener(
+			"drop",
+			(e) => {
+				e.preventDefault();
+			},
+			false,
+		);
+	});
 	return (
 		<>
 			<AppStateProvider>

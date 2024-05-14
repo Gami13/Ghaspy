@@ -159,29 +159,25 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 		}
 	}
 	onMount(() => {
-		article.ondrop = (e) => {
-			e.preventDefault();
-			if (e.dataTransfer == null) return;
-			const files = e.dataTransfer.files;
-			for (let i = 0; i < files.length; i++) {
-				const blob = files[i];
-				const fileName = blob.name;
-				setFiles((files) => [...files, { name: fileName, blob: blob }]);
-			}
-			setIsDragging(false);
-		};
 		article.ondragenter = (e) => {
 			e.preventDefault();
-			console.log("enter");
-			setIsDragging(true);
+			if (article.contains(e.relatedTarget as Node)) {
+				console.log("disable blur");
+
+				setIsDragging(true);
+			}
 		};
 		article.ondragend = (e) => {
 			e.preventDefault();
 			console.log("end");
-			setIsDragging(false);
+			if (!article.contains(e.relatedTarget as Node)) {
+				console.log("disable blur");
+
+				setIsDragging(false);
+			}
 		};
 
-		article.ondragleave = (e: DragEvent | MouseEvent) => {
+		article.ondragleave = (e) => {
 			e.preventDefault();
 			console.log("leave");
 			if (!article.contains(e.relatedTarget as Node)) {
@@ -192,7 +188,22 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 		};
 	});
 	return (
-		<article {...stylex.attrs(styles.post, isDragging() && styles.blur)} ref={article}>
+		<article
+			{...stylex.attrs(styles.post, isDragging() && styles.blur)}
+			ref={article}
+			onDrop={(e) => {
+				e.preventDefault();
+				console.log("DROP", e);
+				setIsDragging(false);
+				if (e.dataTransfer == null) return;
+				const files = e.dataTransfer.files;
+				for (let i = 0; i < files.length; i++) {
+					const blob = files[i];
+					const fileName = blob.name;
+					setFiles((files) => [...files, { name: fileName, blob: blob }]);
+				}
+			}}
+		>
 			<header {...stylex.attrs(styles.header)}>
 				<UserAvatar user={props.user} styles={styles.avatar} />
 
