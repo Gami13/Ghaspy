@@ -1,0 +1,41 @@
+- display posts from database
+- add bookmarks
+- add liking posts
+- add quoting posts
+- create a post getting algorithm
+- add chat functionality
+- add notifications
+- add user profile
+- add user settings
+  - change profile picture
+    - processing into different resolutions
+    - frontend cropping, can be advanced or just get from top
+  - change display name
+  - change username
+  - change password
+  - change email
+  - change bio
+- add search
+- add following users
+- add time formatting for posts
+- add frontend limit of 360 characters per post
+- add gif support
+- theme switching
+- translate to other languages
+- language picker
+- add user blocking
+- add viewing threads
+- add user preview when hovering over username or avatar
+-? add trending tags/word
+-? add admin functionality
+-? add admin badge
+-? add admin settings
+- create logo
+- add post views count
+-! fill out startThread on post creation
+-? add polls
+-? add post editing with history
+- see who liked a post
+- see who bookmarked a post
+- add proper embedding of our site on others
+- add proper embedding of other sites on our site
