@@ -42,30 +42,30 @@ func logInUser(c *fiber.Ctx) error {
 	err = dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
 
 	if err != nil {
-		return protoError(c, http.StatusBadRequest, "loginDataIncorrect")
+		return protoError(c, http.StatusBadRequest, "dataIncorrect")
 	}
 	if !isValidated {
 
-		return protoError(c, http.StatusBadRequest, "loginUnvalidated")
+		return protoError(c, http.StatusBadRequest, "unvalidated")
 
 	}
 	match := comparePasswordAndHash(requestBody.Password, hash, salt)
 
 	if !match {
-		return protoError(c, http.StatusBadRequest, "loginDataIncorrect")
+		return protoError(c, http.StatusBadRequest, "dataIncorrect")
 
 	}
 
 	token, snowflake, err := generateToken()
 	if err != nil {
 		logger.Println("ERROR: ", err)
-		return protoError(c, http.StatusBadRequest, "loginCantGenerateToken")
+		return protoError(c, http.StatusBadRequest, "cantGenerateToken")
 
 	}
 
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake, userId, token, requestBody.DeviceName)
 	if err != nil {
-		return protoError(c, http.StatusBadRequest, "loginCantInsertToken")
+		return protoError(c, http.StatusBadRequest, "cantInsertToken")
 
 	}
 	logger.Println("USER LOGGED IN: ", requestBody.Email)
@@ -82,19 +82,19 @@ func logInUser(c *fiber.Ctx) error {
 func isPasswordValid(password string) []string {
 	var errors []string
 	if len(password) < 8 {
-		errors = append(errors, "signupPasswordTooShort")
+		errors = append(errors, "passwordTooShort")
 	}
 	if regexp.MustCompile(`\s`).MatchString(password) {
-		errors = append(errors, "signupPasswordNoSpaces")
+		errors = append(errors, "passwordNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-z]`).MatchString(password) {
-		errors = append(errors, "signupPasswordLetter")
+		errors = append(errors, "passwordLetter")
 	}
 	if !regexp.MustCompile(`[0-9]`).MatchString(password) {
-		errors = append(errors, "signupPasswordNumber")
+		errors = append(errors, "passwordNumber")
 	}
 	if !regexp.MustCompile(`[A-Z]`).MatchString(password) {
-		errors = append(errors, "signupPasswordCapital")
+		errors = append(errors, "passwordCapital")
 	}
 	return errors
 }
@@ -108,16 +108,16 @@ func isPasswordValid(password string) []string {
 func isUsernameValid(username string) []string {
 	var errors []string
 	if len(username) < 3 {
-		errors = append(errors, "signupUsernameTooShort")
+		errors = append(errors, "usernameTooShort")
 	}
 	if len(username) > 64 {
-		errors = append(errors, "signupUsernameTooLong")
+		errors = append(errors, "usernameTooLong")
 	}
 	if regexp.MustCompile(`\s`).MatchString(username) {
-		errors = append(errors, "signupUsernameNoSpaces")
+		errors = append(errors, "usernameNoSpaces")
 	}
 	if !regexp.MustCompile(`[a-zA-Z0-9_.,-]`).MatchString(username) {
-		errors = append(errors, "signupUsernameNoSpecials")
+		errors = append(errors, "usernameNoSpecials")
 	}
 	return errors
 }
