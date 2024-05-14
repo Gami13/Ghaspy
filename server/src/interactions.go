@@ -206,9 +206,9 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 	var token = c.GetReqHeaders()["Authorization"][0]
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	row := dbpool.QueryRow(c.Context(), `SELECT usersDetails.id,usersDetails.username,usersDetails.displayname,usersDetails.bio,usersDetails.avatar,usersDetails.banner,usersDetails.isfollowerspublic,usersDetails.isfollowingpublic, usersDetails.ispostspublic,usersDetails.islikespublic,usersDetails.countlikes,usersDetails.countposts,usersDetails.countisfollowing,usersDetails.countfollowedby FROM usersDetails JOIN tokens ON tokens.userid = usersDetails.id WHERE tokens.token = $1`, token)
+	row := dbpool.QueryRow(c.Context(), `SELECT usersDetails.id,usersDetails.username,usersDetails.displayname,usersDetails.bio,usersDetails.avatar,usersDetails.banner,usersDetails.isfollowerspublic,usersDetails.isfollowingpublic, usersDetails.ispostspublic,usersDetails.islikespublic,usersDetails.countlikes,usersDetails.countposts,usersDetails.countisfollowing,usersDetails.countfollowedby, usersDetails.prefferedLanguage FROM usersDetails JOIN tokens ON tokens.userid = usersDetails.id WHERE tokens.token = $1`, token)
 	var user types.User
-	err := row.Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Avatar, &user.Banner, &user.IsFollowersPublic, &user.IsFollowingPublic, &user.IsPostsPublic, &user.IsLikesPublic, &user.CountLikes, &user.CountPosts, &user.CountFollowing, &user.CountFollowers)
+	err := row.Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Avatar, &user.Banner, &user.IsFollowersPublic, &user.IsFollowingPublic, &user.IsPostsPublic, &user.IsLikesPublic, &user.CountLikes, &user.CountPosts, &user.CountFollowing, &user.CountFollowers, &user.PrefferedLanguage)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")

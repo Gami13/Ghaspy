@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
 	bio TEXT DEFAULT '',
 	avatar VARCHAR(255) DEFAULT '',
 	banner VARCHAR(255) DEFAULT '',
-	prefferedLanguage VARCHAR(255) NOT NULL DEFAULT 'en-US',
+	prefferedLanguage VARCHAR(255) NOT NULL DEFAULT 'en_US',
 	isFollowingPublic BOOLEAN NOT NULL DEFAULT '1',
 	isFollowersPublic BOOLEAN NOT NULL DEFAULT '1',
 	isPostsPublic BOOLEAN NOT NULL DEFAULT '1',
@@ -195,7 +195,8 @@ SELECT id,
 		SELECT count(f2.*) AS count
 		FROM follows f2
 		WHERE f2.followedid = users.id
-	) AS countfollowedby
+	) AS countfollowedby,
+	prefferedLanguage
 FROM users;
 
 SELECT usersDetails.id,
@@ -211,6 +212,7 @@ SELECT usersDetails.id,
 	usersDetails.countlikes,
 	usersDetails.countposts,
 	usersDetails.countisfollowing,
-	usersDetails.countfollowedby
+	usersDetails.countfollowedby,
+	usersDetails.prefferedLanguage
 FROM usersDetails
 	JOIN tokens ON tokens.userid = usersDetails.id

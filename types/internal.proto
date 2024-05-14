@@ -21,6 +21,7 @@ message SQLUser {
   uint32 countFollowers = 15;
   uint32 countFollowing = 16;
   bool isYourProfile = 17;
+  string prefferedLanguage = 18;
 }
 
 message User {
@@ -42,6 +43,8 @@ message User {
   bool isPostsPublic = 16;
   bool isLikesPublic = 17;
   bool isYourProfile = 18;
+  string prefferedLanguage = 19;
+
 }
 
 

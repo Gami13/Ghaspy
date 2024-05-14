@@ -6,6 +6,7 @@ import { children, createEffect, onMount } from "solid-js";
 import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
 import { ResponseGetProfile } from "@/types/responses";
 import { ProtoFetch } from "@/ProtoFetch";
+import { Locales } from "@/Translation";
 
 const styles = stylex.create({
 	wrapper: {
@@ -51,6 +52,8 @@ export function NavWrapper(props: any) {
 				.then((data) => {
 					if (data?.isSuccess && data.data?.profile !== undefined) {
 						AppState.setUser(data.data.profile);
+						AppState.setLocale(data.data.profile.prefferedLanguage as Locales);
+						console.log("USER", data.data.profile.prefferedLanguage);
 						//!TYPE IS MISSING PREFFERED LANGUAGE
 						//TODO: ADD TYPE
 						return;
