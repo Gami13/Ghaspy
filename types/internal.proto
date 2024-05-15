@@ -63,4 +63,5 @@ message Post {
   string timePosted = 12;
   bool isLiked = 13;
   bool isBookmarked = 14;
+  uint64 threadStart = 15;
 }

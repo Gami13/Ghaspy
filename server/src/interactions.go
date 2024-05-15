@@ -213,6 +213,7 @@ func getLoggedInUserProfile(c *fiber.Ctx) error {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
+
 	user.JoinedAt = Snowflake(user.ID).GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 	user.IsYourProfile = true
 	user.IsFollowingYou = false
@@ -540,6 +541,7 @@ func deletePost(c *fiber.Ctx) error {
 // TODO: TRANSLATE
 
 func getPostsChronologically(c *fiber.Ctx) error {
+	logger.Println("Getting posts chrono")
 	token := ""
 	if len(c.GetReqHeaders()["Authorization"]) > 0 {
 		token = c.GetReqHeaders()["Authorization"][0]
@@ -551,22 +553,28 @@ func getPostsChronologically(c *fiber.Ctx) error {
 		return protoError(c, http.StatusBadRequest, "badRequestNotNumber")
 
 	}
+	logger.Println("PAGE: ", pageInt)
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	rows, err := dbpool.Query(c.Context(), `SELECT posts.id, usersDetails.id as authorId, usersDetails.username, usersDetails.displayname, usersDetails.bio, usersDetails.avatar, usersDetails.banner, usersDetails.isfollowerspublic, usersDetails.isfollowingpublic, usersDetails.ispostspublic, usersDetails.islikespublic, usersDetails.countlikes, usersDetails.countposts, usersDetails.countisfollowing, usersDetails.countfollowedby, posts.content, posts.replyTo, posts.quoteOf, posts.attachments, ( SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id ) as postCountLikes, ( SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id ) AS postCountQuotes, ( SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id ) AS postCountReplies, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM likes l1  JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid  AND t1.token = $1 ) AS isPostLiked, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM bookmarks b1  JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid  AND t2.token = $1 ) AS isPostBookmarked FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id ORDER BY posts.id DESC LIMIT 50 OFFSET $2`, token, 50*pageInt)
+	rows, err := dbpool.Query(c.Context(), `SELECT posts.id, usersDetails.id as authorId, usersDetails.username, usersDetails.displayname, usersDetails.bio, usersDetails.avatar, usersDetails.banner, usersDetails.isfollowerspublic, usersDetails.isfollowingpublic, usersDetails.ispostspublic, usersDetails.islikespublic, usersDetails.countlikes, usersDetails.countposts, usersDetails.countisfollowing, usersDetails.countfollowedby, posts.content, posts.replyTo, posts.quoteOf, COALESCE(posts.attachments,'{}'), ( SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id ) as postCountLikes, ( SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id ) AS postCountQuotes, ( SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id ) AS postCountReplies, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM likes l1  JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid  AND t1.token = $1 ) AS isPostLiked, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM bookmarks b1  JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid  AND t2.token = $1 ) AS isPostBookmarked, posts.threadStart FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id ORDER BY posts.id DESC LIMIT 50 OFFSET $2`, token, 50*pageInt)
 
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")
 	}
 	var posts []*types.Post
+	logger.Println("Fetched from db")
 	for rows.Next() {
-		var post types.Post
-		err := rows.Scan(&post.ID, &post.Author.ID, &post.Author.Username, &post.Author.DisplayName, &post.Author.Bio, &post.Author.Avatar, &post.Author.Banner, &post.Author.IsFollowersPublic, &post.Author.IsFollowingPublic, &post.Author.IsPostsPublic, &post.Author.IsLikesPublic, &post.Author.CountLikes, &post.Author.CountPosts, &post.Author.CountFollowing, &post.Author.CountFollowers, &post.Content, &post.ReplyToID, &post.QuotedID, &post.Attachments, &post.CountLikes, &post.CountQuotes, &post.CountReplies, &post.IsLiked, &post.IsBookmarked)
+		post := types.Post{
+			Author: &types.User{},
+		}
+		err := rows.Scan(&post.ID, &post.Author.ID, &post.Author.Username, &post.Author.DisplayName, &post.Author.Bio, &post.Author.Avatar, &post.Author.Banner, &post.Author.IsFollowersPublic, &post.Author.IsFollowingPublic, &post.Author.IsPostsPublic, &post.Author.IsLikesPublic, &post.Author.CountLikes, &post.Author.CountPosts, &post.Author.CountFollowing, &post.Author.CountFollowers, &post.Content, &post.ReplyToID, &post.QuotedID, &post.Attachments, &post.CountLikes, &post.CountQuotes, &post.CountReplies, &post.IsLiked, &post.IsBookmarked, &post.ThreadStart)
 		if err != nil {
 			logger.Println("ERROR: ", err)
 			return protoError(c, http.StatusInternalServerError, "internalError")
 		}
+		post.TimePosted = Snowflake(post.ID).GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+		logger.Println(post.TimePosted)
 		posts = append(posts, &post)
 	}
 	//TODO: FILL IN QUOTED and REPLYTO LATER

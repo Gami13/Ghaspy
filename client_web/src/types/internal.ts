@@ -68,6 +68,7 @@ export interface Post {
   timePosted: string;
   isLiked: boolean;
   isBookmarked: boolean;
+  threadStart: string;
 }
 
 function createBaseSQLUser(): SQLUser {
@@ -600,6 +601,7 @@ function createBasePost(): Post {
     timePosted: "",
     isLiked: false,
     isBookmarked: false,
+    threadStart: "0",
   };
 }
 
@@ -646,6 +648,9 @@ export const Post = {
     }
     if (message.isBookmarked !== false) {
       writer.uint32(112).bool(message.isBookmarked);
+    }
+    if (message.threadStart !== "0") {
+      writer.uint32(120).uint64(message.threadStart);
     }
     return writer;
   },
@@ -755,6 +760,13 @@ export const Post = {
 
           message.isBookmarked = reader.bool();
           continue;
+        case 15:
+          if (tag !== 120) {
+            break;
+          }
+
+          message.threadStart = longToString(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -789,6 +801,7 @@ export const Post = {
     message.timePosted = object.timePosted ?? "";
     message.isLiked = object.isLiked ?? false;
     message.isBookmarked = object.isBookmarked ?? false;
+    message.threadStart = object.threadStart ?? "0";
     return message;
   },
 };

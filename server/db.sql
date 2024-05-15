@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	replyTo bigint DEFAULT '0',
 	threadStart bigint DEFAULT '0',
 	quoteOf bigint DEFAULT '0',
-	attachments VARCHAR [] DEFAULT '{}'
+	attachments VARCHAR [] DEFAULT '{[]}'
 );
 
 CREATE INDEX postsIdIdx ON posts (id);
