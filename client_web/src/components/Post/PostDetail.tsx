@@ -29,6 +29,9 @@ const styles = stylex.create({
 		scrollbarGutter: "stable both-edges",
 	},
 	header: {
+		borderColor: colors.background200,
+		borderWidth: "5px 3px 5px 3px",
+		borderStyle: "solid",
 		backgroundColor: colors.background100,
 	},
 	comment: {

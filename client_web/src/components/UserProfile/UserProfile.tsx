@@ -22,7 +22,6 @@ const styles = stylex.create({
 		position: "relative",
 		display: "flex",
 		flexDirection: "column",
-		gap: "1em",
 	},
 	buttons: {
 		display: "flex",
@@ -33,7 +32,51 @@ const styles = stylex.create({
 		minHeight: "3.75em",
 		alignItems: "center",
 	},
-	mainButtons: {},
+	mainButtons: {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		padding: "0.5em",
+	},
+	mainBtn: {
+		color: colors.text700,
+		flexGrow: 1,
+		padding: "0.75em",
+		fontWeight: "bold",
+		cursor: "pointer",
+		letterSpacing: "0.1em",
+		":hover": {
+			backgroundColor: colors.background100,
+			color: colors.text900,
+		},
+		":active": {
+			backgroundColor: colors.background200,
+			color: colors.text950,
+		},
+		transition: "all 0.2s linear",
+		position: "relative",
+	},
+	currentBtn: {
+		// textDecoration: "underline",
+		// textDecorationStyle: "solid",
+		// textUnderlineOffset: "0.75em",
+		// textDecorationColor: colors.accent500,
+		// textDecorationThickness: "0.2em",
+		// textDecorationSkipInk: "none",
+		"::before": {
+			content: '""',
+			position: "absolute",
+			bottom: "0.2em",
+			left: "1.25em",
+
+			width: "calc(100% - 2.5em)",
+
+			height: "0.2em",
+			borderRadius: "0.1em",
+			backgroundColor: colors.accent500,
+		},
+	},
 	headerNav: {
 		display: "flex",
 		flexDirection: "row",
@@ -118,11 +161,39 @@ const styles = stylex.create({
 	},
 	username: {
 		fontSize: "1em",
-		color: colors.text500,
-		fontWeight: 500,
+		color: "#71767b",
+		fontWeight: 300,
 	},
 	displayName: {
 		fontSize: "1.3em",
+		fontWeight: 700,
+	},
+	description: {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5em",
+		padding: "0.5em",
+		backgroundColor: colors.background50,
+		borderRadius: "1em",
+		overflow: "hidden",
+	},
+	stats: {
+		display: "flex",
+		gap: "1em",
+		flexDirection: "row",
+	},
+	statNum: {
+		backgroundColor: colors.background100,
+		borderRadius: "0.5em",
+		padding: "0.25em 0.5em",
+		fontSize: "0.9em",
+	},
+	followedBySomeone: {
+		borderRadius: "0.5em",
+		padding: "0.25em 0.5em",
+		fontSize: "0.9em",
+		textAlign: "center",
+		color: colors.text300,
 	},
 });
 
@@ -152,7 +223,7 @@ export function UserProfile() {
 							Follow
 						</button>
 					</div>
-					<ol>
+					<ol {...stylex.attrs(styles.description)}>
 						<li {...stylex.attrs(styles.names)}>
 							{/* TODO: Marcin niewolniku zrób to */}
 							<h2 {...stylex.attrs(styles.displayName)}>GamiToFurras</h2>
@@ -165,37 +236,52 @@ export function UserProfile() {
 							corrupti. Aliquid, quo.{/* <A href="">View more</A> */}
 						</li>
 						<li>
-							<h3 {...stylex.attrs(styles.username)}>
-								signup date Joined May 2024
-							</h3>
+							<h3 {...stylex.attrs(styles.username)}>Joined: May 2024</h3>
 						</li>
-						<li>
+						<li {...stylex.attrs(styles.stats)}>
 							<h5>
-								<span>000</span>
+								<span {...stylex.attrs(styles.statNum)}>000</span>
 								<span {...stylex.attrs(styles.username)}>Following</span>
 							</h5>
 							<h5>
-								<span>000</span>{" "}
+								<span {...stylex.attrs(styles.statNum)}>000</span>{" "}
 								<span {...stylex.attrs(styles.username)}>Followers</span>
 							</h5>
 							<h5>
-								<span>000</span>{" "}
+								<span {...stylex.attrs(styles.statNum)}>000</span>{" "}
 								<span {...stylex.attrs(styles.username)}>Likes</span>
 							</h5>
 						</li>
-						<li>Is Followed by someone you'r folowing</li>
+						<li {...stylex.attrs(styles.followedBySomeone)}>
+							Is Followed by someone you'r folowing
+						</li>
 					</ol>
 				</div>
 			</header>
 			<main>
 				<div {...stylex.attrs(styles.mainButtons)}>
-					<button type="button">Posts</button>
-					<button type="button">Replies</button>
-					<button type="button">Subs</button>
-					<button type="button">Highlights</button>
+					<button
+						type="button"
+						{...stylex.attrs(styles.mainBtn, styles.currentBtn)}
+					>
+						Posts
+					</button>
+					<button type="button" {...stylex.attrs(styles.mainBtn)}>
+						Replies
+					</button>
+					<button type="button" {...stylex.attrs(styles.mainBtn)}>
+						Subs
+					</button>
+					<button type="button" {...stylex.attrs(styles.mainBtn)}>
+						Highlights
+					</button>
 
-					<button type="button">Media</button>
-					<button type="button">Likes</button>
+					<button type="button" {...stylex.attrs(styles.mainBtn)}>
+						Media
+					</button>
+					<button type="button" {...stylex.attrs(styles.mainBtn)}>
+						Likes
+					</button>
 				</div>
 			</main>
 		</div>

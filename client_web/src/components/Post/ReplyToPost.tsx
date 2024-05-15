@@ -8,26 +8,21 @@ import { UserAvatar } from "../UserAvatar";
 const styles = stylex.create({
 	replyBox: {
 		width: "100%",
-		height: "fit-content",
-		lineHeight: "1em",
-		padding: "1em",
 		backgroundColor: colors.background100,
 		borderRadius: "1em",
 		gap: "0.5em",
-
+		maxHeight: "fit-content",
 		display: "flex",
 		justifyContent: "space-between",
 		alignItems: "center",
+		padding: "0.5em",
 	},
 	avatar: {
-		width: "1.5em",
-		minWidth: "3.5em",
-		minHeight: "3.5em",
-		height: "1.5em",
-		aspectRatio: 1 / 1,
-		borderRadius: "50%",
-		marginRight: "0.5em",
-
+		aspectRatio: "1/1",
+		minHeight: "2.5em",
+		minWidth: "2.5em",
+		height: "2.5em",
+		width: "2.5em",
 		backgroundColor: colors.accent500,
 	},
 	replyContent: {
@@ -37,6 +32,7 @@ const styles = stylex.create({
 		fontSize: "1em",
 		fontWeight: 500,
 		color: colors.text500,
+		height: "100%",
 	},
 	replyBtn: {
 		backgroundColor: colors.primary500,
@@ -44,7 +40,7 @@ const styles = stylex.create({
 		height: "fit-content",
 		padding: "0.5em",
 		borderRadius: "0.75em",
-		fontSize: "1.25em",
+		fontSize: "1em",
 		fontWeight: 500,
 		letterSpacing: "0.025em",
 	},
@@ -54,10 +50,10 @@ export function ReplyToPost(props: { post: PostType }) {
 	//todo: replace with that from appstate
 	return (
 		<div {...stylex.attrs(styles.replyBox)}>
-			<UserAvatar user={props.post.author as User} {...stylex.attrs(styles.avatar)} />
+			<UserAvatar user={props.post.author as User} styles={styles.avatar} />
 			<span {...stylex.attrs(styles.replyContent)}>
-				Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi quos nemo optio a ratione animi deleniti. Ea
-				adipisci voluptatum iusto, est in nobis quam. Quasi quisquam voluptatem fugit iste consequatur!
+				Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur
+				adipisicing elit.
 			</span>
 			{/* TODO: Gami zrób to niewolniku */}
 			<button {...stylex.attrs(styles.replyBtn)}>Reply</button>
