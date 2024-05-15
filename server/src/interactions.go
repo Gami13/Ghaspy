@@ -556,6 +556,7 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	logger.Println("PAGE: ", pageInt)
 
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	//refactor to use postsExtra
 	rows, err := dbpool.Query(c.Context(), `SELECT posts.id, usersDetails.id as authorId, usersDetails.username, usersDetails.displayname, usersDetails.bio, usersDetails.avatar, usersDetails.banner, usersDetails.isfollowerspublic, usersDetails.isfollowingpublic, usersDetails.ispostspublic, usersDetails.islikespublic, usersDetails.countlikes, usersDetails.countposts, usersDetails.countisfollowing, usersDetails.countfollowedby, posts.content, posts.replyTo, posts.quoteOf, COALESCE(posts.attachments,'{}'), ( SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id ) as postCountLikes, ( SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id ) AS postCountQuotes, ( SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id ) AS postCountReplies, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM likes l1  JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid  AND t1.token = $1 ) AS isPostLiked, ( SELECT CASE  WHEN COUNT(*) > 0 THEN true  ELSE false  END FROM bookmarks b1  JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid  AND t2.token = $1 ) AS isPostBookmarked, posts.threadStart FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id ORDER BY posts.id DESC LIMIT 50 OFFSET $2`, token, 50*pageInt)
 
 	if err != nil {
@@ -587,6 +588,13 @@ func getPostsChronologically(c *fiber.Ctx) error {
 	})
 
 }
+func getPost(c *fiber.Ctx) error {
+	//check if post is posted by someone with private posts
+	//if yes then check if accessing user has permissions to view it
+	//	if yes, send post
+	//  if not, send error with message unauthorized
+	//if not send post
+}
 
 func getUserPostsChronologically(c *fiber.Ctx) error {
 	token := ""
@@ -605,6 +613,7 @@ func getUserPostsChronologically(c *fiber.Ctx) error {
 		return protoError(c, http.StatusBadRequest, "badRequestNoUsername")
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
 	rows, err := dbpool.Query(c.Context(), `SELECT posts.id,usersDetails.id as authorId,usersDetails.username,usersDetails.displayname,usersDetails.bio,usersDetails.avatar,usersDetails.banner,usersDetails.isfollowerspublic,usersDetails.isfollowingpublic,usersDetails.ispostspublic,usersDetails.islikespublic,usersDetails.countlikes,usersDetails.countposts,usersDetails.countisfollowing,usersDetails.countfollowedby,posts.content,posts.replyTo,posts.quoteOf,posts.attachments,(SELECT COUNT(*) FROM likes l1 WHERE l1.postid = posts.id) as postCountLikes,(SELECT COUNT(*) FROM posts p1 WHERE p1.quoteof = posts.id) AS postCountQuotes,(SELECT COUNT(*) FROM posts p2 WHERE p2.replyto = posts.id) AS postCountReplies,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM likes l1 JOIN tokens t1 ON t1.userid = l1.userid WHERE posts.id = l1.postid AND t1.token = $1) AS isPostLiked,(SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM bookmarks b1 JOIN tokens t2 ON t2.userid = b1.userid WHERE posts.id = b1.postid AND t2.token = $1) AS isPostBookmarked FROM posts JOIN usersDetails ON posts.authorid = usersDetails.id WHERE usersDetails.username = $2 ORDER BY posts.id DESC LIMIT 50 OFFSET $3`, token, username, 50*pageInt)
 
 	if err != nil {
