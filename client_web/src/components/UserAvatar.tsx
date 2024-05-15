@@ -30,6 +30,7 @@ export function UserAvatar(props: Props) {
 			src={CDN_URL + props.user.avatar}
 			onerror={onError}
 			alt={getDisplayName(props.user)}
+			//
 		/>
 	);
 }
