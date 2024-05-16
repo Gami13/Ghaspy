@@ -32,6 +32,7 @@
 -? add admin settings
 - create logo
 - add post views count
+<<<<<<< HEAD
 -! fill out startThread on post creation
 -? add polls
 -? add post editing with history
