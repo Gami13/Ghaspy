@@ -88,6 +88,12 @@ message ResponseGetPostsChronologically{
   uint32 pageNumber = 3;
 }
 
+message ResponseGetPost{
+  internal.Post post = 1;
+  string message = 2;
+}
+
+
 message ResponseGetPostsChronologicallyByUser{
   repeated internal.Post posts = 1;
   string message = 2;

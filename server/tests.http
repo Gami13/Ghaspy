@@ -147,3 +147,6 @@ Authorization: {{token}}
 GET {{apiURL}}/pins/0
 Authorization: {{token}}
 
+
+###getPost
+GET {{apiURL}}/post/162430153014640642

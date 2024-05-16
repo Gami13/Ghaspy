@@ -21,7 +21,6 @@ const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.pl_PL), i1
 export const t = i18n.chainedTranslator(dictionaries.pl_PL, i18n.translator(dict, i18n.resolveTemplate));
 
 export function formatDate(date: string): string {
-	console.log("DATE", date);
 	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
 		dateStyle: "full",
 		timeStyle: "medium",

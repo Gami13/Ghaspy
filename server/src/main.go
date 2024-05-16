@@ -102,14 +102,14 @@ func main() {
 	app.Patch("/like", toggleLike)
 	app.Patch("/follow", toggleFollow)
 	// app.Get("/pins/:page", getPins)
-	app.Get("post",getPost)
+	app.Get("post/:id", getPost)
 	app.Post("/post", addPost)
 	app.Delete("/post", deletePost)
 	app.Get("/posts-chrono/:page", getPostsChronologically)
 	app.Get("/posts-profile/:username/:page", getUserPostsChronologically)
 
 	app.Static("/attachment", "C:\\uploads")
-	
+
 	app.Listen("localhost:8080")
 
 }

@@ -113,6 +113,11 @@ export interface ResponseGetPostsChronologically {
   pageNumber: number;
 }
 
+export interface ResponseGetPost {
+  post: Post | undefined;
+  message: string;
+}
+
 export interface ResponseGetPostsChronologicallyByUser {
   posts: Post[];
   message: string;
@@ -1266,6 +1271,62 @@ export const ResponseGetPostsChronologically = {
     message.posts = object.posts?.map((e) => Post.fromPartial(e)) || [];
     message.message = object.message ?? "";
     message.pageNumber = object.pageNumber ?? 0;
+    return message;
+  },
+};
+
+function createBaseResponseGetPost(): ResponseGetPost {
+  return { post: undefined, message: "" };
+}
+
+export const ResponseGetPost = {
+  encode(message: ResponseGetPost, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.post !== undefined) {
+      Post.encode(message.post, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ResponseGetPost {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResponseGetPost();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.post = Post.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ResponseGetPost>, I>>(base?: I): ResponseGetPost {
+    return ResponseGetPost.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ResponseGetPost>, I>>(object: I): ResponseGetPost {
+    const message = createBaseResponseGetPost();
+    message.post = (object.post !== undefined && object.post !== null) ? Post.fromPartial(object.post) : undefined;
+    message.message = object.message ?? "";
     return message;
   },
 };

@@ -125,6 +125,8 @@
 		"followAdded": "Zacząłeś obserwować",
 		"followRemoved": "Przestałeś obserwować",
 		"postAdded": "Dodano post",
-		"postRemoved": "Usunięto post"
+		"postRemoved": "Usunięto post",
+		"postRetrievedSuccessfully": "Post znaleziony pomyślnie",
+		"postsRetrievedSuccessfully": "Posty znalezione pomyślnie"
 	}
 }

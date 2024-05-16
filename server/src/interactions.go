@@ -1,5 +1,6 @@
 package main
 
+//!REWRITE THE SQL FOR GETTING POSTS BECAUSE IT IGNORES POST PRIVACY
 import (
 	"ghaspy_server/src/types"
 	"net/http"
@@ -286,11 +287,20 @@ func addPost(c *fiber.Ctx) error {
 	println("CONTENT", content)
 	println("QUOTE OF", quoteOf)
 	println("REPLY TO", replyTo)
+	threadStart := postId
+	if replyTo != 0 {
+		row := GetLocal[*pgxpool.Pool](c, "dbpool").QueryRow(c.Context(), "SELECT posts.threadStart FROM posts WHERE posts.id = $1", replyTo)
+		err := row.Scan(&threadStart)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return protoError(c, http.StatusInternalServerError, "internalError")
+		}
+	}
 	for _, fileName := range fileNames {
 		println("FILE NAME", fileName)
 	}
 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
-	_, err = dbpool.Exec(c.Context(), "INSERT INTO posts (id, authorId, content, quoteOf, replyTo, attachments) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3, $4, $5, $6)", postId, token, content, quoteOf, replyTo, fileNames)
+	_, err = dbpool.Exec(c.Context(), "INSERT INTO posts (id, authorId, content, quoteOf, replyTo, attachments, threadStart) VALUES ($1, (SELECT tokens.userId FROM tokens WHERE tokens.token = $2), $3, $4, $5, $6, $7)", postId, token, content, quoteOf, replyTo, fileNames, threadStart)
 	if err != nil {
 		logger.Println("ERROR: ", err)
 		return protoError(c, http.StatusInternalServerError, "internalError")
@@ -589,12 +599,59 @@ func getPostsChronologically(c *fiber.Ctx) error {
 
 }
 func getPost(c *fiber.Ctx) error {
+	//SELECT * FROM getPosts($1) as p WHERE p.id = $2
 	//check if post is posted by someone with private posts
 	//if yes then check if accessing user has permissions to view it
 	//	if yes, send post
 	//  if not, send error with message unauthorized
 	//if not send post
-	panic("not implemented")
+	logger.Println("Getting post")
+	token := ""
+	if len(c.GetReqHeaders()["Authorization"]) > 0 {
+		token = c.GetReqHeaders()["Authorization"][0]
+	}
+	postId := c.Params("id")
+	postIdInt, err := strconv.ParseUint(postId, 10, 64)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusBadRequest, "badRequestNotNumber")
+
+	}
+	logger.Println("PAGE: ", postIdInt)
+
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+	//refactor to use postsExtra
+	rows, err := dbpool.Query(c.Context(), `SELECT * FROM getPosts($1) as p WHERE p.id = $2`, token, postIdInt)
+
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusInternalServerError, "internalError")
+	}
+
+	logger.Println("Fetched from db")
+
+	post := types.Post{
+		Author: &types.User{},
+	}
+	rows.Next()
+
+	err = rows.Scan(&post.ID, &post.Author.ID, &post.Author.Username, &post.Author.DisplayName, &post.Author.Bio, &post.Author.Avatar, &post.Author.Banner, &post.Author.IsFollowersPublic, &post.Author.IsFollowingPublic, &post.Author.IsPostsPublic, &post.Author.IsLikesPublic, &post.Author.CountLikes, &post.Author.CountPosts, &post.Author.CountFollowing, &post.Author.CountFollowers, &post.Content, &post.ReplyToID, &post.QuotedID, &post.Attachments, &post.CountLikes, &post.CountQuotes, &post.CountReplies, &post.IsLiked, &post.IsBookmarked, &post.ThreadStart)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusInternalServerError, "internalError")
+	}
+
+	post.TimePosted = Snowflake(post.ID).GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+	logger.Println(post.TimePosted)
+
+	//TODO: FILL IN QUOTED and REPLYTO LATER
+	//Merge posts that are replies to posts that have that post as a reply
+
+	return protoSuccess(c, http.StatusOK, &types.ResponseGetPost{
+		Post:    &post,
+		Message: "postRetrievedSuccessfully",
+	})
+
 }
 
 func getUserPostsChronologically(c *fiber.Ctx) error {

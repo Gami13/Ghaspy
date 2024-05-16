@@ -4,14 +4,12 @@ import { Post } from "./Post";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { ReplyToPost } from "./ReplyToPost";
-import {
-	createEffect,
-	createMemo,
-	createResource,
-	createSignal,
-	For,
-	Show,
-} from "solid-js";
+import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js";
+import { ProtoFetch } from "@/ProtoFetch";
+import { ResponseGetPost } from "@/types/responses";
+import { POST_ENDPOINT } from "@/constants";
+import { useAppState } from "@/AppState";
+import type { Post as PostType, User } from "@/types/internal";
 
 const styles = stylex.create({
 	main: {
@@ -28,12 +26,7 @@ const styles = stylex.create({
 		overflowY: "auto",
 		scrollbarGutter: "stable both-edges",
 	},
-	header: {
-		borderColor: colors.background200,
-		borderWidth: "5px 3px 5px 3px",
-		borderStyle: "solid",
-		backgroundColor: colors.background100,
-	},
+
 	comment: {
 		backgroundColor: colors.background100,
 	},
@@ -43,25 +36,23 @@ export function PostDetail() {
 	const params = useParams();
 
 	console.log(params.username);
-	console.log(params);
-
-	const data = createMemo(() =>
-		posts.find(
-			(x) => x.author?.username === params.username && x.ID === params.postID,
-		),
+	console.log(params.postID);
+	const AppState = useAppState();
+	const proto = new ProtoFetch<undefined, ResponseGetPost>(undefined, ResponseGetPost);
+	createEffect(() =>
+		proto.Query(`${POST_ENDPOINT}/${params.postID}`, {
+			method: "GET",
+			headers: { Authorization: AppState.userToken() || "" },
+		}),
 	);
-
-	const comments = createMemo(() =>
-		posts.filter((x) => x.replyToID === params.postID),
-	);
-
+	//TODO:Add fetching replies
 	return (
-		<main {...stylex.attrs(styles.main)}>
-			<Post styling={styles.header} post={data()} />
-			<ReplyToPost post={data()} />
-			<For each={comments()}>
-				{(comment) => <Post styling={styles.comment} post={comment} />}
-			</For>
-		</main>
+		<Show when={proto.state.isSuccess && proto.state.data !== undefined && proto.state.data.post !== undefined}>
+			<main {...stylex.attrs(styles.main)}>
+				<Post post={proto.state.data?.post as PostType & { author: User }} />
+				<ReplyToPost post={proto.state.data?.post as PostType & { author: User }} />
+				{/* <For each={comments()}>{(comment) => <Post styling={styles.comment} post={comment} />}</For> */}
+			</main>
+		</Show>
 	);
 }
