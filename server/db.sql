@@ -257,7 +257,7 @@ FROM posts
 	JOIN usersDetails ON posts.authorid = usersDetails.id
 ORDER BY posts.id DESC;
 
-CREATE OR REPLACE FUNCTION getPost(tokenIn VARCHAR(255)) RETURNS TABLE(
+CREATE OR REPLACE FUNCTION getPosts(tokenIn VARCHAR(255)) RETURNS TABLE(
 		id bigint,
 		authorId bigint,
 		username VARCHAR(255),
@@ -328,4 +328,4 @@ SELECT "postsExtra".id,
 	) AS isPostBookmarked,
 	"postsExtra".threadStart
 FROM "postsExtra"
-ORDER BY "postsExtra".id $$ LANGUAGE SQL
+ORDER BY "postsExtra".id $$ LANGUAGE SQL;

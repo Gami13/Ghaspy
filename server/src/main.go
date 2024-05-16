@@ -98,17 +98,18 @@ func main() {
 	app.Patch("/banner", setBanner)
 	app.Get("/profile/:name", getProfile)
 	app.Get("/profile", getLoggedInUserProfile)
-	app.Post("/post", addPost)
-	app.Get("/posts-chrono/:page", getPostsChronologically)
 	app.Patch("/pin", togglePin)
 	app.Patch("/like", toggleLike)
 	app.Patch("/follow", toggleFollow)
-	app.Delete("/post", deletePost)
 	// app.Get("/pins/:page", getPins)
+	app.Get("post",getPost)
+	app.Post("/post", addPost)
+	app.Delete("/post", deletePost)
+	app.Get("/posts-chrono/:page", getPostsChronologically)
 	app.Get("/posts-profile/:username/:page", getUserPostsChronologically)
 
 	app.Static("/attachment", "C:\\uploads")
-
+	
 	app.Listen("localhost:8080")
 
 }
