@@ -60,7 +60,7 @@ export function timeSince(date: string): string {
 	if (difference >= DAY) return t.relativeTime.past({ ago: t.relativeTime.d({ x: 1 }) });
 	if (difference >= HOURS_THRESHOLD)
 		return t.relativeTime.past({
-			ago: t.relativeTime.hh({ x: difference / HOUR }),
+			ago: t.relativeTime.hh({ x: Math.floor(difference / HOUR) }),
 		});
 	if (difference >= HOUR) return t.relativeTime.past({ ago: t.relativeTime.h({ x: 1 }) });
 	if (difference >= MINUTES_THRESHOLD)
