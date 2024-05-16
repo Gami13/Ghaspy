@@ -93,6 +93,12 @@ message ResponseGetPost{
   string message = 2;
 }
 
+message ResponseGetPostReplies{
+  repeated internal.Post posts = 1;
+  string message = 2;
+  uint32 pageNumber = 3;
+}
+
 
 message ResponseGetPostsChronologicallyByUser{
   repeated internal.Post posts = 1;

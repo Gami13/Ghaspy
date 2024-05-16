@@ -118,6 +118,12 @@ export interface ResponseGetPost {
   message: string;
 }
 
+export interface ResponseGetPostReplies {
+  posts: Post[];
+  message: string;
+  pageNumber: number;
+}
+
 export interface ResponseGetPostsChronologicallyByUser {
   posts: Post[];
   message: string;
@@ -1327,6 +1333,73 @@ export const ResponseGetPost = {
     const message = createBaseResponseGetPost();
     message.post = (object.post !== undefined && object.post !== null) ? Post.fromPartial(object.post) : undefined;
     message.message = object.message ?? "";
+    return message;
+  },
+};
+
+function createBaseResponseGetPostReplies(): ResponseGetPostReplies {
+  return { posts: [], message: "", pageNumber: 0 };
+}
+
+export const ResponseGetPostReplies = {
+  encode(message: ResponseGetPostReplies, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.posts) {
+      Post.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.pageNumber !== 0) {
+      writer.uint32(24).uint32(message.pageNumber);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ResponseGetPostReplies {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResponseGetPostReplies();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.posts.push(Post.decode(reader, reader.uint32()));
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.pageNumber = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ResponseGetPostReplies>, I>>(base?: I): ResponseGetPostReplies {
+    return ResponseGetPostReplies.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ResponseGetPostReplies>, I>>(object: I): ResponseGetPostReplies {
+    const message = createBaseResponseGetPostReplies();
+    message.posts = object.posts?.map((e) => Post.fromPartial(e)) || [];
+    message.message = object.message ?? "";
+    message.pageNumber = object.pageNumber ?? 0;
     return message;
   },
 };

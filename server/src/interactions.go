@@ -698,3 +698,50 @@ func getUserPostsChronologically(c *fiber.Ctx) error {
 	})
 
 }
+
+func getPostReplies(c *fiber.Ctx) error {
+
+	token := ""
+	if len(c.GetReqHeaders()["Authorization"]) > 0 {
+		token = c.GetReqHeaders()["Authorization"][0]
+	}
+	page := c.Params("page")
+	pageInt, err := strconv.ParseInt(page, 10, 32)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusBadRequest, "badRequestNotNumber")
+
+	}
+	postId := c.Params("id")
+	postIdInt, err := strconv.ParseUint(postId, 10, 64)
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusBadRequest, "badRequestNotNumber")
+
+	}
+	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+
+	rows, err := dbpool.Query(c.Context(), `SELECT * FROM getPosts($1) as p WHERE p.threadStart = $2 AND p.id != $2 ORDER BY p.id DESC LIMIT 50 OFFSET $3`, token, postIdInt, 50*pageInt)
+
+	if err != nil {
+		logger.Println("ERROR: ", err)
+		return protoError(c, http.StatusInternalServerError, "internalError")
+	}
+	var posts []*types.Post
+	for rows.Next() {
+		var post types.Post
+		err := rows.Scan(&post.ID, &post.Author.ID, &post.Author.Username, &post.Author.DisplayName, &post.Author.Bio, &post.Author.Avatar, &post.Author.Banner, &post.Author.IsFollowersPublic, &post.Author.IsFollowingPublic, &post.Author.IsPostsPublic, &post.Author.IsLikesPublic, &post.Author.CountLikes, &post.Author.CountPosts, &post.Author.CountFollowing, &post.Author.CountFollowers, &post.Content, &post.ReplyToID, &post.QuotedID, &post.Attachments, &post.CountLikes, &post.CountQuotes, &post.CountReplies, &post.IsLiked, &post.IsBookmarked)
+		if err != nil {
+			logger.Println("ERROR: ", err)
+			return protoError(c, http.StatusInternalServerError, "internalError")
+		}
+		posts = append(posts, &post)
+	}
+	return protoSuccess(c, http.StatusOK, &types.ResponseGetPostReplies{
+		Posts:      posts,
+		Message:    "postsRetrievedSuccessfully",
+		PageNumber: uint32(pageInt),
+	})
+}
+
+//

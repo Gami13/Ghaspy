@@ -150,3 +150,7 @@ Authorization: {{token}}
 
 ###getPost
 GET {{apiURL}}/post/162430153014640642
+
+
+###getPostReplies
+GET {{apiURL}}/post-replies/162430153014640642/0

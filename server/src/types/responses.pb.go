@@ -1206,6 +1206,69 @@ func (x *ResponseGetPost) GetMessage() string {
 	return ""
 }
 
+type ResponseGetPostReplies struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Posts      []*Post `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+	Message    string  `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	PageNumber uint32  `protobuf:"varint,3,opt,name=pageNumber,proto3" json:"pageNumber,omitempty"`
+}
+
+func (x *ResponseGetPostReplies) Reset() {
+	*x = ResponseGetPostReplies{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_responses_proto_msgTypes[22]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ResponseGetPostReplies) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResponseGetPostReplies) ProtoMessage() {}
+
+func (x *ResponseGetPostReplies) ProtoReflect() protoreflect.Message {
+	mi := &file_responses_proto_msgTypes[22]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResponseGetPostReplies.ProtoReflect.Descriptor instead.
+func (*ResponseGetPostReplies) Descriptor() ([]byte, []int) {
+	return file_responses_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ResponseGetPostReplies) GetPosts() []*Post {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
+}
+
+func (x *ResponseGetPostReplies) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ResponseGetPostReplies) GetPageNumber() uint32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
 type ResponseGetPostsChronologicallyByUser struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1219,7 +1282,7 @@ type ResponseGetPostsChronologicallyByUser struct {
 func (x *ResponseGetPostsChronologicallyByUser) Reset() {
 	*x = ResponseGetPostsChronologicallyByUser{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_responses_proto_msgTypes[22]
+		mi := &file_responses_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1232,7 +1295,7 @@ func (x *ResponseGetPostsChronologicallyByUser) String() string {
 func (*ResponseGetPostsChronologicallyByUser) ProtoMessage() {}
 
 func (x *ResponseGetPostsChronologicallyByUser) ProtoReflect() protoreflect.Message {
-	mi := &file_responses_proto_msgTypes[22]
+	mi := &file_responses_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1245,7 +1308,7 @@ func (x *ResponseGetPostsChronologicallyByUser) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use ResponseGetPostsChronologicallyByUser.ProtoReflect.Descriptor instead.
 func (*ResponseGetPostsChronologicallyByUser) Descriptor() ([]byte, []int) {
-	return file_responses_proto_rawDescGZIP(), []int{22}
+	return file_responses_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ResponseGetPostsChronologicallyByUser) GetPosts() []*Post {
@@ -1377,17 +1440,25 @@ var file_responses_proto_rawDesc = []byte{
 	0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x69, 0x6e, 0x74, 0x65, 0x72,
 	0x6e, 0x61, 0x6c, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x04, 0x70, 0x6f, 0x73, 0x74, 0x12, 0x18,
 	0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x8c, 0x01, 0x0a, 0x25, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x43, 0x68, 0x72,
-	0x6f, 0x6e, 0x6f, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x6c, 0x79, 0x42, 0x79, 0x55, 0x73,
-	0x65, 0x72, 0x12, 0x29, 0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x7d, 0x0a, 0x16, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x69,
+	0x65, 0x73, 0x12, 0x29, 0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x13, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61,
 	0x6c, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x12, 0x18, 0x0a,
 	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
 	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x65, 0x4e,
 	0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42, 0x08, 0x5a, 0x06, 0x74, 0x79, 0x70, 0x65, 0x73,
-	0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x22, 0x8c, 0x01, 0x0a, 0x25, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x43, 0x68, 0x72, 0x6f,
+	0x6e, 0x6f, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x6c, 0x79, 0x42, 0x79, 0x55, 0x73, 0x65,
+	0x72, 0x12, 0x29, 0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x13, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
+	0x2e, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x12, 0x18, 0x0a, 0x07,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d,
+	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x65, 0x4e, 0x75,
+	0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x65,
+	0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42, 0x08, 0x5a, 0x06, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1402,7 +1473,7 @@ func file_responses_proto_rawDescGZIP() []byte {
 	return file_responses_proto_rawDescData
 }
 
-var file_responses_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_responses_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_responses_proto_goTypes = []interface{}{
 	(*ResponseError)(nil),                         // 0: main.responses.ResponseError
 	(*ResponseSetDisplayName)(nil),                // 1: main.responses.ResponseSetDisplayName
@@ -1426,20 +1497,22 @@ var file_responses_proto_goTypes = []interface{}{
 	(*ResponseValidateUser)(nil),                  // 19: main.responses.ResponseValidateUser
 	(*ResponseGetPostsChronologically)(nil),       // 20: main.responses.ResponseGetPostsChronologically
 	(*ResponseGetPost)(nil),                       // 21: main.responses.ResponseGetPost
-	(*ResponseGetPostsChronologicallyByUser)(nil), // 22: main.responses.ResponseGetPostsChronologicallyByUser
-	(*User)(nil),                                  // 23: main.internal.User
-	(*Post)(nil),                                  // 24: main.internal.Post
+	(*ResponseGetPostReplies)(nil),                // 22: main.responses.ResponseGetPostReplies
+	(*ResponseGetPostsChronologicallyByUser)(nil), // 23: main.responses.ResponseGetPostsChronologicallyByUser
+	(*User)(nil),                                  // 24: main.internal.User
+	(*Post)(nil),                                  // 25: main.internal.Post
 }
 var file_responses_proto_depIdxs = []int32{
-	23, // 0: main.responses.ResponseGetProfile.profile:type_name -> main.internal.User
-	24, // 1: main.responses.ResponseGetPostsChronologically.posts:type_name -> main.internal.Post
-	24, // 2: main.responses.ResponseGetPost.post:type_name -> main.internal.Post
-	24, // 3: main.responses.ResponseGetPostsChronologicallyByUser.posts:type_name -> main.internal.Post
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	24, // 0: main.responses.ResponseGetProfile.profile:type_name -> main.internal.User
+	25, // 1: main.responses.ResponseGetPostsChronologically.posts:type_name -> main.internal.Post
+	25, // 2: main.responses.ResponseGetPost.post:type_name -> main.internal.Post
+	25, // 3: main.responses.ResponseGetPostReplies.posts:type_name -> main.internal.Post
+	25, // 4: main.responses.ResponseGetPostsChronologicallyByUser.posts:type_name -> main.internal.Post
+	5,  // [5:5] is the sub-list for method output_type
+	5,  // [5:5] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_responses_proto_init() }
@@ -1714,6 +1787,18 @@ func file_responses_proto_init() {
 			}
 		}
 		file_responses_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ResponseGetPostReplies); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_responses_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ResponseGetPostsChronologicallyByUser); i {
 			case 0:
 				return &v.state
@@ -1732,7 +1817,7 @@ func file_responses_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_responses_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

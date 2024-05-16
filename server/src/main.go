@@ -103,6 +103,7 @@ func main() {
 	app.Patch("/follow", toggleFollow)
 	// app.Get("/pins/:page", getPins)
 	app.Get("post/:id", getPost)
+	app.Get("post-replies/:id/:page", getPostReplies)
 	app.Post("/post", addPost)
 	app.Delete("/post", deletePost)
 	app.Get("/posts-chrono/:page", getPostsChronologically)
