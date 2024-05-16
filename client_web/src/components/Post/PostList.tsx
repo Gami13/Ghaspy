@@ -1,7 +1,7 @@
 import stylex from "@stylexjs/stylex";
 import { colors, dimensions } from "../../variables.stylex";
 // import { createVirtualizer } from "@tanstack/solid-virtual";
-import type { Post as PostType } from "@/types/internal";
+import type { Post as PostType, User } from "@/types/internal";
 import { Post } from "./Post";
 import { PostWriter } from "./PostWriter";
 import { useAppState } from "@/AppState";
@@ -24,9 +24,6 @@ const styles = stylex.create({
 		scrollbarGutter: "stable both-edges",
 
 		overflowY: "auto",
-	},
-	link: {
-		textDecoration: "none",
 	},
 });
 type PostListProps = {
@@ -65,9 +62,7 @@ export function PostList(props: PostListProps) {
 				<For each={props.posts}>
 					{(post) => (
 						<li>
-							<A href={`/${post.author?.username}/${post.ID}`} {...stylex.attrs(styles.link)}>
-								<Post post={post} />
-							</A>
+							<Post post={post as PostType & { author: User }} />
 						</li>
 					)}
 				</For>

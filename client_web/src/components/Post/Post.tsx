@@ -52,7 +52,7 @@ const styles = stylex.create({
 	time: {
 		fontSize: "0.9em",
 		color: colors.text500,
-		height: "2.3em",
+		height: "2.6em",
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "flex-start",
@@ -61,13 +61,13 @@ const styles = stylex.create({
 		fontSize: "1.3em",
 	},
 	content: {
-		// paddingHorizontal: "1em",
+		textDecoration: "none",
 	},
 	statistics: {
 		display: "grid",
 		gridTemplateColumns: "1fr 1fr 1fr 0.5fr 0.5fr 0.5fr",
 		gap: "0.5em",
-		paddingLeft: "1em",
+		paddingHorizontal: "1em",
 		color: colors.text500,
 		fontSize: "0.9em",
 	},
@@ -77,9 +77,11 @@ const styles = stylex.create({
 		flexDirection: "column",
 		gap: "0.5em",
 		paddingHorizontal: "1em",
+		paddingTop: "0.5em",
 	},
 	link: {
 		textDecoration: "none",
+		color: "inherit",
 	},
 });
 
@@ -105,30 +107,32 @@ export function Post(props: { post: PostType & { author: User }; styling?: Style
 
 	return (
 		<article {...stylex.attrs(styles.post, props.styling)}>
-			<header {...stylex.attrs(styles.header)}>
-				<UserAvatar user={props.post.author} styles={styles.avatar} />
-				<section {...stylex.attrs(styles.names)}>
-					<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
-					<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
-				</section>
-				<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>
-					○ {timeSince(props.post.timePosted)}
-				</time>
-			</header>
-			<main {...stylex.attrs(styles.main)}>
-				<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
-				<Show when={props.post.attachments.length > 0}>
-					<AttachmentList attachments={props.post.attachments} />
-				</Show>
-				<Switch>
-					<Match when={quote() === "big"}>
-						<PostQuoteBig post={props.post.quoted as PostType} />
-					</Match>
-					<Match when={quote() === "small"}>
-						<PostQuoteSmall post={props.post.quoted as PostType} />
-					</Match>
-				</Switch>
-			</main>
+			<A href={`/${props.post.author?.username}/${props.post.ID}`} {...stylex.attrs(styles.link)}>
+				<header {...stylex.attrs(styles.header)}>
+					<UserAvatar user={props.post.author} styles={styles.avatar} />
+					<section {...stylex.attrs(styles.names)}>
+						<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
+						<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
+					</section>
+					<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>
+						○ {timeSince(props.post.timePosted)}
+					</time>
+				</header>
+				<main {...stylex.attrs(styles.main)}>
+					<p {...stylex.attrs(styles.content)}>{props.post.content}</p>
+					<Show when={props.post.attachments.length > 0}>
+						<AttachmentList attachments={props.post.attachments} />
+					</Show>
+					<Switch>
+						<Match when={quote() === "big"}>
+							<PostQuoteBig post={props.post.quoted as PostType} />
+						</Match>
+						<Match when={quote() === "small"}>
+							<PostQuoteSmall post={props.post.quoted as PostType} />
+						</Match>
+					</Switch>
+				</main>
+			</A>
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
 					<InteractionButton onClick={toggleLike} isToggled={isLiked()} icon={<TbHeart />} iconToggled={<TbHeartFilled />} text={likeCount()} />
