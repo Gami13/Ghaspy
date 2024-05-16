@@ -1,6 +1,6 @@
 import type { Post as PostType, User } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { Match, Show, Switch } from "solid-js";
+import { createSignal, Match, Show, Switch } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
@@ -8,7 +8,7 @@ import { formatDate, timeSince } from "@/Translation";
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
-import { TbBookmark, TbDownload, TbHeart, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
+import { TbBookmark, TbBookmarkFilled, TbDownload, TbHeart, TbHeartFilled, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import { UserAvatar } from "../UserAvatar";
@@ -64,31 +64,14 @@ const styles = stylex.create({
 		// paddingHorizontal: "1em",
 	},
 	statistics: {
-		display: "flex",
-		justifyContent: "space-between",
-		paddingHorizontal: "1em",
+		display: "grid",
+		gridTemplateColumns: "1fr 1fr 1fr 0.5fr 0.5fr 0.5fr",
+		gap: "0.5em",
+		paddingLeft: "1em",
 		color: colors.text500,
 		fontSize: "0.9em",
 	},
-	activityWrapper: {
-		display: "flex",
-		alignItems: "center",
-		gap: "0.3em",
-	},
-	activityButton: {
-		display: "flex",
-		alignItems: "center",
-		gap: "0.5em",
-		fontSize: "2em",
-		border: "none",
-		backgroundColor: "transparent",
-		cursor: "pointer",
-		transition: "color 0.2s",
-		color: colors.text500,
-		":hover": {
-			color: colors.primary500,
-		},
-	},
+
 	main: {
 		display: "flex",
 		flexDirection: "column",
@@ -99,11 +82,26 @@ const styles = stylex.create({
 		textDecoration: "none",
 	},
 });
-//! Use Small quote if original and quote have media, otherwise use Big quote
+
 export function Post(props: { post: PostType & { author: User }; styling?: StyleXStyles }) {
 	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
-	//stupid protobuf generates as optional even tho its required and will always be there
-	props.post.author = props.post.author as User;
+	const [isLiked, setIsLiked] = createSignal(props.post.isLiked);
+	const [isBookmarked, setIsBookmarked] = createSignal(props.post.isBookmarked);
+	const [likeCount, setLikeCount] = createSignal(props.post.countLikes);
+
+	function toggleLike() {
+		//TODO: Add like functionality
+		setIsLiked(!isLiked());
+		if (props.post.isLiked) {
+			setLikeCount(isLiked() ? props.post.countLikes : props.post.countLikes - 1);
+		} else {
+			setLikeCount(isLiked() ? props.post.countLikes + 1 : props.post.countLikes);
+		}
+	}
+	function toggleBookmark() {
+		//TODO: Add bookmark functionality
+		setIsBookmarked(!isBookmarked());
+	}
 
 	return (
 		<article {...stylex.attrs(styles.post, props.styling)}>
@@ -133,12 +131,18 @@ export function Post(props: { post: PostType & { author: User }; styling?: Style
 			</main>
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
-					<InteractionButton isToggled={props.post.isLiked} icon={<TbHeart />} text={props.post.countLikes} />
+					<InteractionButton onClick={toggleLike} isToggled={isLiked()} icon={<TbHeart />} iconToggled={<TbHeartFilled />} text={likeCount()} />
 					<InteractionButton icon={<TbMessage />} text={props.post.countReplies} />
 					<InteractionButton icon={<TbRepeat />} text={props.post.countQuotes} />
-					<InteractionButton isToggled={props.post.isBookmarked} icon={<TbBookmark />} />
-					<InteractionButton icon={<TbLink />} />
-					<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
+					<InteractionButton
+						isRight={true}
+						isToggled={isBookmarked()}
+						onClick={toggleBookmark}
+						icon={<TbBookmark />}
+						iconToggled={<TbBookmarkFilled />}
+					/>
+					<InteractionButton isRight={true} icon={<TbLink />} />
+					<li {...stylex.attrs(InteractionButtonStyle.activityWrapper, InteractionButtonStyle.right)}>
 						<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
 							<TbDownload />
 						</a>

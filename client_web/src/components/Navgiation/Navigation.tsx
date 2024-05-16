@@ -4,23 +4,14 @@ import stylex from "@stylexjs/stylex";
 
 import { NavigationListLink } from "./NavigationListLink";
 
-import {
-	TbBell,
-	TbBookmark,
-	TbCompass,
-	TbDoorExit,
-	TbHome,
-	TbLock,
-	TbMail,
-	TbSettings,
-	TbUser,
-} from "solid-icons/tb";
+import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
 import { logOut, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
 import { Portal } from "solid-js/web";
 import { LogInModal } from "./LogInModal";
 import { SignUpModal } from "./SignUpModal";
+import { A } from "@solidjs/router";
 const styles = stylex.create({
 	nav: {
 		display: "flex",
@@ -48,21 +39,7 @@ const styles = stylex.create({
 		textDecoration: "none",
 		gap: "0.5em",
 	},
-	navElementWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	navElementIcon: {
-		height: "2em",
-		width: "2em",
-		aspectRatio: "1/1",
-		margin: 0,
-	},
-	navElementText: {
-		fontSize: "1.5em",
-	},
+
 	list: {
 		display: "flex",
 		flexDirection: "column",
@@ -73,9 +50,13 @@ const styles = stylex.create({
 		// width: 0,
 	},
 	logo: {
+		paddingLeft: "0.5em",
+		width: "100%",
 		display: "flex",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		alignItems: "center",
+		textDecoration: "none",
+		color: colors.text950,
 	},
 	settings: {
 		position: "absolute",
@@ -93,7 +74,10 @@ export function Navigation() {
 	const [isSigningUp, setIsSigningUp] = createSignal(false);
 	return (
 		<nav {...stylex.attrs(styles.nav)}>
-			<h1 {...stylex.attrs(styles.logo)}>G</h1>
+			<A href="/" {...stylex.attrs(styles.logo)}>
+				<h1 {...stylex.attrs(styles.logo)}>G</h1>
+			</A>
+
 			<ol {...stylex.attrs(styles.list)}>
 				<NavigationListLink Icon={TbHome} text={t.nav.home()} href="/" />
 				<NavigationListLink Icon={TbCompass} text={t.nav.explore()} href="/" />
