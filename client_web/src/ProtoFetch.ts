@@ -70,12 +70,10 @@ export class ProtoFetch<RequestType, ReturnType> {
 		base?: I,
 	): Uint8Array {
 		if (this.encoder !== undefined) {
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			return this.encoder
-				.encode(this.encoder.create(base ?? ({} as any)))
+				.encode(this.encoder.create(base ?? ({} as Partial<RequestType> as I)))
 				.finish();
 		}
-		console.log("No encoder");
 		return new Uint8Array();
 	}
 
@@ -85,8 +83,6 @@ export class ProtoFetch<RequestType, ReturnType> {
 		if (this.controller) {
 			this.controller.abort();
 			this.controller = undefined;
-
-			console.log("Aborted");
 		}
 
 		this.controller = new AbortController();
@@ -97,7 +93,6 @@ export class ProtoFetch<RequestType, ReturnType> {
 		});
 		console.log("response", response);
 		if (!response) {
-			console.log("Returning abort");
 			return this.state;
 		}
 
@@ -105,7 +100,6 @@ export class ProtoFetch<RequestType, ReturnType> {
 
 		const bodyAsString = await response.clone().text();
 		if (bodyAsString === "internalErrorCrit") {
-			console.log("ProtoFetch internalErrorCrit");
 			batch(() => {
 				this.store[1]("isLoading", false);
 				this.store[1]("isError", true);
@@ -127,7 +121,6 @@ export class ProtoFetch<RequestType, ReturnType> {
 			});
 			return this.state;
 		}
-		console.log("ProtoFetch success");
 		const success = this.decoder.decode(data);
 		batch(() => {
 			this.store[1]("isSuccess", true);
