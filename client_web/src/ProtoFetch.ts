@@ -5,112 +5,136 @@ import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
 import { batch } from "solid-js";
 
-
 type Coder<Type> = {
 	encode(message: Type, writer?: _m0.Writer): _m0.Writer;
 	decode(input: _m0.Reader | Uint8Array, length?: number): Type;
 	create<I extends Exact<DeepPartial<Type>, I>>(base?: I): Type;
 };
-type ProtoFetchType<ReturnType> = {
-	isLoading: boolean;
-	isError: boolean;
-	isCriticalError: boolean;
-	isSuccess: boolean;
-	error: undefined | ErrorTransKeys;
-	data: ReturnType | undefined;
-};
+type ProtoFetchType<ReturnType> =
+	| {
+			isLoading: false;
+			isError: true;
+			isSuccess: boolean;
+			error: ErrorTransKeys;
+			data: ReturnType | undefined;
+	  }
+	| {
+			isLoading: false;
+			isError: false;
+			isSuccess: boolean;
+			error: undefined;
+			data: ReturnType | undefined;
+	  }
+	| {
+			isLoading: true;
+			isError: undefined;
+			isSuccess: undefined;
+			error: undefined;
+			data: undefined;
+	  }
+	| {
+			isLoading: false;
+			isError: false;
+			isSuccess: true;
+			error: undefined;
+			data: ReturnType;
+	  };
 
 export class ProtoFetch<RequestType, ReturnType> {
-	private store: [get: Store<ProtoFetchType<ReturnType>>, set: SetStoreFunction<ProtoFetchType<ReturnType>>];
+	private store: [
+		get: Store<ProtoFetchType<ReturnType>>,
+		set: SetStoreFunction<ProtoFetchType<ReturnType>>,
+	];
 	state: Store<ProtoFetchType<ReturnType>>;
 	encoder: Coder<RequestType> | undefined;
 	decoder: Coder<ReturnType>;
-	controller: AbortController | undefined
-	constructor(encoder: Coder<RequestType> | undefined, decoder: Coder<ReturnType>) {
+	controller: AbortController | undefined;
+	constructor(
+		encoder: Coder<RequestType> | undefined,
+		decoder: Coder<ReturnType>,
+	) {
 		this.encoder = encoder;
 		this.decoder = decoder;
 		this.store = createStore<ProtoFetchType<ReturnType>>({
 			isLoading: false,
 			isError: false,
-			isCriticalError: false,
 			isSuccess: false,
 			error: undefined,
 			data: undefined,
 		});
-		
+
 		this.state = this.store[0];
 	}
 
-	createBody<I extends Exact<DeepPartial<RequestType>, I>>(base?: I): Uint8Array {
+	createBody<I extends Exact<DeepPartial<RequestType>, I>>(
+		base?: I,
+	): Uint8Array {
 		if (this.encoder !== undefined) {
-			
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-			return this.encoder.encode(this.encoder.create(base ?? ({} as any))).finish();
+			return this.encoder
+				.encode(this.encoder.create(base ?? ({} as any)))
+				.finish();
 		}
-		console.log("No encoder")
+		console.log("No encoder");
 		return new Uint8Array();
 	}
 
 	async Query(url: string, init: RequestInit) {
 		this.store[1]("isLoading", true);
-		console.log("Querying")
-		if(this.controller)
-			{
-				this.controller.abort();
-				this.controller = undefined;
-			
-				console.log("Aborted")
+		console.log("Querying");
+		if (this.controller) {
+			this.controller.abort();
+			this.controller = undefined;
 
-			}
+			console.log("Aborted");
+		}
 
 		this.controller = new AbortController();
 		init.signal = this.controller.signal;
-		
-		const response = await fetch(url, init).catch(e=>{
-			if(e.name === "AbortError") return
-		})
-		console.log("response", response)
-		if(!response)
-		{
-			console.log("Returning abort")
+
+		const response = await fetch(url, init).catch((e) => {
+			if (e.name === "AbortError") return;
+		});
+		console.log("response", response);
+		if (!response) {
+			console.log("Returning abort");
 			return this.state;
 		}
-	
+
 		this.controller = undefined;
-		
-		
+
 		const bodyAsString = await response.clone().text();
 		if (bodyAsString === "internalErrorCrit") {
-			console.log("ProtoFetch internalErrorCrit")
-			batch(()=>{
-			this.store[1]("isLoading", false);
-			this.store[1]("isError", true);
-			this.store[1]("isCriticalError", true);
-			this.store[1]("error", "internalErrorCrit" as ErrorTransKeys);
-		})
+			console.log("ProtoFetch internalErrorCrit");
+			batch(() => {
+				this.store[1]("isLoading", false);
+				this.store[1]("isError", true);
+				this.store[1]("isSuccess", false);
+				this.store[1]("error", "internalErrorCrit" as ErrorTransKeys);
+			});
 
 			return this.state;
-
 		}
 		const data = new Uint8Array(await response.arrayBuffer());
 
 		if (!response.ok) {
 			const error = ResponseError.decode(data);
-			batch(()=>{
-
-			this.store[1]("isError", true);
-			this.store[1]("error", error.message as ErrorTransKeys)
-			this.store[1]("isLoading", false)})
+			batch(() => {
+				this.store[1]("isError", true);
+				this.store[1]("isSuccess", false);
+				this.store[1]("error", error.message as ErrorTransKeys);
+				this.store[1]("isLoading", false);
+			});
 			return this.state;
-
 		}
-		console.log("ProtoFetch success")
+		console.log("ProtoFetch success");
 		const success = this.decoder.decode(data);
-		batch(()=>{
-		this.store[1]("isSuccess", true);
-		this.store[1]("data", success);
-		this.store[1]("isLoading", false);
-		})
+		batch(() => {
+			this.store[1]("isSuccess", true);
+			this.store[1]("data", success);
+			this.store[1]("isLoading", false);
+			this.store[1]("isError", false);
+		});
 		return this.state;
 	}
 }
