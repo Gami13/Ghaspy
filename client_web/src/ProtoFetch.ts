@@ -4,7 +4,7 @@ import type { ErrorTransKeys } from "./Translation";
 import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
 import { batch } from "solid-js";
-
+//ytes
 type Coder<Type> = {
 	encode(message: Type, writer?: _m0.Writer): _m0.Writer;
 	decode(input: _m0.Reader | Uint8Array, length?: number): Type;
@@ -24,13 +24,6 @@ type ProtoFetchType<ReturnType> =
 			isSuccess: false;
 			error: ErrorTransKeys;
 			data: undefined;
-	  }
-	| {
-			isLoading: false;
-			isError: false;
-			isSuccess: true;
-			error: undefined;
-			data: ReturnType;
 	  }
 	| {
 			isLoading: false;
