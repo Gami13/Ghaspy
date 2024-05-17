@@ -81,7 +81,10 @@ type LogInModalProps = {
 };
 export function LogInModal(props: LogInModalProps) {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<RequestLogInUser, ResponseLogInUser>(RequestLogInUser, ResponseLogInUser);
+	const proto = new ProtoFetch<RequestLogInUser, ResponseLogInUser>(
+		RequestLogInUser,
+		ResponseLogInUser,
+	);
 
 	function onSubmit(
 		event: Event & {
@@ -122,14 +125,32 @@ export function LogInModal(props: LogInModalProps) {
 					<p {...stylex.attrs(styles.paragraph)}>{t.auth.logInDescription()}</p>
 				</header>
 				<form onsubmit={onSubmit} {...stylex.attrs(styles.form)}>
-					<LogInInput type="email" name="email" placeholder={t.auth.emailExample()} label={t.auth.email()} disabled={proto.state.isLoading} />
-					<LogInInput type="password" name="password" placeholder={t.auth.password()} label={t.auth.password()} disabled={proto.state.isLoading} />
+					<LogInInput
+						type="email"
+						name="email"
+						placeholder={t.auth.emailExample()}
+						label={t.auth.email()}
+						disabled={proto.state.isLoading}
+					/>
+					<LogInInput
+						type="password"
+						name="password"
+						placeholder={t.auth.password()}
+						label={t.auth.password()}
+						disabled={proto.state.isLoading}
+					/>
 
-					<Show when={proto.state.isError && (proto.state.error !== undefined)}>
-						<span {...stylex.attrs(styles.error)}>{t.errors[proto.state.error as ErrorTransKeys]()}</span>
+					<Show when={proto.state.isError}>
+						<span {...stylex.attrs(styles.error)}>
+							{t.errors[proto.state.error as ErrorTransKeys]()}
+						</span>
 					</Show>
 
-					<button disabled={proto.state.isLoading} type="submit" {...stylex.attrs(styles.submit)}>
+					<button
+						disabled={proto.state.isLoading}
+						type="submit"
+						{...stylex.attrs(styles.submit)}
+					>
 						<Show when={!proto.state.isLoading} fallback={t.loading()}>
 							{t.auth.logIn()}
 						</Show>

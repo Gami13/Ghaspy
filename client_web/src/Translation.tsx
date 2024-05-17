@@ -17,8 +17,16 @@ export type SuccessTransKeys = keyof (typeof dictionaries)["pl_PL"]["success"];
 const AppState = useAppState();
 
 //Remember to change to en_US when I finish translating
-const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.pl_PL), i18n.flatten(dictionaries[AppState.locale()])));
-export const t = i18n.chainedTranslator(dictionaries.pl_PL, i18n.translator(dict, i18n.resolveTemplate));
+const dict = createMemo(() =>
+	Object.assign(
+		i18n.flatten(dictionaries.pl_PL),
+		i18n.flatten(dictionaries[AppState.locale()]),
+	),
+);
+export const t = i18n.chainedTranslator(
+	dictionaries.pl_PL,
+	i18n.translator(dict, i18n.resolveTemplate),
+);
 
 export function formatDate(date: string): string {
 	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
@@ -46,27 +54,32 @@ export function timeSince(date: string): string {
 		return t.relativeTime.past({
 			ago: t.relativeTime.yy({ x: Math.floor(difference / YEAR) }),
 		});
-	if (difference >= YEAR) return t.relativeTime.past({ ago: t.relativeTime.y({ x: 1 }) });
+	if (difference >= YEAR)
+		return t.relativeTime.past({ ago: t.relativeTime.y({ x: 1 }) });
 	if (difference >= MONTHS_THRESHOLD)
 		return t.relativeTime.past({
 			ago: t.relativeTime.MM({ x: Math.floor(difference / MONTH) }),
 		});
-	if (difference >= MONTH) return t.relativeTime.past({ ago: t.relativeTime.M({ x: 1 }) });
+	if (difference >= MONTH)
+		return t.relativeTime.past({ ago: t.relativeTime.M({ x: 1 }) });
 	if (difference >= DAYS_THRESHOLD)
 		return t.relativeTime.past({
 			ago: t.relativeTime.dd({ x: Math.floor(difference / DAY) }),
 		});
-	if (difference >= DAY) return t.relativeTime.past({ ago: t.relativeTime.d({ x: 1 }) });
+	if (difference >= DAY)
+		return t.relativeTime.past({ ago: t.relativeTime.d({ x: 1 }) });
 	if (difference >= HOURS_THRESHOLD)
 		return t.relativeTime.past({
 			ago: t.relativeTime.hh({ x: Math.floor(difference / HOUR) }),
 		});
-	if (difference >= HOUR) return t.relativeTime.past({ ago: t.relativeTime.h({ x: 1 }) });
+	if (difference >= HOUR)
+		return t.relativeTime.past({ ago: t.relativeTime.h({ x: 1 }) });
 	if (difference >= MINUTES_THRESHOLD)
 		return t.relativeTime.past({
 			ago: t.relativeTime.mm({ x: Math.floor(difference / MINUTE) }),
 		});
-	if (difference >= MINUTE) return t.relativeTime.past({ ago: t.relativeTime.m({ x: 1 }) });
+	if (difference >= MINUTE)
+		return t.relativeTime.past({ ago: t.relativeTime.m({ x: 1 }) });
 	if (difference >= SECONDS_THRESHOLD)
 		return t.relativeTime.past({
 			ago: t.relativeTime.ss({ x: Math.floor(difference / SECOND) }),
