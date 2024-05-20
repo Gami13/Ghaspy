@@ -58,12 +58,6 @@ const styles = stylex.create({
 		position: "relative",
 	},
 	currentBtn: {
-		// textDecoration: "underline",
-		// textDecorationStyle: "solid",
-		// textUnderlineOffset: "0.75em",
-		// textDecorationColor: colors.accent500,
-		// textDecorationThickness: "0.2em",
-		// textDecorationSkipInk: "none",
 		"::before": {
 			content: '""',
 			position: "absolute",
