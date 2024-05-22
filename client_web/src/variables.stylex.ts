@@ -20,7 +20,7 @@ export const colors = stylex.defineVars({
 	text950: { default: "#0b0c0f", [DARK]: "#f0f2f4" },
 	textError: { default: "#ef4444" },
 
-	background50: { default: "#cbcbcb", [DARK]: "#" },
+	background50: { default: "#cbcbcb", [DARK]: "#0a0b10" },
 	background100: { default: "#b6b9c2", [DARK]: "#131620" },
 	background200: { default: "#a0a7b9", [DARK]: "#262d40" },
 	background300: { default: "#8b94b1", [DARK]: "#394360" },
