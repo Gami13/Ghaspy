@@ -6,7 +6,6 @@ import { Post } from "./Post";
 import { PostWriter } from "./PostWriter";
 import { useAppState } from "@/AppState";
 import { For, onMount, Show } from "solid-js";
-import { A } from "@solidjs/router";
 const styles = stylex.create({
 	main: {
 		padding: "0.25em 0.5em",

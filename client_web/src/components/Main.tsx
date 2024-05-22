@@ -1,4 +1,3 @@
-import { posts } from "@/MockData";
 import { PostList } from "./Post/PostList";
 import { ProtoFetch } from "@/ProtoFetch";
 import { ResponseGetPostsChronologically } from "@/types/responses";
@@ -7,8 +6,6 @@ import { useAppState } from "@/AppState";
 import { createEffect, onMount, Show } from "solid-js";
 import type { Post } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
-import { colors, dimensions } from "@/variables.stylex";
-// import cosinus and sinus from Math
 
 import Logo from "./Logo";
 const styles = stylex.create({

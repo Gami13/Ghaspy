@@ -94,7 +94,7 @@ const styles = stylex.create({
 		alignItems: "center",
 		justifyContent: "center",
 		verticalAlign: "middle",
-		backgroundColor: colors.primary500,
+		backgroundColor: colors.accent500,
 		border: "none",
 		width: "fit-content",
 		padding: "0.5em 1.25em",
@@ -124,7 +124,6 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 	const [isDragging, setIsDragging] = createSignal(false);
 	let article!: HTMLElement;
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <im smart>
 	async function sendPost() {
 		if (text().length !== 0 || files().length !== 0) {
 			console.log("SENDING");
@@ -154,7 +153,9 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 
 				return;
 			}
-			const errorData = ResponseError.decode(new Uint8Array(await response.arrayBuffer()));
+			const errorData = ResponseError.decode(
+				new Uint8Array(await response.arrayBuffer()),
+			);
 			alert(errorData.message);
 		}
 	}
@@ -208,7 +209,9 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 				<UserAvatar user={props.user} styles={styles.avatar} />
 
 				<section {...stylex.attrs(styles.names)}>
-					<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.user)}</h2>
+					<h2 {...stylex.attrs(styles.displayName)}>
+						{getDisplayName(props.user)}
+					</h2>
 					<h3 {...stylex.attrs(styles.username)}>@{props.user.username}</h3>
 				</section>
 			</header>
@@ -222,7 +225,10 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 					text={text}
 				/>
 				<Show when={files().length > 0}>
-					<PostWriterAttachmentList attachments={files()} attachmentsSetter={setFiles} />
+					<PostWriterAttachmentList
+						attachments={files()}
+						attachmentsSetter={setFiles}
+					/>
 				</Show>
 				<Show when={props.quote?.quoted}>
 					<PostQuoteSmall post={props.quote as PostType} />
@@ -243,13 +249,20 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 								for (let i = 0; i < input.files.length; i++) {
 									const blob = input.files[i];
 									const fileName = blob.name;
-									setFiles((files) => [...files, { name: fileName, blob: blob }]);
+									setFiles((files) => [
+										...files,
+										{ name: fileName, blob: blob },
+									]);
 								}
 							};
 						}}
 					/>
 					<li>
-						<button onclick={sendPost} type="button" {...stylex.attrs(styles.sendButton)}>
+						<button
+							onclick={sendPost}
+							type="button"
+							{...stylex.attrs(styles.sendButton)}
+						>
 							Post
 						</button>
 					</li>

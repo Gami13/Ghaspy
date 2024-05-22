@@ -73,12 +73,18 @@ const styles = stylex.create({
 		textDecoration: "none",
 	},
 	statistics: {
-		display: "grid",
-		gridTemplateColumns: "1fr 1fr 1fr 0.5fr 0.5fr 0.5fr",
-		gap: "0.5em",
+		display: "flex",
+		flexDirection: "row",
 		paddingHorizontal: "1em",
 		color: colors.text500,
 		fontSize: "0.9em",
+		justifyContent: "space-between",
+	},
+	statisticsGroup: {
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		gap: "4em",
 	},
 
 	main: {
@@ -166,38 +172,38 @@ export function Post(props: {
 			</A>
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
-					<InteractionButton
-						onClick={toggleLike}
-						isToggled={isLiked()}
-						icon={<TbHeart />}
-						iconToggled={<TbHeartFilled />}
-						text={likeCount()}
-					/>
-					<InteractionButton
-						icon={<TbMessage />}
-						text={props.post.countReplies}
-					/>
-					<InteractionButton
-						icon={<TbRepeat />}
-						text={props.post.countQuotes}
-					/>
-					<InteractionButton
-						isRight={true}
-						isToggled={isBookmarked()}
-						onClick={toggleBookmark}
-						icon={<TbBookmark />}
-						iconToggled={<TbBookmarkFilled />}
-					/>
-					<InteractionButton isRight={true} icon={<TbLink />} />
-					<li
-						{...stylex.attrs(
-							InteractionButtonStyle.activityWrapper,
-							InteractionButtonStyle.right,
-						)}
-					>
-						<a {...stylex.attrs(InteractionButtonStyle.activityButton)}>
-							<TbDownload />
-						</a>
+					<li {...stylex.attrs(styles.statisticsGroup)}>
+						<InteractionButton
+							onClick={toggleLike}
+							isToggled={isLiked()}
+							icon={<TbHeart />}
+							iconToggled={<TbHeartFilled />}
+							text={likeCount()}
+						/>
+						<InteractionButton
+							icon={<TbMessage />}
+							text={props.post.countReplies}
+						/>
+						<InteractionButton
+							icon={<TbRepeat />}
+							text={props.post.countQuotes}
+						/>
+					</li>
+
+					<li {...stylex.attrs(styles.statisticsGroup)}>
+						<InteractionButton
+							isRight={true}
+							isToggled={isBookmarked()}
+							onClick={toggleBookmark}
+							icon={<TbBookmark />}
+							iconToggled={<TbBookmarkFilled />}
+						/>
+						<InteractionButton isRight={true} icon={<TbLink />} />
+						<InteractionButton
+							isRight={true}
+							icon={<TbDownload />}
+							{...stylex.attrs(InteractionButtonStyle.activityButton)}
+						/>
 					</li>
 				</ol>
 			</footer>

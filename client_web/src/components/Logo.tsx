@@ -1,12 +1,4 @@
-import logo1024x from "../Logos/logo1024x.svg";
-import logo512x from "../Logos/logo512x.svg";
-import logo256x from "../Logos/logo256x.svg";
-import logo128x from "../Logos/logo128x.svg";
-import logo64x from "../Logos/logo64x.svg";
-import logo128xFace from "../Logos/logo128xFace.svg";
 import stylex, { type StyleXStyles } from "@stylexjs/stylex";
-import Logo128xSmoke from "@/Logos/logo128xSmoke";
-import Logo128xFace from "@/Logos/logo128xFace";
 import Logo128x from "@/Logos/logo128x";
 
 type LogoProps = {

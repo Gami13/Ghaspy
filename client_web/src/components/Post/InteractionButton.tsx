@@ -18,15 +18,22 @@ export const InteractionButtonStyle = stylex.create({
 		transition: "color 0.2s",
 		fontSize: "2em",
 		color: colors.text500,
-		":hover": {
-			color: colors.primary500,
-		},
 	},
-	toggled: {
+	toggledRight: {
+		color: colors.accent500,
+	},
+	toggledLeft: {
 		color: colors.primary500,
 	},
 	right: {
-		flexDirection: "row-reverse",
+		":hover": {
+			color: colors.accent500,
+		},
+	},
+	left: {
+		":hover": {
+			color: colors.primary500,
+		},
 	},
 });
 export function InteractionButton(props: {
@@ -38,11 +45,22 @@ export function InteractionButton(props: {
 	onClick?: () => void;
 }) {
 	return (
-		<li {...stylex.attrs(InteractionButtonStyle.activityWrapper, props.isRight && InteractionButtonStyle.right)}>
+		<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
 			<button
 				type="button"
 				onclick={props.onClick}
-				{...stylex.attrs(InteractionButtonStyle.activityButton, props.isToggled && InteractionButtonStyle.toggled)}
+				{...stylex.attrs(
+					InteractionButtonStyle.activityButton,
+
+					props.isRight
+						? InteractionButtonStyle.right
+						: InteractionButtonStyle.left,
+					props.isToggled
+						? props.isRight
+							? InteractionButtonStyle.toggledRight
+							: InteractionButtonStyle.toggledLeft
+						: {},
+				)}
 			>
 				<Show when={props.isToggled}>{props.iconToggled}</Show>
 				<Show when={!props.isToggled}>{props.icon}</Show>

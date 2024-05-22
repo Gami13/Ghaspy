@@ -1,15 +1,9 @@
-import stylex from "@stylexjs/stylex";
 type SmokeProps = {
 	leftColor?: string;
 	centerColor?: string;
 	rightColor?: string;
 };
-const styles = stylex.create({
-	logoSmoke: {
-		position: "absolute",
-		zIndex: -1,
-	},
-});
+
 export default function Logo128xSmoke(props: SmokeProps) {
 	return (
 		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
