@@ -19,7 +19,13 @@ const styles = stylex.create({
 		justifyContent: "center",
 		alignItems: "center",
 		position: "relative",
-		outline: "red 1px solid",
+		borderRight: "2px solid #c23da9",
+		borderLeft: "2px solid #0066ff",
+	},
+	logo: {
+		width: "7em",
+		height: "7em",
+		transform: "translate(0,0)",
 	},
 });
 
@@ -55,7 +61,7 @@ export function Main() {
 			when={proto.state.isSuccess}
 			fallback={
 				<div {...stylex.attrs(styles.loadingBox)}>
-					<Logo />
+					<Logo loading={true} stylex={styles.logo} />
 				</div>
 			}
 		>

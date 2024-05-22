@@ -6,7 +6,7 @@ import { children, createEffect, onMount } from "solid-js";
 import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
 import { ResponseGetProfile } from "@/types/responses";
 import { ProtoFetch } from "@/ProtoFetch";
-import { Locales } from "@/Translation";
+import type { Locales } from "@/Translation";
 
 const styles = stylex.create({
 	wrapper: {
@@ -23,7 +23,20 @@ const styles = stylex.create({
 		flexGrow: 120,
 		maxWidth: dimensions.asideMaxWidth,
 		backgroundColor: colors.background50,
-		display: { default: "block", "@media (max-width: 950px)": "none" },
+		display: { default: "flex", "@media (max-width: 950px)": "none" },
+		justifyContent: "center",
+		flexDirection: "column",
+		alignItems: "center",
+		gap: "1em",
+	},
+	asideBtn: {
+		width: "50%",
+		height: "2.5em",
+		backgroundColor: colors.background100,
+		color: colors.text900,
+		border: `1px solid ${colors.text900}`,
+		borderRadius: "1em",
+		cursor: "pointer",
 	},
 });
 
@@ -40,7 +53,10 @@ export function NavWrapper(props: any) {
 	});
 	createEffect(() => {
 		if (AppState.userToken()) {
-			const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined, ResponseGetProfile);
+			const proto = new ProtoFetch<undefined, ResponseGetProfile>(
+				undefined,
+				ResponseGetProfile,
+			);
 			proto
 				.Query(CURRENT_USER_DATA_ENDPOINT, {
 					method: "GET",
@@ -72,7 +88,22 @@ export function NavWrapper(props: any) {
 		<div {...stylex.attrs(styles.wrapper)}>
 			<Navigation />
 			{c()}
-			<aside {...stylex.attrs(styles.aside)} />
+			<aside {...stylex.attrs(styles.aside)}>
+				<button
+					{...stylex.attrs(styles.asideBtn)}
+					type="button"
+					onClick={() => AppState.setLocale("pl_PL")}
+				>
+					pl_PL
+				</button>
+				<button
+					{...stylex.attrs(styles.asideBtn)}
+					type="button"
+					onClick={() => AppState.setLocale("en_US")}
+				>
+					en_US
+				</button>
+			</aside>
 		</div>
 	);
 }

@@ -4,7 +4,17 @@ import stylex from "@stylexjs/stylex";
 
 import { NavigationListLink } from "./NavigationListLink";
 
-import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
+import {
+	TbBell,
+	TbBookmark,
+	TbCompass,
+	TbDoorExit,
+	TbHome,
+	TbLock,
+	TbMail,
+	TbSettings,
+	TbUser,
+} from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
 import { logOut, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
@@ -12,6 +22,7 @@ import { Portal } from "solid-js/web";
 import { LogInModal } from "./LogInModal";
 import { SignUpModal } from "./SignUpModal";
 import { A } from "@solidjs/router";
+import Logo from "../Logo";
 const styles = stylex.create({
 	nav: {
 		display: "flex",
@@ -56,7 +67,7 @@ const styles = stylex.create({
 		justifyContent: "flex-start",
 		alignItems: "center",
 		textDecoration: "none",
-		color: colors.text950,
+		gap: "0.5em",
 	},
 	settings: {
 		position: "absolute",
@@ -66,6 +77,14 @@ const styles = stylex.create({
 		bottom: 0,
 	},
 	currentPageIconColor: {},
+	navLogo: {
+		width: "4em",
+		height: "4em",
+	},
+	logoText: {
+		color: colors.text950,
+		fontSize: "2em",
+	},
 });
 
 export function Navigation() {
@@ -74,11 +93,11 @@ export function Navigation() {
 	const [isSigningUp, setIsSigningUp] = createSignal(false);
 	return (
 		<nav {...stylex.attrs(styles.nav)}>
-			<A href="/" {...stylex.attrs(styles.logo)}>
-				<h1 {...stylex.attrs(styles.logo)}>G</h1>
-			</A>
-
 			<ol {...stylex.attrs(styles.list)}>
+				<A href="/" {...stylex.attrs(styles.logo)}>
+					<Logo stylex={styles.navLogo} />
+					<h1 {...stylex.attrs(styles.logoText)}>Ghaspy</h1>
+				</A>
 				<NavigationListLink Icon={TbHome} text={t.nav.home()} href="/" />
 				<NavigationListLink Icon={TbCompass} text={t.nav.explore()} href="/" />
 				<Show when={isLoggingIn()}>
@@ -122,8 +141,22 @@ export function Navigation() {
 				>
 					<NavigationListLink Icon={TbBell} text={t.nav.alerts()} href="/" />
 					<NavigationListLink Icon={TbMail} text={t.nav.inbox()} href="/" />
-					<NavigationListLink Icon={TbBookmark} text={t.nav.bookmarks()} href="/" />
-					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href={`/${AppState.user.username}`} />
+					<NavigationListLink
+						Icon={TbBookmark}
+						text={t.nav.bookmarks()}
+						href="/"
+					/>
+					<NavigationListLink
+						Icon={TbUser}
+						text={t.nav.profile()}
+						href={`/${AppState.user.username}`}
+					/>
+					<NavigationListLink
+						Icon={TbSettings}
+						{...stylex.attrs(styles.settings)}
+						text={t.nav.settings()}
+						href="/"
+					/>
 					<NavigationListButton
 						Icon={TbDoorExit}
 						text={t.nav.logOut()}
@@ -133,14 +166,6 @@ export function Navigation() {
 						}}
 					/>
 				</Show>
-
-				<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
-				<button type="button" onClick={() => AppState.setLocale("pl_PL")}>
-					pl_PL
-				</button>
-				<button type="button" onClick={() => AppState.setLocale("en_US")}>
-					en_US
-				</button>
 			</ol>
 		</nav>
 	);
