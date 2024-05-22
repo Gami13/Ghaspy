@@ -42,8 +42,8 @@ export const colors = stylex.defineVars({
 });
 
 export const dimensions = stylex.defineVars({
-	navMaxWidth: { default: "300px", "@media (max-width: 900px)": "100px" },
-	postsMaxWidth: { default: "700px", "@media (max-width: 900px)": "800px" },
+	navMaxWidth: { default: "350px", "@media (max-width: 900px)": "100px" },
+	postsMaxWidth: { default: "650px", "@media (max-width: 900px)": "800px" },
 	postsMinWidth: "350px",
 	asideMaxWidth: "300px",
 });

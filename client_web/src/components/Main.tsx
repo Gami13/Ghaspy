@@ -6,10 +6,29 @@ import { POSTS_CHRONO_ENDPOINT } from "@/constants";
 import { useAppState } from "@/AppState";
 import { createEffect, onMount, Show } from "solid-js";
 import type { Post } from "@/types/internal";
+import stylex from "@stylexjs/stylex";
+import { colors, dimensions } from "@/variables.stylex";
+// import cosinus and sinus from Math
+
+import Logo from "./Logo";
+const styles = stylex.create({
+	loadingBox: {
+		height: "100vh",
+		width: "650px",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		position: "relative",
+		outline: "red 1px solid",
+	},
+});
 
 export function Main() {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<undefined, ResponseGetPostsChronologically>(undefined, ResponseGetPostsChronologically);
+	const proto = new ProtoFetch<undefined, ResponseGetPostsChronologically>(
+		undefined,
+		ResponseGetPostsChronologically,
+	);
 	onMount(() =>
 		proto.Query(`${POSTS_CHRONO_ENDPOINT}/0`, {
 			method: "GET",
@@ -35,8 +54,8 @@ export function Main() {
 		<Show
 			when={proto.state.isSuccess}
 			fallback={
-				<div>
-					<h1>Loading...</h1>
+				<div {...stylex.attrs(styles.loadingBox)}>
+					<Logo />
 				</div>
 			}
 		>

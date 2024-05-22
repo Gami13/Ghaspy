@@ -30,7 +30,6 @@
 -? add admin functionality
 -? add admin badge
 -? add admin settings
-- create logo
 - add post views count
 <<<<<<< HEAD
 -! fill out startThread on post creation
@@ -46,3 +45,6 @@
 - add limit to 4 attachments per post
 - add limit to 4 attachments per message
 - finish project
+
+Done Seba:
+- create logo
