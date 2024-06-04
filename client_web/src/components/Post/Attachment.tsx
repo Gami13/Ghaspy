@@ -2,6 +2,7 @@ import type { Post as PostType } from "@/types/internal";
 import { colors } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { onMount } from "solid-js";
+import { CDN_URL } from "@/constants";
 
 //! Post is safe to be asserted as defined
 const MAX_WIDTH = 510;
@@ -37,15 +38,5 @@ export function Attachment(props: { link?: string; border?: boolean }) {
 			}
 		}
 	});
-	return (
-		<img
-			ref={img}
-			{...stylex.attrs(
-				styles.attachment,
-				props.border && true ? styles.border : null,
-			)}
-			src={props.link}
-			alt="Attachment"
-		/>
-	);
+	return <img ref={img} {...stylex.attrs(styles.attachment, props.border ? styles.border : null)} src={`${CDN_URL}/${props.link}`} alt="Attachment" />;
 }

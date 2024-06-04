@@ -14,8 +14,8 @@ const styles = stylex.create({
 		minWidth: dimensions.postsMinWidth,
 		backgroundColor: colors.background50,
 		flexGrow: 10000,
-		borderRight: "2px solid #c23da9",
-		borderLeft: "2px solid #0066ff",
+		// borderRight: "2px solid #c23da9",
+		// borderLeft: "2px solid #0066ff",
 	},
 	list: {
 		height: "100%",

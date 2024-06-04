@@ -42,7 +42,7 @@ export function InteractionButton(props: {
 	text?: string | number;
 	isToggled?: boolean;
 	isRight?: boolean;
-	onClick?: () => void;
+	onClick?: (e: MouseEvent) => void;
 }) {
 	return (
 		<li {...stylex.attrs(InteractionButtonStyle.activityWrapper)}>
@@ -52,14 +52,8 @@ export function InteractionButton(props: {
 				{...stylex.attrs(
 					InteractionButtonStyle.activityButton,
 
-					props.isRight
-						? InteractionButtonStyle.right
-						: InteractionButtonStyle.left,
-					props.isToggled
-						? props.isRight
-							? InteractionButtonStyle.toggledRight
-							: InteractionButtonStyle.toggledLeft
-						: {},
+					props.isRight ? InteractionButtonStyle.right : InteractionButtonStyle.left,
+					props.isToggled ? (props.isRight ? InteractionButtonStyle.toggledRight : InteractionButtonStyle.toggledLeft) : {},
 				)}
 			>
 				<Show when={props.isToggled}>{props.iconToggled}</Show>

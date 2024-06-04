@@ -37,7 +37,7 @@ const styles = stylex.create({
 
 		flexDirection: "column",
 		justifyContent: "flex-start",
-		alignItems: "center",
+		alignItems: "flex-start",
 		overflowY: "auto",
 	},
 	navElement: {

@@ -8,20 +8,12 @@ import { formatDate, timeSince } from "@/Translation";
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
-import {
-	TbBookmark,
-	TbBookmarkFilled,
-	TbDownload,
-	TbHeart,
-	TbHeartFilled,
-	TbLink,
-	TbMessage,
-	TbRepeat,
-} from "solid-icons/tb";
+import { TbBookmark, TbBookmarkFilled, TbDownload, TbHeart, TbHeartFilled, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import { UserAvatar } from "../UserAvatar";
 import { getDisplayName } from "@/utils";
+import { CDN_URL } from "@/constants";
 const styles = stylex.create({
 	post: {
 		width: "100%",
@@ -104,12 +96,7 @@ export function Post(props: {
 	post: PostType & { author: User };
 	styling?: StyleXStyles;
 }) {
-	const quote = () =>
-		props.post.quoted != null
-			? props.post.attachments.length === 0
-				? "big"
-				: "small"
-			: null;
+	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
 	const [isLiked, setIsLiked] = createSignal(props.post.isLiked);
 	const [isBookmarked, setIsBookmarked] = createSignal(props.post.isBookmarked);
 	const [likeCount, setLikeCount] = createSignal(props.post.countLikes);
@@ -118,13 +105,9 @@ export function Post(props: {
 		//TODO: Add like functionality
 		setIsLiked(!isLiked());
 		if (props.post.isLiked) {
-			setLikeCount(
-				isLiked() ? props.post.countLikes : props.post.countLikes - 1,
-			);
+			setLikeCount(isLiked() ? props.post.countLikes : props.post.countLikes - 1);
 		} else {
-			setLikeCount(
-				isLiked() ? props.post.countLikes + 1 : props.post.countLikes,
-			);
+			setLikeCount(isLiked() ? props.post.countLikes + 1 : props.post.countLikes);
 		}
 	}
 	function toggleBookmark() {
@@ -134,24 +117,14 @@ export function Post(props: {
 
 	return (
 		<article {...stylex.attrs(styles.post, props.styling)}>
-			<A
-				href={`/${props.post.author?.username}/${props.post.ID}`}
-				{...stylex.attrs(styles.link)}
-			>
+			<A href={`/${props.post.author?.username}/${props.post.ID}`} {...stylex.attrs(styles.link)}>
 				<header {...stylex.attrs(styles.header)}>
 					<UserAvatar user={props.post.author} styles={styles.avatar} />
 					<section {...stylex.attrs(styles.names)}>
-						<h2 {...stylex.attrs(styles.displayName)}>
-							{getDisplayName(props.post.author)}
-						</h2>
-						<h3 {...stylex.attrs(styles.username)}>
-							@{props.post.author.username}
-						</h3>
+						<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
+						<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 					</section>
-					<time
-						title={formatDate(props.post.timePosted)}
-						{...stylex.attrs(styles.time)}
-					>
+					<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>
 						○ {timeSince(props.post.timePosted)}
 					</time>
 				</header>
@@ -173,21 +146,9 @@ export function Post(props: {
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
 					<li {...stylex.attrs(styles.statisticsGroup)}>
-						<InteractionButton
-							onClick={toggleLike}
-							isToggled={isLiked()}
-							icon={<TbHeart />}
-							iconToggled={<TbHeartFilled />}
-							text={likeCount()}
-						/>
-						<InteractionButton
-							icon={<TbMessage />}
-							text={props.post.countReplies}
-						/>
-						<InteractionButton
-							icon={<TbRepeat />}
-							text={props.post.countQuotes}
-						/>
+						<InteractionButton onClick={toggleLike} isToggled={isLiked()} icon={<TbHeart />} iconToggled={<TbHeartFilled />} text={likeCount()} />
+						<InteractionButton icon={<TbMessage />} text={props.post.countReplies} />
+						<InteractionButton icon={<TbRepeat />} text={props.post.countQuotes} />
 					</li>
 
 					<li {...stylex.attrs(styles.statisticsGroup)}>
@@ -199,11 +160,26 @@ export function Post(props: {
 							iconToggled={<TbBookmarkFilled />}
 						/>
 						<InteractionButton isRight={true} icon={<TbLink />} />
-						<InteractionButton
-							isRight={true}
-							icon={<TbDownload />}
-							{...stylex.attrs(InteractionButtonStyle.activityButton)}
-						/>
+						<Show when={props.post.attachments.length > 0}>
+							<InteractionButton
+								isRight={true}
+								icon={<TbDownload />}
+								{...stylex.attrs(InteractionButtonStyle.activityButton)}
+								onClick={(e) => {
+									e.preventDefault();
+									alert("Downloading");
+									const link = document.createElement("a");
+									link.setAttribute("download", "true");
+									link.style.display = "none";
+									document.body.appendChild(link);
+									for (let i = 0; i < props.post.attachments.length; i++) {
+										link.setAttribute("href", CDN_URL + props.post.attachments[i]);
+										link.click();
+									}
+									document.body.removeChild(link);
+								}}
+							/>
+						</Show>
 					</li>
 				</ol>
 			</footer>
