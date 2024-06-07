@@ -41,7 +41,7 @@ message ResponseSetBanner {
 }
 message ResponseLogInUser {
   string token = 1;
-  uint64 userID = 2;
+  int64 userID = 2;
   string message = 3;
 }
 message ResponseGetProfile { internal.User profile = 1; }
@@ -74,7 +74,7 @@ message ResponseDeletePost {
 
 message ResponseAddPost { 
   string message = 1;
-  uint64 postID = 2;
+  int64 postID = 2;
 }
 
 message ResponseSignUpUser { string message = 1; }

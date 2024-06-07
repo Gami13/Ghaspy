@@ -76,6 +76,9 @@ func (s Snowflake) GetType() SnowflakeType {
 func (s Snowflake) GetTime() time.Time {
 	return time.UnixMilli(int64(s>>(TYPE_BITS+BATCH_BITS)) + epoch)
 }
+func (s Snowflake) GetJSTime() string {
+	return s.GetTime().Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+}
 func (s Snowflake) GetTimestamp() uint64 {
 	return uint64(s>>(TYPE_BITS+BATCH_BITS)) + epoch
 }

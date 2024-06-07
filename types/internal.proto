@@ -4,7 +4,7 @@ package main.internal;
 option go_package = "types/";
 
 message SQLUser {
-  uint64 ID = 1;
+  int64 ID = 1;
   string username = 2;
   string displayName = 3;
   string bio = 4;
@@ -25,7 +25,7 @@ message SQLUser {
 }
 
 message User {
-  uint64 ID = 1;
+  int64 ID = 1;
   string username = 2;
   string displayName = 3;
   string bio = 4;
@@ -49,12 +49,12 @@ message User {
 
 
 message Post {
-  uint64 ID = 1;
+  int64 ID = 1;
   User author = 2;
   string content = 3;
-  optional uint64 replyToID = 4;
+  optional int64 replyToID = 4;
   optional Post replyTo = 5;
-  optional uint64 quotedID = 6;
+  optional int64 quotedID = 6;
   optional Post quoted = 7;
   repeated string attachments = 8;
   uint32 countLikes = 9;
@@ -63,5 +63,5 @@ message Post {
   string timePosted = 12;
   bool isLiked = 13;
   bool isBookmarked = 14;
-  uint64 threadStart = 15;
+  int64 threadStart = 15;
 }

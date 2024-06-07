@@ -70,7 +70,7 @@ func logInUser(c *fiber.Ctx) error {
 	}
 	logger.Println("USER LOGGED IN: ", requestBody.Email)
 
-	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: userId, Message: "userLoggedIn"})
+	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: int64(userId), Message: "userLoggedIn"})
 
 }
 
