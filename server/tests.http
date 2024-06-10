@@ -157,4 +157,4 @@ GET {{apiURL}}/post-replies/162430153014640642/0
 
 ###getLoggedInUserProfile
 GET {{apiURL}}/profile
-Authorization: Hello Gami
+Authorization: 166117044658372649.sOuauOT8wJwnNrCq2ERYqtTI00Or8s7xNCQC8UfaVDfNweo3EM7tFP6-Qq8DQ9p1ghtvOpJuEzgf6NT5x6k_qn91k8cBpRRKfuTiuwf6XEoRpguwp5g9tUCqp1_Dp1VpIu3j95r_C4rif1U4WFfSFgRMUJ2qHsSRoNOFIOpJJxc

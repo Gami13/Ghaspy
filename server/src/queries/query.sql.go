@@ -9,7 +9,65 @@ import (
 	"context"
 )
 
-const getLoggedInUserProfile = `-- name: GetLoggedInUserProfile :one
+const insertToken = `-- name: InsertToken :one
+INSERT INTO tokens (id, userId, token, device)
+VALUES ($1, $2, $3, $4)
+RETURNING id, userid, token, device
+`
+
+type InsertTokenParams struct {
+	ID     int64
+	Userid int64
+	Token  string
+	Device string
+}
+
+func (q *Queries) InsertToken(ctx context.Context, arg InsertTokenParams) (Token, error) {
+	row := q.db.QueryRow(ctx, insertToken,
+		arg.ID,
+		arg.Userid,
+		arg.Token,
+		arg.Device,
+	)
+	var i Token
+	err := row.Scan(
+		&i.ID,
+		&i.Userid,
+		&i.Token,
+		&i.Device,
+	)
+	return i, err
+}
+
+const selectAuthData = `-- name: SelectAuthData :one
+SELECT id,
+	salt,
+	password,
+	isValidated
+FROM users
+WHERE email = $1
+`
+
+type SelectAuthDataRow struct {
+	ID          int64
+	Salt        string
+	Password    string
+	Isvalidated bool
+}
+
+func (q *Queries) SelectAuthData(ctx context.Context, email string) (SelectAuthDataRow, error) {
+	row := q.db.QueryRow(ctx, selectAuthData, email)
+	var i SelectAuthDataRow
+	err := row.Scan(
+		&i.ID,
+		&i.Salt,
+		&i.Password,
+		&i.Isvalidated,
+	)
+	return i, err
+}
+
+const selectLoggedInUserProfile = `-- name: SelectLoggedInUserProfile :one
 SELECT usersDetails.id,
 	usersDetails.username,
 	usersDetails.displayname,
@@ -30,8 +88,8 @@ FROM usersDetails
 WHERE tokens.token = $1
 `
 
-func (q *Queries) GetLoggedInUserProfile(ctx context.Context, token string) (Usersdetail, error) {
-	row := q.db.QueryRow(ctx, getLoggedInUserProfile, token)
+func (q *Queries) SelectLoggedInUserProfile(ctx context.Context, token string) (Usersdetail, error) {
+	row := q.db.QueryRow(ctx, selectLoggedInUserProfile, token)
 	var i Usersdetail
 	err := row.Scan(
 		&i.ID,

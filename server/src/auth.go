@@ -21,58 +21,58 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func logInUser(c *fiber.Ctx) error {
+// func logInUser(c *fiber.Ctx) error {
 
-	requestBody := types.RequestLogInUser{}
+// 	requestBody := types.RequestLogInUser{}
 
-	err := proto.Unmarshal(c.Body(), &requestBody)
-	if err != nil {
-		logger.Println("ERROR: ", err)
-		return protoError(c, http.StatusBadRequest, "cantUnmarshal")
-	}
-	logger.Println("LOGGING IN: ", requestBody.Email)
+// 	err := proto.Unmarshal(c.Body(), &requestBody)
+// 	if err != nil {
+// 		logger.Println("ERROR: ", err)
+// 		return protoError(c, http.StatusBadRequest, "cantUnmarshal")
+// 	}
+// 	logger.Println("LOGGING IN: ", requestBody.Email)
 
-	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
+// 	dbpool := GetLocal[*pgxpool.Pool](c, "dbpool")
 
-	var userId uint64
-	var salt string
-	var hash string
-	var isValidated bool
+// 	var userId uint64
+// 	var salt string
+// 	var hash string
+// 	var isValidated bool
 
-	err = dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
+// 	err = dbpool.QueryRow(context.Background(), "SELECT id, salt, password, isValidated FROM users WHERE email = $1", requestBody.Email).Scan(&userId, &salt, &hash, &isValidated)
 
-	if err != nil {
-		return protoError(c, http.StatusBadRequest, "dataIncorrect")
-	}
-	if !isValidated {
+// 	if err != nil {
+// 		return protoError(c, http.StatusBadRequest, "dataIncorrect")
+// 	}
+// 	if !isValidated {
 
-		return protoError(c, http.StatusBadRequest, "unvalidated")
+// 		return protoError(c, http.StatusBadRequest, "unvalidated")
 
-	}
-	match := comparePasswordAndHash(requestBody.Password, hash, salt)
+// 	}
+// 	match := comparePasswordAndHash(requestBody.Password, hash, salt)
 
-	if !match {
-		return protoError(c, http.StatusBadRequest, "dataIncorrect")
+// 	if !match {
+// 		return protoError(c, http.StatusBadRequest, "dataIncorrect")
 
-	}
+// 	}
 
-	token, snowflake, err := generateToken()
-	if err != nil {
-		logger.Println("ERROR: ", err)
-		return protoError(c, http.StatusBadRequest, "cantGenerateToken")
+// 	token, snowflake, err := generateToken()
+// 	if err != nil {
+// 		logger.Println("ERROR: ", err)
+// 		return protoError(c, http.StatusBadRequest, "cantGenerateToken")
 
-	}
+// 	}
 
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake, userId, token, requestBody.DeviceName)
-	if err != nil {
-		return protoError(c, http.StatusBadRequest, "cantInsertToken")
+// 	_, err = dbpool.Exec(context.Background(), "INSERT INTO tokens (id, userId, token, device) VALUES ($1, $2, $3, $4)", snowflake, userId, token, requestBody.DeviceName)
+// 	if err != nil {
+// 		return protoError(c, http.StatusBadRequest, "cantInsertToken")
 
-	}
-	logger.Println("USER LOGGED IN: ", requestBody.Email)
+// 	}
+// 	logger.Println("USER LOGGED IN: ", requestBody.Email)
 
-	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: int64(userId), Message: "userLoggedIn"})
+// 	return protoSuccess(c, http.StatusOK, &types.ResponseLogInUser{Token: token, UserID: int64(userId), Message: "userLoggedIn"})
 
-}
+// }
 
 // PASSWORD REQUIREMENTS
 // 8 characters minimum

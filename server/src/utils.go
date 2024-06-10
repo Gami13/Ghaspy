@@ -29,7 +29,7 @@ func protoSuccess(c *fiber.Ctx, status int, data proto.Message) error {
 	return c.Status(status).Send(marshalled)
 }
 
-func protoErrorNew(w http.ResponseWriter, status int, message string) {
+func ProtoErrorNew(w http.ResponseWriter, status int, message string) {
 	logger.Println("ERROR: ", message)
 	marshalled, err := proto.Marshal(&types.ResponseError{Message: message})
 	if err != nil {
@@ -40,10 +40,11 @@ func protoErrorNew(w http.ResponseWriter, status int, message string) {
 	}
 
 	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/x-protobuf")
 	w.Write(marshalled)
 }
 
-func protoSuccessNew(w http.ResponseWriter, status int, data proto.Message) {
+func ProtoSuccessNew(w http.ResponseWriter, status int, data proto.Message) {
 	marshalled, err := proto.Marshal(data)
 	if err != nil {
 		logger.Println("ERROR: ", err)
@@ -53,5 +54,6 @@ func protoSuccessNew(w http.ResponseWriter, status int, data proto.Message) {
 	}
 
 	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/x-protobuf")
 	w.Write(marshalled)
 }

@@ -1,4 +1,4 @@
--- name: GetLoggedInUserProfile :one
+-- name: SelectLoggedInUserProfile :one
 SELECT usersDetails.id,
 	usersDetails.username,
 	usersDetails.displayname,
@@ -17,3 +17,16 @@ SELECT usersDetails.id,
 FROM usersDetails
 	JOIN tokens ON tokens.userid = usersDetails.id
 WHERE tokens.token = $1;
+
+-- name: SelectAuthData :one
+SELECT id,
+	salt,
+	password,
+	isValidated
+FROM users
+WHERE email = $1;
+
+-- name: InsertToken :one
+INSERT INTO tokens (id, userId, token, device)
+VALUES ($1, $2, $3, $4)
+RETURNING *;

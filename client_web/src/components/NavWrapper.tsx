@@ -53,14 +53,14 @@ export function NavWrapper(props: any) {
 	});
 	createEffect(() => {
 		if (AppState.userToken()) {
-			const proto = new ProtoFetch<undefined, ResponseGetProfile>(
-				undefined,
-				ResponseGetProfile,
-			);
+			const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined, ResponseGetProfile);
+			console.log("Authorization: ", AppState.userToken());
 			proto
 				.Query(CURRENT_USER_DATA_ENDPOINT, {
 					method: "GET",
+
 					headers: {
+						"Content-Type": "application/x-protobuf",
 						// biome-ignore lint/style/noNonNullAssertion: <didnt wanna do it other way>
 						Authorization: AppState.userToken()!,
 					},
@@ -70,8 +70,6 @@ export function NavWrapper(props: any) {
 						AppState.setUser(data.data.profile);
 						AppState.setLocale(data.data.profile.prefferedLanguage as Locales);
 						console.log("USER", data.data.profile.prefferedLanguage);
-						//!TYPE IS MISSING PREFFERED LANGUAGE
-						//TODO: ADD TYPE
 						return;
 					}
 					AppState.setUserToken(undefined);
@@ -89,18 +87,10 @@ export function NavWrapper(props: any) {
 			<Navigation />
 			{c()}
 			<aside {...stylex.attrs(styles.aside)}>
-				<button
-					{...stylex.attrs(styles.asideBtn)}
-					type="button"
-					onClick={() => AppState.setLocale("pl_PL")}
-				>
+				<button {...stylex.attrs(styles.asideBtn)} type="button" onClick={() => AppState.setLocale("pl_PL")}>
 					pl_PL
 				</button>
-				<button
-					{...stylex.attrs(styles.asideBtn)}
-					type="button"
-					onClick={() => AppState.setLocale("en_US")}
-				>
+				<button {...stylex.attrs(styles.asideBtn)} type="button" onClick={() => AppState.setLocale("en_US")}>
 					en_US
 				</button>
 			</aside>
