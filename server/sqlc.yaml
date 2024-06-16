@@ -1,10 +1,18 @@
 version: '2'
 sql:
   - engine: 'postgresql'
+    analyzer:
+      database: true
     queries: 'query.sql'
     schema: 'schema.sql'
+    strict_function_checks: true
+    database:
+      uri: postgres://postgres:root@localhost:5432/ghaspy
     gen:
       go:
         package: 'queries'
         out: 'src/queries'
         sql_package: 'pgx/v5'
+        emit_prepared_queries: true
+    rules:
+      - sqlc/db-prepare

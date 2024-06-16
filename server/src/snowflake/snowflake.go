@@ -1,4 +1,4 @@
-package main
+package snowflake // import "ghaspy/snowflake"
 
 import (
 	"strconv"
@@ -18,22 +18,22 @@ var numberInBatch uint32 = 0
 type SnowflakeType uint16
 
 const (
-	SF_USER SnowflakeType = iota
-	SF_VERIFICATION
-	SF_POST
-	SF_LIKE
-	SF_FOLLOW
-	SF_MESSAGE
-	SF_ATTACHMENT
-	SF_BOOKMARK
-	SF_CHAT
-	SF_TOKEN
-	SF_ELEVEN
-	SF_TWELVE
-	SF_THIRTEEN
-	SF_FOURTEEN
-	SF_FIFTEEN
-	SF_OTHER
+	USER SnowflakeType = iota
+	VERIFICATION
+	POST
+	LIKE
+	FOLLOW
+	MESSAGE
+	ATTACHMENT
+	BOOKMARK
+	CHAT
+	TOKEN
+	ELEVEN
+	TWELVE
+	THIRTEEN
+	FOURTEEN
+	FIFTEEN
+	OTHER
 )
 
 func (s SnowflakeType) String() string {
@@ -50,7 +50,7 @@ func (s Snowflake) StringBinary() string {
 	return strconv.FormatUint(uint64(s), 2)
 }
 
-func newSnowflake(IDType SnowflakeType) Snowflake {
+func New(IDType SnowflakeType) Snowflake {
 	var currentDate = time.Now().UnixMilli()
 
 	var ID = Snowflake(((uint64((currentDate-epoch)<<BATCH_BITS) | uint64(numberInBatch)) << TYPE_BITS) | uint64(IDType))
@@ -65,7 +65,7 @@ func newSnowflake(IDType SnowflakeType) Snowflake {
 
 }
 
-func SnowflakeFromInt(ID uint64) Snowflake {
+func FromInt(ID uint64) Snowflake {
 	return Snowflake(ID)
 }
 

@@ -7,7 +7,125 @@ package queries
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const deletePost = `-- name: DeletePost :execrows
+DELETE FROM posts
+WHERE posts.id = $1
+	AND posts.authorId = (
+		SELECT tokens.userId
+		FROM tokens
+		WHERE tokens.token = $2
+	)
+`
+
+type DeletePostParams struct {
+	ID    int64
+	Token string
+}
+
+func (q *Queries) DeletePost(ctx context.Context, arg DeletePostParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePost, arg.ID, arg.Token)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteToken = `-- name: DeleteToken :execrows
+DELETE FROM tokens
+WHERE token = $1
+`
+
+func (q *Queries) DeleteToken(ctx context.Context, token string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteToken, token)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const insertNewPost = `-- name: InsertNewPost :execrows
+INSERT INTO posts (
+		id,
+		authorId,
+		content,
+		quoteOf,
+		replyTo,
+		attachments,
+		threadStart
+	)
+VALUES (
+		$1,
+		(
+			SELECT tokens.userId
+			FROM tokens
+			WHERE tokens.token = $2
+		),
+		$3,
+		$4,
+		$5,
+		$6,
+		$7
+	)
+`
+
+type InsertNewPostParams struct {
+	ID          int64
+	Token       string
+	Content     pgtype.Text
+	Quoteof     pgtype.Int8
+	Replyto     pgtype.Int8
+	Attachments []string
+	Threadstart pgtype.Int8
+}
+
+func (q *Queries) InsertNewPost(ctx context.Context, arg InsertNewPostParams) (int64, error) {
+	result, err := q.db.Exec(ctx, insertNewPost,
+		arg.ID,
+		arg.Token,
+		arg.Content,
+		arg.Quoteof,
+		arg.Replyto,
+		arg.Attachments,
+		arg.Threadstart,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const insertNewUser = `-- name: InsertNewUser :execrows
+INSERT INTO users (id, username, email, password, salt, isValidated)
+VALUES ($1, $2, $3, $4, $5, $6)
+`
+
+type InsertNewUserParams struct {
+	ID          int64
+	Username    string
+	Email       string
+	Password    string
+	Salt        string
+	Isvalidated bool
+}
+
+func (q *Queries) InsertNewUser(ctx context.Context, arg InsertNewUserParams) (int64, error) {
+	result, err := q.db.Exec(ctx, insertNewUser,
+		arg.ID,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+		arg.Salt,
+		arg.Isvalidated,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
 
 const insertToken = `-- name: InsertToken :one
 INSERT INTO tokens (id, userId, token, device)
@@ -39,6 +157,31 @@ func (q *Queries) InsertToken(ctx context.Context, arg InsertTokenParams) (Token
 	return i, err
 }
 
+const insertVerificationToken = `-- name: InsertVerificationToken :execrows
+INSERT INTO verifications (id, userId, code, validUntil)
+VALUES ($1, $2, $3, $4)
+`
+
+type InsertVerificationTokenParams struct {
+	ID         int64
+	Userid     int64
+	Code       string
+	Validuntil pgtype.Timestamp
+}
+
+func (q *Queries) InsertVerificationToken(ctx context.Context, arg InsertVerificationTokenParams) (int64, error) {
+	result, err := q.db.Exec(ctx, insertVerificationToken,
+		arg.ID,
+		arg.Userid,
+		arg.Code,
+		arg.Validuntil,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const selectAuthData = `-- name: SelectAuthData :one
 SELECT id,
 	salt,
@@ -65,6 +208,32 @@ func (q *Queries) SelectAuthData(ctx context.Context, email string) (SelectAuthD
 		&i.Isvalidated,
 	)
 	return i, err
+}
+
+const selectEmailFromID = `-- name: SelectEmailFromID :one
+SELECT email
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) SelectEmailFromID(ctx context.Context, id int64) (string, error) {
+	row := q.db.QueryRow(ctx, selectEmailFromID, id)
+	var email string
+	err := row.Scan(&email)
+	return email, err
+}
+
+const selectIsVerified = `-- name: SelectIsVerified :one
+SELECT isValidated
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) SelectIsVerified(ctx context.Context, id int64) (bool, error) {
+	row := q.db.QueryRow(ctx, selectIsVerified, id)
+	var isvalidated bool
+	err := row.Scan(&isvalidated)
+	return isvalidated, err
 }
 
 const selectLoggedInUserProfile = `-- name: SelectLoggedInUserProfile :one
@@ -109,4 +278,856 @@ func (q *Queries) SelectLoggedInUserProfile(ctx context.Context, token string) (
 		&i.Prefferedlanguage,
 	)
 	return i, err
+}
+
+const selectPostByID = `-- name: SelectPostByID :one
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1::text) as p
+WHERE p.id = ($2::bigint)
+`
+
+type SelectPostByIDParams struct {
+	Token  string
+	Postid int64
+}
+
+type SelectPostByIDRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectPostByID(ctx context.Context, arg SelectPostByIDParams) (SelectPostByIDRow, error) {
+	row := q.db.QueryRow(ctx, selectPostByID, arg.Token, arg.Postid)
+	var i SelectPostByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Authorid,
+		&i.Username,
+		&i.Displayname,
+		&i.Bio,
+		&i.Avatar,
+		&i.Banner,
+		&i.Isfollowerspublic,
+		&i.Isfollowingpublic,
+		&i.Ispostspublic,
+		&i.Islikespublic,
+		&i.Countlikes,
+		&i.Countposts,
+		&i.Countisfollowing,
+		&i.Countfollowedby,
+		&i.Content,
+		&i.Replyto,
+		&i.Quoteof,
+		&i.Attachments,
+		&i.Postcountlikes,
+		&i.Postcountquotes,
+		&i.Postcountreplies,
+		&i.Ispostliked,
+		&i.Ispostbookmarked,
+		&i.Threadstart,
+	)
+	return i, err
+}
+
+const selectPostsByUserChronologically = `-- name: SelectPostsByUserChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1::text) as p
+WHERE p.username = ($2::text)
+ORDER BY p.id DESC
+LIMIT 50 OFFSET $3
+`
+
+type SelectPostsByUserChronologicallyParams struct {
+	Token    string
+	Username string
+	Offset   int64
+}
+
+type SelectPostsByUserChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectPostsByUserChronologically(ctx context.Context, arg SelectPostsByUserChronologicallyParams) ([]SelectPostsByUserChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectPostsByUserChronologically, arg.Token, arg.Username, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectPostsByUserChronologicallyRow
+	for rows.Next() {
+		var i SelectPostsByUserChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectPostsChronologically = `-- name: SelectPostsChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1) as p
+LIMIT 50 OFFSET $2
+`
+
+type SelectPostsChronologicallyParams struct {
+	Tokenin string
+	Offset  int64
+}
+
+type SelectPostsChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectPostsChronologically(ctx context.Context, arg SelectPostsChronologicallyParams) ([]SelectPostsChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectPostsChronologically, arg.Tokenin, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectPostsChronologicallyRow
+	for rows.Next() {
+		var i SelectPostsChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectTakenEmail = `-- name: SelectTakenEmail :one
+SELECT COUNT(id)
+FROM users
+WHERE email = $1
+`
+
+func (q *Queries) SelectTakenEmail(ctx context.Context, email string) (int64, error) {
+	row := q.db.QueryRow(ctx, selectTakenEmail, email)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const selectTakenUsername = `-- name: SelectTakenUsername :one
+SELECT COUNT(id)
+FROM users
+WHERE username = $1
+`
+
+func (q *Queries) SelectTakenUsername(ctx context.Context, username string) (int64, error) {
+	row := q.db.QueryRow(ctx, selectTakenUsername, username)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const selectThreadReplies = `-- name: SelectThreadReplies :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1) as p
+WHERE p.threadStart = $2
+	AND p.id != $2
+ORDER BY p.id DESC
+LIMIT 50 OFFSET $3::integer
+`
+
+type SelectThreadRepliesParams struct {
+	Token      pgtype.Text
+	Postid     pgtype.Int8
+	Pagenumber pgtype.Int4
+}
+
+type SelectThreadRepliesRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectThreadReplies(ctx context.Context, arg SelectThreadRepliesParams) ([]SelectThreadRepliesRow, error) {
+	rows, err := q.db.Query(ctx, selectThreadReplies, arg.Token, arg.Postid, arg.Pagenumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectThreadRepliesRow
+	for rows.Next() {
+		var i SelectThreadRepliesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectThreadStart = `-- name: SelectThreadStart :one
+SELECT posts.threadStart
+FROM posts
+WHERE posts.id = $1
+`
+
+func (q *Queries) SelectThreadStart(ctx context.Context, id int64) (pgtype.Int8, error) {
+	row := q.db.QueryRow(ctx, selectThreadStart, id)
+	var threadstart pgtype.Int8
+	err := row.Scan(&threadstart)
+	return threadstart, err
+}
+
+const selectUser = `-- name: SelectUser :one
+SELECT usersDetails.id,
+	usersDetails.username,
+	usersDetails.displayName,
+	usersDetails.bio,
+	usersDetails.avatar,
+	usersDetails.banner,
+	usersDetails.isFollowersPublic,
+	usersDetails.isFollowingPublic,
+	usersDetails.isPostsPublic,
+	usersDetails.isLikesPublic,
+	usersDetails.countlikes,
+	usersDetails.countposts,
+	usersDetails.countisfollowing,
+	usersDetails.countfollowedby,
+	(
+		SELECT CASE
+				WHEN COUNT(follows.id) > 0 THEN true
+				ELSE false
+			END AS isFollowed
+		FROM follows,
+			usersDetails
+		WHERE follows.followedid = usersDetails.id
+			AND usersDetails.username = $1
+			AND follows.followerId = (
+				SELECT tokens.userId
+				FROM tokens
+				WHERE tokens.token = $2
+			)
+	) AS isFollowed,
+	(
+		SELECT CASE
+				WHEN COUNT(follows.id) > 0 THEN true
+				ELSE false
+			END AS isFollowingYou
+		FROM follows,
+			usersDetails
+		WHERE follows.followerId = usersDetails.id
+			AND usersDetails.username = $1
+			AND follows.followedid = (
+				SELECT tokens.userId
+				FROM tokens
+				WHERE tokens.token = $2
+			)
+	) AS isFollowingYou,
+	(
+		SELECT CASE
+				WHEN COUNT(tokens.id) > 0 THEN true
+				ELSE false
+			END AS isYou
+		FROM tokens,
+			usersDetails
+		WHERE tokens.userId = usersDetails.id
+			AND usersDetails.username = $1
+			AND tokens.token = $2
+	) AS isYou
+FROM usersDetails
+WHERE usersDetails.username = $1
+`
+
+type SelectUserParams struct {
+	Username string
+	Token    string
+}
+
+type SelectUserRow struct {
+	ID                int64
+	Username          string
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic bool
+	Isfollowingpublic bool
+	Ispostspublic     bool
+	Islikespublic     bool
+	Countlikes        int64
+	Countposts        int64
+	Countisfollowing  int64
+	Countfollowedby   int64
+	Isfollowed        bool
+	Isfollowingyou    bool
+	Isyou             bool
+}
+
+func (q *Queries) SelectUser(ctx context.Context, arg SelectUserParams) (SelectUserRow, error) {
+	row := q.db.QueryRow(ctx, selectUser, arg.Username, arg.Token)
+	var i SelectUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Displayname,
+		&i.Bio,
+		&i.Avatar,
+		&i.Banner,
+		&i.Isfollowerspublic,
+		&i.Isfollowingpublic,
+		&i.Ispostspublic,
+		&i.Islikespublic,
+		&i.Countlikes,
+		&i.Countposts,
+		&i.Countisfollowing,
+		&i.Countfollowedby,
+		&i.Isfollowed,
+		&i.Isfollowingyou,
+		&i.Isyou,
+	)
+	return i, err
+}
+
+const selectVerificationToken = `-- name: SelectVerificationToken :one
+SELECT id,
+	userId,
+	code,
+	validUntil
+FROM verifications
+WHERE code LIKE $1
+`
+
+func (q *Queries) SelectVerificationToken(ctx context.Context, code string) (Verification, error) {
+	row := q.db.QueryRow(ctx, selectVerificationToken, code)
+	var i Verification
+	err := row.Scan(
+		&i.ID,
+		&i.Userid,
+		&i.Code,
+		&i.Validuntil,
+	)
+	return i, err
+}
+
+const toggleBookmark = `-- name: ToggleBookmark :one
+INSERT INTO bookmarks(id, userid, postid, isenabled)
+VALUES(
+		$1,
+		(
+			SELECT tokens.userId
+			FROM tokens
+			WHERE tokens.token = $2
+		),
+		$3,
+		true
+	) ON CONFLICT(userid, postid) DO
+UPDATE
+SET isenabled = NOT bookmarks.isenabled
+RETURNING isenabled
+`
+
+type ToggleBookmarkParams struct {
+	ID     int64
+	Token  string
+	Postid int64
+}
+
+func (q *Queries) ToggleBookmark(ctx context.Context, arg ToggleBookmarkParams) (bool, error) {
+	row := q.db.QueryRow(ctx, toggleBookmark, arg.ID, arg.Token, arg.Postid)
+	var isenabled bool
+	err := row.Scan(&isenabled)
+	return isenabled, err
+}
+
+const toggleFollow = `-- name: ToggleFollow :one
+INSERT INTO follows(id, followerid, followedid, isenabled)
+VALUES(
+		$1,
+		(
+			SELECT tokens.userId
+			FROM tokens
+			WHERE tokens.token = $2
+		),
+		$3,
+		true
+	) ON CONFLICT(followerid, followedid) DO
+UPDATE
+SET isenabled = NOT follows.isenabled
+RETURNING isenabled
+`
+
+type ToggleFollowParams struct {
+	ID         int64
+	Token      string
+	Followedid int64
+}
+
+func (q *Queries) ToggleFollow(ctx context.Context, arg ToggleFollowParams) (bool, error) {
+	row := q.db.QueryRow(ctx, toggleFollow, arg.ID, arg.Token, arg.Followedid)
+	var isenabled bool
+	err := row.Scan(&isenabled)
+	return isenabled, err
+}
+
+const toggleLike = `-- name: ToggleLike :one
+INSERT INTO likes(id, userid, postid, isenabled)
+VALUES(
+		$1,
+		(
+			SELECT tokens.userId
+			FROM tokens
+			WHERE tokens.token = $2
+		),
+		$3,
+		true
+	) ON CONFLICT(userid, postid) DO
+UPDATE
+SET isenabled = NOT likes.isenabled
+RETURNING isenabled
+`
+
+type ToggleLikeParams struct {
+	ID     int64
+	Token  string
+	Postid int64
+}
+
+func (q *Queries) ToggleLike(ctx context.Context, arg ToggleLikeParams) (bool, error) {
+	row := q.db.QueryRow(ctx, toggleLike, arg.ID, arg.Token, arg.Postid)
+	var isenabled bool
+	err := row.Scan(&isenabled)
+	return isenabled, err
+}
+
+const updateAvatar = `-- name: UpdateAvatar :one
+UPDATE users
+SET avatar = $1
+FROM tokens
+WHERE tokens.token = $2
+	AND users.id = tokens.userId
+RETURNING avatar
+`
+
+type UpdateAvatarParams struct {
+	Avatar pgtype.Text
+	Token  string
+}
+
+func (q *Queries) UpdateAvatar(ctx context.Context, arg UpdateAvatarParams) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, updateAvatar, arg.Avatar, arg.Token)
+	var avatar pgtype.Text
+	err := row.Scan(&avatar)
+	return avatar, err
+}
+
+const updateBanner = `-- name: UpdateBanner :one
+UPDATE users
+SET banner = $1
+FROM tokens
+WHERE tokens.token = $2
+	AND users.id = tokens.userId
+RETURNING banner
+`
+
+type UpdateBannerParams struct {
+	Banner pgtype.Text
+	Token  string
+}
+
+func (q *Queries) UpdateBanner(ctx context.Context, arg UpdateBannerParams) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, updateBanner, arg.Banner, arg.Token)
+	var banner pgtype.Text
+	err := row.Scan(&banner)
+	return banner, err
+}
+
+const updateBio = `-- name: UpdateBio :one
+UPDATE users
+SET bio = $1
+FROM tokens
+WHERE tokens.token = $2
+	AND users.id = tokens.userId
+RETURNING bio
+`
+
+type UpdateBioParams struct {
+	Bio   pgtype.Text
+	Token string
+}
+
+func (q *Queries) UpdateBio(ctx context.Context, arg UpdateBioParams) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, updateBio, arg.Bio, arg.Token)
+	var bio pgtype.Text
+	err := row.Scan(&bio)
+	return bio, err
+}
+
+const updateDisplayName = `-- name: UpdateDisplayName :one
+UPDATE users
+SET displayName = $1
+FROM tokens
+WHERE tokens.token = $2
+	AND users.id = tokens.userId
+RETURNING displayName
+`
+
+type UpdateDisplayNameParams struct {
+	Displayname pgtype.Text
+	Token       string
+}
+
+func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, updateDisplayName, arg.Displayname, arg.Token)
+	var displayname pgtype.Text
+	err := row.Scan(&displayname)
+	return displayname, err
+}
+
+const updateIsVerified = `-- name: UpdateIsVerified :execrows
+UPDATE users
+SET isValidated = true
+WHERE id = $1
+`
+
+func (q *Queries) UpdateIsVerified(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, updateIsVerified, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const updateToggleIsFollowersPublic = `-- name: UpdateToggleIsFollowersPublic :one
+UPDATE users
+SET isFollowersPublic = NOT isFollowersPublic
+FROM tokens
+WHERE tokens.token = $1
+	AND users.id = tokens.userId
+RETURNING users.isFollowersPublic
+`
+
+func (q *Queries) UpdateToggleIsFollowersPublic(ctx context.Context, token string) (bool, error) {
+	row := q.db.QueryRow(ctx, updateToggleIsFollowersPublic, token)
+	var isfollowerspublic bool
+	err := row.Scan(&isfollowerspublic)
+	return isfollowerspublic, err
+}
+
+const updateToggleIsFollowingPublic = `-- name: UpdateToggleIsFollowingPublic :one
+UPDATE users
+SET isFollowingPublic = NOT isFollowingPublic
+FROM tokens
+WHERE tokens.token = $1
+	AND users.id = tokens.userId
+RETURNING users.isFollowingPublic
+`
+
+func (q *Queries) UpdateToggleIsFollowingPublic(ctx context.Context, token string) (bool, error) {
+	row := q.db.QueryRow(ctx, updateToggleIsFollowingPublic, token)
+	var isfollowingpublic bool
+	err := row.Scan(&isfollowingpublic)
+	return isfollowingpublic, err
+}
+
+const updateToggleIsLikesPublic = `-- name: UpdateToggleIsLikesPublic :one
+UPDATE users
+SET isLikesPublic = NOT isLikesPublic
+FROM tokens
+WHERE tokens.token = $1
+	AND users.id = tokens.userId
+RETURNING users.isLikesPublic
+`
+
+func (q *Queries) UpdateToggleIsLikesPublic(ctx context.Context, token string) (bool, error) {
+	row := q.db.QueryRow(ctx, updateToggleIsLikesPublic, token)
+	var islikespublic bool
+	err := row.Scan(&islikespublic)
+	return islikespublic, err
+}
+
+const updateToggleIsPostsPublic = `-- name: UpdateToggleIsPostsPublic :one
+UPDATE users
+SET isPostsPublic = NOT isPostsPublic
+FROM tokens
+WHERE tokens.token = $1
+	AND users.id = tokens.userId
+RETURNING users.isPostsPublic
+`
+
+func (q *Queries) UpdateToggleIsPostsPublic(ctx context.Context, token string) (bool, error) {
+	row := q.db.QueryRow(ctx, updateToggleIsPostsPublic, token)
+	var ispostspublic bool
+	err := row.Scan(&ispostspublic)
+	return ispostspublic, err
 }

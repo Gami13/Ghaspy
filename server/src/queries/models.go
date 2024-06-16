@@ -9,9 +9,10 @@ import (
 )
 
 type Bookmark struct {
-	ID     int64
-	Userid int64
-	Postid int64
+	ID        int64
+	Userid    int64
+	Postid    int64
+	Isenabled bool
 }
 
 type Chat struct {
@@ -25,12 +26,14 @@ type Follow struct {
 	ID         int64
 	Followerid int64
 	Followedid int64
+	Isenabled  bool
 }
 
 type Like struct {
-	ID     int64
-	Userid int64
-	Postid int64
+	ID        int64
+	Userid    int64
+	Postid    int64
+	Isenabled bool
 }
 
 type Message struct {

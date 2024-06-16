@@ -40,7 +40,9 @@ CREATE INDEX postsReplyToIdx ON posts (replyTo);
 CREATE TABLE IF NOT EXISTS likes (
 	id bigint NOT NULL PRIMARY KEY,
 	userId bigint NOT NULL,
-	postId bigint NOT NULL
+	postId bigint NOT NULL,
+	isEnabled BOOLEAN NOT NULL DEFAULT '1',
+	UNIQUE(userId, postId)
 );
 
 CREATE INDEX likesUserIdx ON likes (userId);
@@ -50,7 +52,9 @@ CREATE INDEX likesPostIdIdx ON likes (postId);
 CREATE TABLE IF NOT EXISTS follows (
 	id bigint NOT NULL PRIMARY KEY,
 	followerId bigint NOT NULL,
-	followedId bigint NOT NULL
+	followedId bigint NOT NULL,
+	isEnabled BOOLEAN NOT NULL DEFAULT '1',
+	UNIQUE(followerId, followedId)
 );
 
 CREATE INDEX followsFollowerIdx ON follows (followerId);
@@ -81,7 +85,9 @@ CREATE INDEX chatsIdIdx ON chats (id);
 CREATE TABLE IF NOT EXISTS bookmarks (
 	id bigint NOT NULL PRIMARY KEY,
 	userId bigint NOT NULL,
-	postId bigint NOT NULL
+	postId bigint NOT NULL,
+	isEnabled BOOLEAN NOT NULL DEFAULT '1',
+	UNIQUE(userId, postId)
 );
 
 CREATE INDEX bookmarksUserIdx ON bookmarks (userId);
