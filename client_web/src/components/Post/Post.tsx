@@ -4,7 +4,7 @@ import { createSignal, Match, Show, Switch } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
-import { formatDate, timeSince } from "@/Translation";
+import { formatDate, t, timeSince } from "@/Translation";
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
@@ -13,7 +13,11 @@ import type { StyleXStyles } from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import { UserAvatar } from "../UserAvatar";
 import { getDisplayName } from "@/utils";
-import { CDN_URL } from "@/constants";
+import { CDN_URL, TOGGLE_BOOKMARK_ENDPOINT, TOGGLE_LIKE_ENDPOINT } from "@/constants";
+import { ProtoFetch } from "@/ProtoFetch";
+import { ResponseToggleBookmark, ResponseToggleLike } from "@/types/responses";
+import { useAppState } from "@/AppState";
+import { RequestToggleBookmark, RequestToggleLike } from "@/types/requests";
 const styles = stylex.create({
 	post: {
 		width: "100%",
@@ -96,10 +100,14 @@ export function Post(props: {
 	post: PostType & { author: User };
 	styling?: StyleXStyles;
 }) {
+	console.log("POST", props.post);
+	const AppState = useAppState();
 	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
 	const [isLiked, setIsLiked] = createSignal(props.post.isLiked);
 	const [isBookmarked, setIsBookmarked] = createSignal(props.post.isBookmarked);
 	const [likeCount, setLikeCount] = createSignal(props.post.countLikes);
+	const likeProto = new ProtoFetch<RequestToggleLike, ResponseToggleLike>(RequestToggleLike, ResponseToggleLike);
+	const bookmarkProto = new ProtoFetch<RequestToggleBookmark, ResponseToggleBookmark>(RequestToggleBookmark, ResponseToggleBookmark);
 
 	function toggleLike() {
 		//TODO: Add like functionality
@@ -109,10 +117,65 @@ export function Post(props: {
 		} else {
 			setLikeCount(isLiked() ? props.post.countLikes + 1 : props.post.countLikes);
 		}
+		console.log("POST ID: ", props.post.ID);
+		likeProto
+			.Query(TOGGLE_LIKE_ENDPOINT.url, {
+				method: TOGGLE_LIKE_ENDPOINT.method,
+				headers: {
+					"Content-Type": TOGGLE_LIKE_ENDPOINT.contentType,
+					Authorization: AppState.userToken() as string,
+				},
+				body: likeProto.createBody({ postID: props.post.ID }),
+			})
+			.then((data) => {
+				console.log(data);
+				console.log("IS LIKED", data.data?.state);
+				if (data.isSuccess) {
+					if ((data.data.state && props.post.isLiked) || !(data.data.state || props.post.isLiked)) {
+						setLikeCount(props.post.countLikes);
+					}
+					if (data.data.state && !props.post.isLiked) {
+						setLikeCount(props.post.countLikes + 1);
+					}
+					if (!data.data.state && props.post.isLiked) {
+						setLikeCount(props.post.countLikes - 1);
+					}
+
+					setIsLiked(data.data.state);
+				}
+				if (data.isError) {
+					console.log(data.error);
+					alert(`Something went wrong${t.errors[data.error]()}`);
+					setIsLiked(!isLiked());
+				}
+			});
 	}
 	function toggleBookmark() {
-		//TODO: Add bookmark functionality
+		//TODO: Add like functionality
 		setIsBookmarked(!isBookmarked());
+
+		console.log("POST ID: ", props.post.ID);
+		bookmarkProto
+			.Query(TOGGLE_BOOKMARK_ENDPOINT.url, {
+				method: TOGGLE_BOOKMARK_ENDPOINT.method,
+				headers: {
+					"Content-Type": TOGGLE_BOOKMARK_ENDPOINT.contentType,
+					Authorization: AppState.userToken() as string,
+				},
+				body: bookmarkProto.createBody({ postID: props.post.ID }),
+			})
+			.then((data) => {
+				console.log(data);
+				console.log("IS BOOKMARKED", data.data?.state);
+				if (data.isSuccess) {
+					setIsBookmarked(data.data.state);
+				}
+				if (data.isError) {
+					console.log(data.error);
+					alert(`Something went wrong${t.errors[data.error]()}`);
+					setIsBookmarked(!isBookmarked());
+				}
+			});
 	}
 
 	return (

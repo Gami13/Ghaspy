@@ -41,18 +41,12 @@ type ProtoFetchType<ReturnType> =
 	  };
 
 export class ProtoFetch<RequestType, ReturnType> {
-	private store: [
-		get: Store<ProtoFetchType<ReturnType>>,
-		set: SetStoreFunction<ProtoFetchType<ReturnType>>,
-	];
+	private store: [get: Store<ProtoFetchType<ReturnType>>, set: SetStoreFunction<ProtoFetchType<ReturnType>>];
 	state: Store<ProtoFetchType<ReturnType>>;
 	encoder: Coder<RequestType> | undefined;
 	decoder: Coder<ReturnType>;
 	controller: AbortController | undefined;
-	constructor(
-		encoder: Coder<RequestType> | undefined,
-		decoder: Coder<ReturnType>,
-	) {
+	constructor(encoder: Coder<RequestType> | undefined, decoder: Coder<ReturnType>) {
 		this.encoder = encoder;
 		this.decoder = decoder;
 		this.store = createStore<ProtoFetchType<ReturnType>>({
@@ -66,14 +60,11 @@ export class ProtoFetch<RequestType, ReturnType> {
 		this.state = this.store[0];
 	}
 
-	createBody<I extends Exact<DeepPartial<RequestType>, I>>(
-		base?: I,
-	): Uint8Array {
+	createBody<I extends Exact<DeepPartial<RequestType>, I>>(base?: I): Uint8Array {
 		if (this.encoder !== undefined) {
-			return this.encoder
-				.encode(this.encoder.create(base ?? ({} as Partial<RequestType> as I)))
-				.finish();
+			return this.encoder.encode(this.encoder.create(base ?? ({} as Partial<RequestType> as I))).finish();
 		}
+
 		return new Uint8Array();
 	}
 

@@ -1,10 +1,9 @@
-import { posts } from "@/MockData";
 import { useParams } from "@solidjs/router";
 import { Post } from "./Post";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 import { ReplyToPost } from "./ReplyToPost";
-import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js";
+import { createEffect, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
 import { ResponseGetPost } from "@/types/responses";
 import { POST_ENDPOINT } from "@/constants";

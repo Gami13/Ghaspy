@@ -6,3 +6,5 @@ export const LOG_OUT_ENDPOINT = `${API_URL}/log-out`;
 export const CURRENT_USER_DATA_ENDPOINT = `${API_URL}/profile`;
 export const POST_ENDPOINT = `${API_URL}/post`;
 export const POSTS_CHRONO_ENDPOINT = `${API_URL}/posts-chrono`;
+export const TOGGLE_LIKE_ENDPOINT = { url: `${API_URL}/like`, method: "PATCH", contentType: "application/x-protobuf" } as const;
+export const TOGGLE_BOOKMARK_ENDPOINT = { url: `${API_URL}/bookmark`, method: "PATCH", contentType: "application/x-protobuf" } as const;

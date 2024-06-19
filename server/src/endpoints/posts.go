@@ -164,6 +164,7 @@ func (ec *EndpointContext) PatchLikeEndpoint(w http.ResponseWriter, r *http.Requ
 		protoutils.ProtoError(w, http.StatusBadRequest, "cantUnmarshal")
 		return
 	}
+	println("Request body: ", requestBody.PostID)
 	postIdInt, err := strconv.ParseInt(requestBody.PostID, 10, 64)
 	if err != nil {
 		println("ERROR: ", err)
@@ -267,6 +268,7 @@ func (ec *EndpointContext) GetPostsChronologicallyEndpoint(w http.ResponseWriter
 	if len(r.Header.Get("Authorization")) > 0 {
 		token = r.Header.Get("Authorization")
 	}
+	println("TOKEN: ", token)
 	page := strings.TrimPrefix(r.URL.Path, "/posts-chrono/")
 	pageInt, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
@@ -290,6 +292,7 @@ func (ec *EndpointContext) GetPostsChronologicallyEndpoint(w http.ResponseWriter
 	var posts []*types.Post
 	println("Fetched from db")
 	for _, row := range rows {
+		println("ROW: ", row.ID.Int64, "IS LIKED:", row.Ispostliked.Bool)
 		post := types.Post{
 			ID: row.ID.Int64,
 			Author: &types.User{

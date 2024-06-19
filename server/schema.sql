@@ -247,6 +247,7 @@ SELECT posts.id,
 		SELECT COUNT(*)
 		FROM likes l1
 		WHERE l1.postid = posts.id
+			AND l1.isenabled = true
 	) as postCountLikes,
 	(
 		SELECT COUNT(*)
@@ -313,24 +314,18 @@ SELECT "postsExtra".id,
 	"postsExtra".postCountQuotes,
 	"postsExtra".postCountReplies,
 	(
-		SELECT CASE
-				WHEN COUNT(*) > 0 THEN true
-				ELSE false
-			END
-		FROM likes l1
-			JOIN tokens t1 ON t1.userid = l1.userid
-		WHERE "postsExtra".id = l1.postid
-			AND t1.token = tokenIn
+		SELECT likes.isenabled
+		FROM likes
+			JOIN tokens ON tokens.userid = likes.userid
+		WHERE likes.postid = "postsExtra".id
+			AND tokens.token = tokenIn
 	) AS isPostLiked,
 	(
-		SELECT CASE
-				WHEN COUNT(*) > 0 THEN true
-				ELSE false
-			END
-		FROM bookmarks b1
-			JOIN tokens t2 ON t2.userid = b1.userid
-		WHERE "postsExtra".id = b1.postid
-			AND t2.token = tokenIn
+		SELECT bookmarks.isenabled
+		FROM bookmarks
+			JOIN tokens ON tokens.userid = bookmarks.userid
+		WHERE bookmarks.postid = "postsExtra".id
+			AND tokens.token = tokenIn
 	) AS isPostBookmarked,
 	"postsExtra".threadStart
 FROM "postsExtra"
