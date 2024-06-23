@@ -4,7 +4,7 @@ import { createSignal, Match, Show, Switch } from "solid-js";
 import { PostQuoteBig } from "./PostQuoteBig";
 import { PostQuoteSmall } from "./PostQuoteSmall";
 import { colors } from "../../variables.stylex";
-import { formatDate, t, timeSince } from "@/Translation";
+import { type ErrorTransKeys, formatDateLong, t, timeSince } from "@/Translation";
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
@@ -108,9 +108,32 @@ export function Post(props: {
 	const [likeCount, setLikeCount] = createSignal(props.post.countLikes);
 	const likeProto = new ProtoFetch<RequestToggleLike, ResponseToggleLike>(RequestToggleLike, ResponseToggleLike);
 	const bookmarkProto = new ProtoFetch<RequestToggleBookmark, ResponseToggleBookmark>(RequestToggleBookmark, ResponseToggleBookmark);
-
+	function likeSuccess(data: ResponseToggleLike) {
+		setIsLiked(data.state);
+		if ((data.state && props.post.isLiked) || !(data.state || props.post.isLiked)) {
+			setLikeCount(props.post.countLikes);
+			return;
+		}
+		if (data.state && !props.post.isLiked) {
+			setLikeCount(props.post.countLikes + 1);
+			return;
+		}
+		if (!data.state && props.post.isLiked) {
+			setLikeCount(props.post.countLikes - 1);
+			return;
+		}
+		return;
+	}
+	function likeError(error: ErrorTransKeys) {
+		console.log(error);
+		alert(`Something went wrong${t.errors[error]()}`);
+		setIsLiked(!isLiked());
+	}
 	function toggleLike() {
-		//TODO: Add like functionality
+		if (!AppState.isLoggedIn()) {
+			alert("You need to be logged in to like a post");
+			return;
+		}
 		setIsLiked(!isLiked());
 		if (props.post.isLiked) {
 			setLikeCount(isLiked() ? props.post.countLikes : props.post.countLikes - 1);
@@ -128,30 +151,19 @@ export function Post(props: {
 				body: likeProto.createBody({ postID: props.post.ID }),
 			})
 			.then((data) => {
-				console.log(data);
-				console.log("IS LIKED", data.data?.state);
 				if (data.isSuccess) {
-					if ((data.data.state && props.post.isLiked) || !(data.data.state || props.post.isLiked)) {
-						setLikeCount(props.post.countLikes);
-					}
-					if (data.data.state && !props.post.isLiked) {
-						setLikeCount(props.post.countLikes + 1);
-					}
-					if (!data.data.state && props.post.isLiked) {
-						setLikeCount(props.post.countLikes - 1);
-					}
-
-					setIsLiked(data.data.state);
+					likeSuccess(data.data);
 				}
 				if (data.isError) {
-					console.log(data.error);
-					alert(`Something went wrong${t.errors[data.error]()}`);
-					setIsLiked(!isLiked());
+					likeError(data.error);
 				}
 			});
 	}
 	function toggleBookmark() {
-		//TODO: Add like functionality
+		if (!AppState.isLoggedIn()) {
+			alert("You need to be logged in to bookmark a post");
+			return;
+		}
 		setIsBookmarked(!isBookmarked());
 
 		console.log("POST ID: ", props.post.ID);
@@ -187,7 +199,7 @@ export function Post(props: {
 						<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
 						<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 					</section>
-					<time title={formatDate(props.post.timePosted)} {...stylex.attrs(styles.time)}>
+					<time title={formatDateLong(props.post.timePosted)} {...stylex.attrs(styles.time)}>
 						○ {timeSince(props.post.timePosted)}
 					</time>
 				</header>

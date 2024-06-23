@@ -405,3 +405,41 @@ WHERE p.threadStart = @postID
 	AND p.id != @postID
 ORDER BY p.id DESC
 LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
+
+-- ORDERED BY BOOKMARK ID
+-- name: SelectBookmarksChronologically :many
+SELECT p.id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1) as p
+	JOIN bookmarks b ON p.id = b.postId
+WHERE b.userId = (
+		SELECT tokens.userId
+		FROM tokens
+		WHERE tokens.token = $1
+	)
+	AND b.isenabled = true
+ORDER BY b.id DESC
+LIMIT 50 OFFSET $2;

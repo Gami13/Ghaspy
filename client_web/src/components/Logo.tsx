@@ -34,16 +34,10 @@ const styles = stylex.create({
 	},
 });
 
-export default function Logo(props: LogoProps) {
+export function Logo(props: LogoProps) {
 	4;
 	return (
-		<div
-			{...stylex.attrs(
-				styles.logo,
-				props.loading ? styles.loading : undefined,
-				props.stylex,
-			)}
-		>
+		<div {...stylex.attrs(styles.logo, props.loading ? styles.loading : undefined, props.stylex)}>
 			<Logo128x />
 		</div>
 	);

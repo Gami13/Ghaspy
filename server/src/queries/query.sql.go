@@ -210,6 +210,124 @@ func (q *Queries) SelectAuthData(ctx context.Context, email string) (SelectAuthD
 	return i, err
 }
 
+const selectBookmarksChronologically = `-- name: SelectBookmarksChronologically :many
+SELECT p.id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1) as p
+	JOIN bookmarks b ON p.id = b.postId
+WHERE b.userId = (
+		SELECT tokens.userId
+		FROM tokens
+		WHERE tokens.token = $1
+	)
+	AND b.isenabled = true
+ORDER BY b.id DESC
+LIMIT 50 OFFSET $2
+`
+
+type SelectBookmarksChronologicallyParams struct {
+	Tokenin string
+	Offset  int64
+}
+
+type SelectBookmarksChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+// ORDERED BY BOOKMARK ID
+func (q *Queries) SelectBookmarksChronologically(ctx context.Context, arg SelectBookmarksChronologicallyParams) ([]SelectBookmarksChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectBookmarksChronologically, arg.Tokenin, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectBookmarksChronologicallyRow
+	for rows.Next() {
+		var i SelectBookmarksChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const selectEmailFromID = `-- name: SelectEmailFromID :one
 SELECT email
 FROM users

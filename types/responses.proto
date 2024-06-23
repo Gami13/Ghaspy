@@ -105,3 +105,10 @@ message ResponseGetPostsChronologicallyByUser{
   string message = 2;
   uint32 pageNumber = 3;
 }
+
+
+message ResponseGetBookmarksChronologically{
+  repeated internal.Post posts = 1;
+  string message = 2;
+  uint32 pageNumber = 3;
+}

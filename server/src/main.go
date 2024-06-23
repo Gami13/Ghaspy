@@ -81,6 +81,8 @@ func main() {
 	mux.HandleFunc("POST /post", hctx.PostAddPostEndpoint)
 	//Takes in a page int
 	mux.HandleFunc("GET /posts-chrono/", hctx.GetPostsChronologicallyEndpoint)
+	//Takes in a page int
+	mux.HandleFunc("GET /bookmarks/", hctx.GetBookmarksChronologicallyEndpoint)
 	mux.Handle("/attachment/", http.StripPrefix("/attachment/", http.FileServer(http.Dir("C:\\uploads"))))
 	//Takes in a post id
 	mux.HandleFunc("GET /post/", hctx.GetPostEndpoint)

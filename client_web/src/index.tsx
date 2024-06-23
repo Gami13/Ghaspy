@@ -12,6 +12,7 @@ import { Pallete } from "./components/Pallete";
 import { ValidatePage } from "./components/ValidatePage";
 import { Main } from "./components/Main";
 import { onMount } from "solid-js";
+import { BookmarksRoute } from "./components/Bookmarks/BookmarksRoute";
 //stylex example
 // const styles = stylex.create({
 // 	name of class: {
@@ -52,6 +53,7 @@ function App() {
 				<Router>
 					<Route path="/" component={NavWrapper}>
 						<Route path="/" component={Main} />
+						<Route path="/bookmarks" component={BookmarksRoute} />
 						<Route path="/pallete" component={Pallete} />
 						<Route path="validate/:token" component={ValidatePage} />
 						<Route path="/:username/:postID" component={PostDetail} />

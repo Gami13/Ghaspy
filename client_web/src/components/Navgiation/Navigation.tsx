@@ -4,17 +4,7 @@ import stylex from "@stylexjs/stylex";
 
 import { NavigationListLink } from "./NavigationListLink";
 
-import {
-	TbBell,
-	TbBookmark,
-	TbCompass,
-	TbDoorExit,
-	TbHome,
-	TbLock,
-	TbMail,
-	TbSettings,
-	TbUser,
-} from "solid-icons/tb";
+import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
 import { logOut, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
@@ -22,7 +12,7 @@ import { Portal } from "solid-js/web";
 import { LogInModal } from "./LogInModal";
 import { SignUpModal } from "./SignUpModal";
 import { A } from "@solidjs/router";
-import Logo from "../Logo";
+import { Logo } from "../Logo";
 const styles = stylex.create({
 	nav: {
 		display: "flex",
@@ -141,22 +131,9 @@ export function Navigation() {
 				>
 					<NavigationListLink Icon={TbBell} text={t.nav.alerts()} href="/" />
 					<NavigationListLink Icon={TbMail} text={t.nav.inbox()} href="/" />
-					<NavigationListLink
-						Icon={TbBookmark}
-						text={t.nav.bookmarks()}
-						href="/"
-					/>
-					<NavigationListLink
-						Icon={TbUser}
-						text={t.nav.profile()}
-						href={`/${AppState.user.username}`}
-					/>
-					<NavigationListLink
-						Icon={TbSettings}
-						{...stylex.attrs(styles.settings)}
-						text={t.nav.settings()}
-						href="/"
-					/>
+					<NavigationListLink Icon={TbBookmark} text={t.nav.bookmarks()} href="/bookmarks" />
+					<NavigationListLink Icon={TbUser} text={t.nav.profile()} href={`/${AppState.user.username}`} />
+					<NavigationListLink Icon={TbSettings} {...stylex.attrs(styles.settings)} text={t.nav.settings()} href="/" />
 					<NavigationListButton
 						Icon={TbDoorExit}
 						text={t.nav.logOut()}

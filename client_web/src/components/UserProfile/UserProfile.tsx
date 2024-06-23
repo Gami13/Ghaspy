@@ -1,9 +1,17 @@
 import stylex from "@stylexjs/stylex";
-import { colors, dimensions } from "../../variables.stylex";
+import { colors, dimensions, transitions } from "../../variables.stylex";
 import { useAppState } from "@/AppState";
 // import left arrow icon
 import { TbArrowLeft, TbDots, TbUserStar } from "solid-icons/tb";
-import { A } from "@solidjs/router";
+import { A, useParams } from "@solidjs/router";
+import { ResponseGetProfile } from "@/types/responses";
+import { createEffect, Show } from "solid-js";
+import { ProtoFetch } from "@/ProtoFetch";
+import { GET_PROFILE_ENDPOINT } from "@/constants";
+import { UserAvatar } from "../UserAvatar";
+import { User } from "@/types/internal";
+import { getDisplayName } from "@/utils";
+import { formatDate, formatDateNoTime, formatNumber, t } from "@/Translation";
 const styles = stylex.create({
 	main: {
 		paddingTop: "0.25em",
@@ -94,10 +102,23 @@ const styles = stylex.create({
 		},
 	},
 	navIcon: {
-		cursor: "pointer",
 		height: "1.5em",
 		width: "1.5em",
 		fontWeight: "bold",
+	},
+	navButton: {
+		height: "2.5em",
+		width: "2.5em",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		cursor: "pointer",
+		borderRadius: "50%",
+		transitionTimingFunction: transitions.timing,
+		transitionDuration: transitions.duration,
+		":hover": {
+			backgroundColor: colors.background100,
+		},
 	},
 	navInfo: {
 		display: "flex",
@@ -138,7 +159,7 @@ const styles = stylex.create({
 		padding: "0.5em",
 		color: colors.accent500,
 	},
-	folowBtn: {
+	followBtn: {
 		cursor: "pointer",
 		backgroundColor: colors.primary500,
 		color: colors.text950,
@@ -192,92 +213,124 @@ const styles = stylex.create({
 });
 
 export function UserProfile() {
-	// const AppState = useAppState();
+	const AppState = useAppState();
+	const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined, ResponseGetProfile);
+	const params = useParams();
+	createEffect(() => {
+		let token = AppState.userToken();
+		if (!token) {
+			console.log("No token found");
+			token = "";
+		}
+		proto.Query(GET_PROFILE_ENDPOINT.url(params.username), {
+			method: GET_PROFILE_ENDPOINT.method,
+			headers: {
+				"Content-Type": GET_PROFILE_ENDPOINT.contentType,
+				Authorization: token,
+			},
+		});
+	});
+	createEffect(() => {
+		if (proto.state.isSuccess) {
+			console.log(proto.state.data?.profile);
+		}
+		if (proto.state.isError) {
+			console.log(proto.state.error);
+		}
+		if (proto.state.isLoading) {
+			console.log("Loading...");
+		}
+		console.log("PROTO", proto);
+	});
 	return (
 		<div {...stylex.attrs(styles.main)}>
-			<header>
-				<div {...stylex.attrs(styles.headerNav)}>
-					<TbArrowLeft {...stylex.attrs(styles.navIcon)} />
+			<Show when={proto.state.data?.profile} keyed>
+				{(profile) => {
+					return (
+						<>
+							<header>
+								<div {...stylex.attrs(styles.headerNav)}>
+									<button type="button" {...stylex.attrs(styles.navButton)} onClick={() => history.back()}>
+										{/* @ts-ignore */}
+										<TbArrowLeft {...stylex.attrs(styles.navIcon)} />
+									</button>
 
-					<section {...stylex.attrs(styles.names)}>
-						{/* TODO: Marcin niewolniku zrób to */}
-						<h2 {...stylex.attrs(styles.displayName)}>GamiToFurras</h2>
-						<h3 {...stylex.attrs(styles.username)}>0,000 posts</h3>
-					</section>
-				</div>
+									<section {...stylex.attrs(styles.names)}>
+										<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(profile)}</h2>
+										<h3 {...stylex.attrs(styles.username)}>{formatNumber(profile.countPosts)} Posts</h3>
+									</section>
+								</div>
 
-				<img src="" alt="banner" {...stylex.attrs(styles.banner)} />
-				<div {...stylex.attrs(styles.bio)}>
-					<div {...stylex.attrs(styles.buttons)}>
-						<img src="" alt="ss" {...stylex.attrs(styles.avatar)} />
+								<img src="" {...stylex.attrs(styles.banner)} alt="banner" />
+								<div {...stylex.attrs(styles.bio)}>
+									<div {...stylex.attrs(styles.buttons)}>
+										<UserAvatar user={profile} styles={styles.avatar} />
+										{/* @ts-ignore */}
+										<TbDots {...stylex.attrs(styles.buttonsIcons)} />
+										{/* @ts-ignore */}
+										<TbUserStar {...stylex.attrs(styles.buttonsIcons)} />
+										<button type="button" {...stylex.attrs(styles.followBtn)}>
+											Follow
+										</button>
+									</div>
+									<ol {...stylex.attrs(styles.description)}>
+										<li {...stylex.attrs(styles.names)}>
+											{/* TODO: Marcin niewolniku zrób to */}
+											<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(profile)}</h2>
+											<h3 {...stylex.attrs(styles.username)}>@{profile.username}</h3>
+										</li>
+										<li>
+											<p>{profile.bio}</p>
+										</li>
+										<li>
+											<h3 {...stylex.attrs(styles.username)}>Joined: {formatDateNoTime(profile.joinedAt as string)}</h3>
+										</li>
+										<li {...stylex.attrs(styles.stats)}>
+											<h5>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowing)}</span>
+												<span {...stylex.attrs(styles.username)}>Following</span>
+											</h5>
+											<h5>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowers)}</span>{" "}
+												<span {...stylex.attrs(styles.username)}>Followers</span>
+											</h5>
+											<h5>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countLikes)}</span>{" "}
+												<span {...stylex.attrs(styles.username)}>Likes</span>
+											</h5>
+										</li>
+										<li {...stylex.attrs(styles.followedBySomeone)}>Is Followed by someone you're following</li>
+									</ol>
+								</div>
+							</header>
+							<main>
+								<div {...stylex.attrs(styles.mainButtons)}>
+									{/* //TODO:TRANSLATE */}
+									<button type="button" {...stylex.attrs(styles.mainBtn, styles.currentBtn)}>
+										Posts
+									</button>
+									<button type="button" {...stylex.attrs(styles.mainBtn)}>
+										Replies
+									</button>
+									<button type="button" {...stylex.attrs(styles.mainBtn)}>
+										Subs
+									</button>
+									<button type="button" {...stylex.attrs(styles.mainBtn)}>
+										Highlights
+									</button>
 
-						<TbDots {...stylex.attrs(styles.buttonsIcons)} />
-						<TbUserStar {...stylex.attrs(styles.buttonsIcons)} />
-						<button type="button" {...stylex.attrs(styles.folowBtn)}>
-							Follow
-						</button>
-					</div>
-					<ol {...stylex.attrs(styles.description)}>
-						<li {...stylex.attrs(styles.names)}>
-							{/* TODO: Marcin niewolniku zrób to */}
-							<h2 {...stylex.attrs(styles.displayName)}>GamiToFurras</h2>
-							<h3 {...stylex.attrs(styles.username)}>@GamiToFurras</h3>
-						</li>
-						<li>
-							Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
-							necessitatibus quibusdam ullam soluta commodi quis nemo in a
-							nulla, modi porro. Odit beatae, inventore voluptates sit facilis
-							corrupti. Aliquid, quo.{/* <A href="">View more</A> */}
-						</li>
-						<li>
-							<h3 {...stylex.attrs(styles.username)}>Joined: May 2024</h3>
-						</li>
-						<li {...stylex.attrs(styles.stats)}>
-							<h5>
-								<span {...stylex.attrs(styles.statNum)}>000</span>
-								<span {...stylex.attrs(styles.username)}>Following</span>
-							</h5>
-							<h5>
-								<span {...stylex.attrs(styles.statNum)}>000</span>{" "}
-								<span {...stylex.attrs(styles.username)}>Followers</span>
-							</h5>
-							<h5>
-								<span {...stylex.attrs(styles.statNum)}>000</span>{" "}
-								<span {...stylex.attrs(styles.username)}>Likes</span>
-							</h5>
-						</li>
-						<li {...stylex.attrs(styles.followedBySomeone)}>
-							Is Followed by someone you'r folowing
-						</li>
-					</ol>
-				</div>
-			</header>
-			<main>
-				<div {...stylex.attrs(styles.mainButtons)}>
-					<button
-						type="button"
-						{...stylex.attrs(styles.mainBtn, styles.currentBtn)}
-					>
-						Posts
-					</button>
-					<button type="button" {...stylex.attrs(styles.mainBtn)}>
-						Replies
-					</button>
-					<button type="button" {...stylex.attrs(styles.mainBtn)}>
-						Subs
-					</button>
-					<button type="button" {...stylex.attrs(styles.mainBtn)}>
-						Highlights
-					</button>
-
-					<button type="button" {...stylex.attrs(styles.mainBtn)}>
-						Media
-					</button>
-					<button type="button" {...stylex.attrs(styles.mainBtn)}>
-						Likes
-					</button>
-				</div>
-			</main>
+									<button type="button" {...stylex.attrs(styles.mainBtn)}>
+										Media
+									</button>
+									<button type="button" {...stylex.attrs(styles.mainBtn)}>
+										Likes
+									</button>
+								</div>
+							</main>
+						</>
+					);
+				}}
+			</Show>
 		</div>
 	);
 }

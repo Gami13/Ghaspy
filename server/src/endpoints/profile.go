@@ -254,7 +254,6 @@ func (ec *EndpointContext) PatchBannerEndpoint(w http.ResponseWriter, r *http.Re
 	})
 	if err != nil {
 		println("ERROR: ", err)
-		// return protoUtils.ProtoErrorOld(c, http.StatusInternalServerError, "internalError")
 		protoutils.ProtoError(w, http.StatusInternalServerError, "internalError")
 		return
 	}

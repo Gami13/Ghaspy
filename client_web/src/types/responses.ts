@@ -124,6 +124,12 @@ export interface ResponseGetPostsChronologicallyByUser {
   pageNumber: number;
 }
 
+export interface ResponseGetBookmarksChronologically {
+  posts: Post[];
+  message: string;
+  pageNumber: number;
+}
+
 function createBaseResponseError(): ResponseError {
   return { message: "" };
 }
@@ -1462,6 +1468,77 @@ export const ResponseGetPostsChronologicallyByUser = {
     object: I,
   ): ResponseGetPostsChronologicallyByUser {
     const message = createBaseResponseGetPostsChronologicallyByUser();
+    message.posts = object.posts?.map((e) => Post.fromPartial(e)) || [];
+    message.message = object.message ?? "";
+    message.pageNumber = object.pageNumber ?? 0;
+    return message;
+  },
+};
+
+function createBaseResponseGetBookmarksChronologically(): ResponseGetBookmarksChronologically {
+  return { posts: [], message: "", pageNumber: 0 };
+}
+
+export const ResponseGetBookmarksChronologically = {
+  encode(message: ResponseGetBookmarksChronologically, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.posts) {
+      Post.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.pageNumber !== 0) {
+      writer.uint32(24).uint32(message.pageNumber);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ResponseGetBookmarksChronologically {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResponseGetBookmarksChronologically();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.posts.push(Post.decode(reader, reader.uint32()));
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.pageNumber = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ResponseGetBookmarksChronologically>, I>>(
+    base?: I,
+  ): ResponseGetBookmarksChronologically {
+    return ResponseGetBookmarksChronologically.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ResponseGetBookmarksChronologically>, I>>(
+    object: I,
+  ): ResponseGetBookmarksChronologically {
+    const message = createBaseResponseGetBookmarksChronologically();
     message.posts = object.posts?.map((e) => Post.fromPartial(e)) || [];
     message.message = object.message ?? "";
     message.pageNumber = object.pageNumber ?? 0;

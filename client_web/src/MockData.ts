@@ -58,6 +58,7 @@ export const post0: PostType = {
 	timePosted: "Tue Sep 11 2001 14:14:20 GMT+0200 (CET)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: "1",
 } as PostType;
 export const reply0: PostType = {
 	ID: "1337",
@@ -74,6 +75,7 @@ export const reply0: PostType = {
 	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: "1337",
 } as PostType;
 export const reply1: PostType = {
 	ID: "1337",
@@ -90,6 +92,7 @@ export const reply1: PostType = {
 	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: post0.ID,
 } as PostType;
 export const reply3: PostType = {
 	ID: "1337",
@@ -106,6 +109,7 @@ export const reply3: PostType = {
 	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: post0.ID,
 } as PostType;
 
 export const post1: PostType = {
@@ -124,6 +128,7 @@ export const post1: PostType = {
 	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: "2",
 } as PostType;
 
 //with attachments
@@ -160,6 +165,7 @@ export const post3: PostType = {
 	timePosted: "Mon Jan 02 2023 15:04:05 GMT-0700 (MST)",
 	isLiked: true,
 	isBookmarked: true,
+	threadStart: "4",
 } as PostType;
 
 //with quote and media

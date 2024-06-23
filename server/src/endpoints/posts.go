@@ -577,3 +577,82 @@ func (ec *EndpointContext) GetPostRepliesEndpoint(w http.ResponseWriter, r *http
 		PageNumber: uint32(pageInt),
 	})
 }
+
+func (ec *EndpointContext) GetBookmarksChronologicallyEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	println("Getting bookmarks chrono")
+
+	token := r.Header.Get("Authorization")
+	if len(token) < 1 {
+		protoUtils.ProtoError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	println("TOKEN: ", token)
+	page := strings.TrimPrefix(r.URL.Path, "/bookmarks/")
+	pageInt, err := strconv.ParseUint(page, 10, 32)
+	if err != nil {
+		println("ERROR: ", err)
+		protoUtils.ProtoError(w, http.StatusBadRequest, "badRequestNotNumber")
+		return
+
+	}
+	println("Requesting chronological bookmarks, page number: ", pageInt)
+
+	rows, err := ec.Query.SelectBookmarksChronologically(ec.Ctx, queries.SelectBookmarksChronologicallyParams{
+		Tokenin: token,
+		Offset:  int64(pageInt) * 50,
+	})
+
+	if err != nil {
+		println("ERROR: ", err)
+		protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
+		return
+	}
+	var posts []*types.Post
+	println("Fetched from db")
+	for _, row := range rows {
+		println("ROW: ", row.ID.Int64, "IS LIKED:", row.Ispostliked.Bool)
+		post := types.Post{
+			ID: row.ID.Int64,
+			Author: &types.User{
+				ID:             row.Authorid.Int64,
+				Username:       row.Username.String,
+				DisplayName:    row.Username.String,
+				Bio:            row.Bio.String,
+				Avatar:         row.Avatar.String,
+				Banner:         row.Banner.String,
+				CountLikes:     uint32(row.Countlikes.Int64),
+				CountPosts:     uint32(row.Countposts.Int64),
+				CountFollowers: uint32(row.Countfollowedby.Int64),
+				CountFollowing: uint32(row.Countisfollowing.Int64),
+
+				JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
+				IsFollowersPublic: row.Isfollowerspublic.Bool,
+				IsFollowingPublic: row.Isfollowingpublic.Bool,
+				IsPostsPublic:     row.Ispostspublic.Bool,
+				IsLikesPublic:     row.Islikespublic.Bool,
+			},
+			Content:      row.Content.String,
+			ReplyToID:    &row.Replyto.Int64,
+			QuotedID:     &row.Quoteof.Int64,
+			Attachments:  row.Attachments,
+			CountLikes:   uint32(row.Postcountlikes.Int64),
+			CountQuotes:  uint32(row.Postcountquotes.Int64),
+			CountReplies: uint32(row.Postcountreplies.Int64),
+			IsLiked:      row.Ispostliked.Bool,
+			IsBookmarked: row.Ispostbookmarked.Bool,
+			ThreadStart:  row.Threadstart.Int64,
+			TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+		}
+		posts = append(posts, &post)
+	}
+	//TODO: FILL IN QUOTED and REPLYTO LATER
+	//Merge posts that are replies to posts that have that post as a reply
+
+	protoUtils.ProtoSuccess(w, http.StatusOK, &types.ResponseGetBookmarksChronologically{
+		Posts:      posts,
+		Message:    "bookmarksRetrievedSuccessfully",
+		PageNumber: uint32(pageInt),
+	})
+
+}
