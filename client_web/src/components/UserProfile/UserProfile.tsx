@@ -11,7 +11,7 @@ import { GET_PROFILE_ENDPOINT } from "@/constants";
 import { UserAvatar } from "../UserAvatar";
 import { User } from "@/types/internal";
 import { getDisplayName } from "@/utils";
-import { formatDate, formatDateNoTime, formatNumber, t } from "@/Translation";
+import { formatDateNoTime, formatNumber, t } from "@/Translation";
 const styles = stylex.create({
 	main: {
 		paddingTop: "0.25em",

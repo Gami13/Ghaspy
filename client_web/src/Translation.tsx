@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 import * as i18n from "@solid-primitives/i18n";
-import pl_PL from "./Locales/pl_PL.json";
-import en_US from "./Locales/en_US.json";
+import pl_PL from "../Resources/pl-PL.json";
+import en_US from "../Resources/en-US.json";
 import { useAppState } from "./AppState";
 
 export const dictionaries = {

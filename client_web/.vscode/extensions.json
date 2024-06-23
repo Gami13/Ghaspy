@@ -5,6 +5,7 @@
     "golang.go",
     "yoavbls.pretty-ts-errors",
     "zxh404.vscode-proto3",
-    "aaron-bond.better-comments"
+    "aaron-bond.better-comments",
+    "inlang.vs-code-extension"
   ]
 }
