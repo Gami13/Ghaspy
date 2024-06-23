@@ -49,6 +49,7 @@ export function BookmarksList(props: BookmarksListProps) {
 		<main {...stylex.attrs(styles.main)}>
 			<ul {...stylex.attrs(styles.list)} ref={listRef} onScroll={scrollControl}>
 				<Show when={props.posts.length === 0}>
+					{/* //TODO: Translate */}
 					<h3>No bookmarks found</h3>
 				</Show>
 				<For each={props.posts}>

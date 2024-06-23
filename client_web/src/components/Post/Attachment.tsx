@@ -1,8 +1,7 @@
-import type { Post as PostType } from "@/types/internal";
 import { colors } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
-import { onMount } from "solid-js";
-import { CDN_URL } from "@/constants";
+import { createEffect, onMount } from "solid-js";
+import { CDN_URL, IMAGE_URL } from "@/constants";
 
 //! Post is safe to be asserted as defined
 const MAX_WIDTH = 510;
@@ -23,20 +22,22 @@ const styles = stylex.create({
 
 export function Attachment(props: { link?: string; border?: boolean }) {
 	//TODO: HANDLE OTHER FORMATS HERE
+	return (
+		<img
+			onload={(e) => {
+				const img = e.target as HTMLImageElement;
+				const width = img.width;
+				const height = img.height;
 
-	let img: HTMLImageElement | undefined;
-	onMount(() => {
-		if (img) {
-			//resize image to 100% width or 510px height
-			const width = img.width;
-			const height = img.height;
-
-			if (height > MAX_WIDTH) {
-				img.style.maxHeight = `${MAX_WIDTH}px`;
-				const ratio = MAX_WIDTH / height;
-				img.style.width = `${width * ratio}px`;
-			}
-		}
-	});
-	return <img ref={img} {...stylex.attrs(styles.attachment, props.border ? styles.border : null)} src={`${CDN_URL}/${props.link}`} alt="Attachment" />;
+				if (height > MAX_WIDTH) {
+					img.style.maxHeight = `${MAX_WIDTH}px`;
+					const ratio = MAX_WIDTH / height;
+					img.style.width = `${width * ratio}px`;
+				}
+			}}
+			{...stylex.attrs(styles.attachment, props.border ? styles.border : null)}
+			src={IMAGE_URL(props.link as string)}
+			alt="Attachment"
+		/>
+	);
 }

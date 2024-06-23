@@ -9,7 +9,7 @@
 		"indentStyle": "tab",
 		"indentWidth": 4,
 		"lineEnding": "lf",
-		"lineWidth": 160,
+		"lineWidth": 100,
 		"formatWithErrors": true
 	},
 	"linter": {
@@ -19,10 +19,8 @@
 			"nursery": {
 				"noDuplicateElseIf": "warn",
 				"noDuplicateJsonKeys": "warn"
-
 			},
 			"style": {
-				
 				"useCollapsedElseIf": "warn",
 				"noDefaultExport": "error",
 				"useConsistentArrayType": "warn",
@@ -37,7 +35,6 @@
 			},
 			"correctness": {
 				"noUndeclaredVariables": "error"
-				
 			},
 			"complexity": {
 				"noVoid": "warn",

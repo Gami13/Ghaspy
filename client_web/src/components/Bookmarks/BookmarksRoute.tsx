@@ -1,5 +1,4 @@
 import { ProtoFetch } from "@/ProtoFetch";
-import { ResponseGetPostsChronologically } from "@/types/responses";
 import { GET_BOOKMARKS_ENDPOINT } from "@/constants";
 import { useAppState } from "@/AppState";
 import { createEffect, Show } from "solid-js";
@@ -28,23 +27,15 @@ const styles = stylex.create({
 
 export function BookmarksRoute() {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<undefined, ResponseGetPostsChronologically>(undefined, ResponseGetPostsChronologically);
-	//!Posts should probably be kept in state and not fetched when changing route, should also modify the state optimistically on interactions
-	//TODO: Do the above
+	const proto = new ProtoFetch(GET_BOOKMARKS_ENDPOINT(0));
+
 	createEffect(() => {
 		const token = AppState.userToken();
 		if (!token) {
 			console.log("No token found");
 			return;
 		}
-		proto.Query(`${GET_BOOKMARKS_ENDPOINT.url}/0`, {
-			method: GET_BOOKMARKS_ENDPOINT.method,
-
-			headers: {
-				"Content-Type": GET_BOOKMARKS_ENDPOINT.contentType,
-				Authorization: token,
-			},
-		});
+		proto.Query();
 	});
 	createEffect(() => {
 		if (proto.state.isSuccess) {

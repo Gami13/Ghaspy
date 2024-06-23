@@ -3,7 +3,7 @@ import stylex from "@stylexjs/stylex";
 import { Show } from "solid-js";
 import { colors } from "../../variables.stylex";
 import { useAppState } from "@/AppState";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "../UserProfile/UserAvatar";
 
 const styles = stylex.create({
 	replyBox: {
@@ -52,8 +52,7 @@ export function ReplyToPost(props: { post: PostType }) {
 		<div {...stylex.attrs(styles.replyBox)}>
 			<UserAvatar user={props.post.author as User} styles={styles.avatar} />
 			<span {...stylex.attrs(styles.replyContent)}>
-				Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur
-				adipisicing elit.
+				Placeholder, enter reply Lorem ipsum dolor sit amet, consectetur adipisicing elit.
 			</span>
 			{/* TODO: Gami zrób to niewolniku */}
 			<button {...stylex.attrs(styles.replyBtn)}>Reply</button>

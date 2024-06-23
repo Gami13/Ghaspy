@@ -194,9 +194,9 @@ func SaveFile(file *multipart.FileHeader) (string, error) {
 
 	snowflake := snowflake.New(snowflake.ATTACHMENT)
 
-	newFileName := snowflake.String() + "." + fileExtension[0]
+	newFileName := snowflake.String() + fileExtension[0]
 	// Write the file to disk:
-	out, err := os.Create(newFileName)
+	out, err := os.Create("C:\\uploads\\" + newFileName)
 	if err != nil {
 		return "", err
 	}

@@ -1,10 +1,8 @@
 import stylex from "@stylexjs/stylex";
 import { Modal } from "../Modal";
 import { colors, transitions } from "../../variables.stylex";
-import { ResponseSignUpUser } from "@/types/responses";
-import { RequestSignUpUser } from "@/types/requests";
 import { SIGN_UP_ENDPOINT } from "@/constants";
-import { type SuccessTransKeys, t, type ErrorTransKeys } from "@/Translation";
+import { type SuccessTransKeys, type ErrorTransKeys, useTrans } from "@/Translation";
 import { TbBrandTwitterFilled } from "solid-icons/tb";
 import { createEffect, createSignal, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
@@ -84,9 +82,10 @@ type SignUpModalProps = {
 	onOutsideClick: () => void;
 };
 export function SignUpModal(props: SignUpModalProps) {
-	const proto = new ProtoFetch<RequestSignUpUser, ResponseSignUpUser>(RequestSignUpUser, ResponseSignUpUser);
+	const proto = new ProtoFetch(SIGN_UP_ENDPOINT);
 	const [error, setError] = createSignal<ErrorTransKeys | undefined>(undefined);
 	const [hasSignedUp, setHasSignedUp] = createSignal(false);
+	const t = useTrans();
 
 	function onSubmit(
 		event: Event & {
@@ -105,13 +104,10 @@ export function SignUpModal(props: SignUpModalProps) {
 			return;
 		}
 
-		proto.Query(SIGN_UP_ENDPOINT, {
-			method: "POST",
-			body: proto.createBody({
-				email: email,
-				password: password,
-				username: username,
-			}),
+		proto.Query({
+			email: email,
+			password: password,
+			username: username,
 		});
 	}
 	createEffect(() => {

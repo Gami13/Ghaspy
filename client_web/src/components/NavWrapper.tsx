@@ -1,7 +1,7 @@
 import stylex from "@stylexjs/stylex";
 import { colors, dimensions } from "../variables.stylex";
 import { Navigation } from "./Navgiation/Navigation";
-import { getTokenFromCookie, useAppState } from "@/AppState";
+import { AppStateProvider, getTokenFromCookie, useAppState } from "@/AppState";
 import { children, createEffect, onMount } from "solid-js";
 import { CURRENT_USER_DATA_ENDPOINT } from "@/constants";
 import { ResponseGetProfile } from "@/types/responses";
@@ -53,18 +53,10 @@ export function NavWrapper(props: any) {
 	});
 	createEffect(() => {
 		if (AppState.userToken()) {
-			const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined, ResponseGetProfile);
+			const proto = new ProtoFetch(CURRENT_USER_DATA_ENDPOINT);
 			console.log("Authorization: ", AppState.userToken());
 			proto
-				.Query(CURRENT_USER_DATA_ENDPOINT, {
-					method: "GET",
-
-					headers: {
-						"Content-Type": "application/x-protobuf",
-						// biome-ignore lint/style/noNonNullAssertion: <didnt wanna do it other way>
-						Authorization: AppState.userToken()!,
-					},
-				})
+				.Query()
 				.then((data) => {
 					if (data?.isSuccess && data.data?.profile !== undefined) {
 						AppState.setUser(data.data.profile);

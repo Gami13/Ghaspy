@@ -10,14 +10,11 @@ export function NavigationListLink(props: {
 }) {
 	return (
 		<li {...stylex.attrs(NavigationListItemStyle.navElementWrapper)}>
-			<A
-				{...stylex.attrs(NavigationListItemStyle.navElement)}
-				href={props.href}
-			>
+			<A {...stylex.attrs(NavigationListItemStyle.navElement)} href={props.href}>
+				{/* @ts-ignore */}
+
 				<props.Icon {...stylex.attrs(NavigationListItemStyle.navElementIcon)} />
-				<span {...stylex.attrs(NavigationListItemStyle.navElementText)}>
-					{props.text}
-				</span>
+				<span {...stylex.attrs(NavigationListItemStyle.navElementText)}>{props.text}</span>
 			</A>
 		</li>
 	);

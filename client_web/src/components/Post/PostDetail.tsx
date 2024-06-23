@@ -5,9 +5,7 @@ import stylex from "@stylexjs/stylex";
 import { ReplyToPost } from "./ReplyToPost";
 import { createEffect, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
-import { ResponseGetPost } from "@/types/responses";
-import { POST_ENDPOINT } from "@/constants";
-import { useAppState } from "@/AppState";
+import { GET_POST_ENDPOINT } from "@/constants";
 import type { Post as PostType, User } from "@/types/internal";
 
 const styles = stylex.create({
@@ -36,14 +34,8 @@ export function PostDetail() {
 
 	console.log(params.username);
 	console.log(params.postID);
-	const AppState = useAppState();
-	const proto = new ProtoFetch<undefined, ResponseGetPost>(undefined, ResponseGetPost);
-	createEffect(() =>
-		proto.Query(`${POST_ENDPOINT}/${params.postID}`, {
-			method: "GET",
-			headers: { Authorization: AppState.userToken() || "" },
-		}),
-	);
+	const proto = new ProtoFetch(GET_POST_ENDPOINT(params.postID));
+	createEffect(() => proto.Query());
 	//TODO:Add fetching replies
 	return (
 		<Show when={proto.state.isSuccess && proto.state.data !== undefined && proto.state.data.post !== undefined}>

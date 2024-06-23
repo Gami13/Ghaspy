@@ -9,14 +9,10 @@ export function NavigationListButton(props: {
 }) {
 	return (
 		<li {...stylex.attrs(NavigationListItemStyle.navElementWrapper)}>
-			<button
-				{...stylex.attrs(NavigationListItemStyle.navElement)}
-				onclick={props.onClick}
-			>
+			<button {...stylex.attrs(NavigationListItemStyle.navElement)} onclick={props.onClick}>
+				{/* @ts-ignore */}
 				<props.Icon {...stylex.attrs(NavigationListItemStyle.navElementIcon)} />
-				<span {...stylex.attrs(NavigationListItemStyle.navElementText)}>
-					{props.text}
-				</span>
+				<span {...stylex.attrs(NavigationListItemStyle.navElementText)}>{props.text}</span>
 			</button>
 		</li>
 	);

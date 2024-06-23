@@ -28,7 +28,7 @@ const styles = stylex.create({
 
 export function Main() {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<undefined, ResponseGetPostsChronologically>(undefined, ResponseGetPostsChronologically);
+	const proto = new ProtoFetch(POSTS_CHRONO_ENDPOINT(0));
 	//!Posts should probably be kept in state and not fetched when changing route, should also modify the state optimistically on interactions
 	//TODO: Do the above
 	createEffect(() => {
@@ -37,16 +37,11 @@ export function Main() {
 			console.log("No token found");
 			token = "";
 		}
-		proto.Query(`${POSTS_CHRONO_ENDPOINT}/0`, {
-			method: "GET",
-			headers: {
-				Authorization: token,
-			},
-		});
+		proto.Query();
 	});
 	createEffect(() => {
 		if (proto.state.isSuccess) {
-			console.log(proto.state.data?.posts as Post[]);
+			console.log(proto.state.data.posts as Post[]);
 		}
 		if (proto.state.isError) {
 			console.log(proto.state.error);

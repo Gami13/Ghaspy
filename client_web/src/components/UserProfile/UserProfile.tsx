@@ -8,10 +8,11 @@ import { ResponseGetProfile } from "@/types/responses";
 import { createEffect, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
 import { GET_PROFILE_ENDPOINT } from "@/constants";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "./UserAvatar";
 import { User } from "@/types/internal";
 import { getDisplayName } from "@/utils";
-import { formatDateNoTime, formatNumber, t } from "@/Translation";
+import { formatDateNoTime, formatNumber } from "@/Translation";
+import { UserBanner } from "./UserBanner";
 const styles = stylex.create({
 	main: {
 		paddingTop: "0.25em",
@@ -53,7 +54,8 @@ const styles = stylex.create({
 		padding: "0.75em",
 		fontWeight: "bold",
 		cursor: "pointer",
-		letterSpacing: "0.1em",
+
+		letterSpacing: "0.05em",
 		":hover": {
 			backgroundColor: colors.background100,
 			color: colors.text900,
@@ -174,7 +176,7 @@ const styles = stylex.create({
 		flexDirection: "column",
 		justifyContent: "center",
 	},
-	username: {
+	highlight: {
 		fontSize: "1em",
 		color: "#71767b",
 		fontWeight: 300,
@@ -214,21 +216,15 @@ const styles = stylex.create({
 
 export function UserProfile() {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<undefined, ResponseGetProfile>(undefined, ResponseGetProfile);
 	const params = useParams();
+	const proto = new ProtoFetch(GET_PROFILE_ENDPOINT(params.username));
 	createEffect(() => {
 		let token = AppState.userToken();
 		if (!token) {
 			console.log("No token found");
 			token = "";
 		}
-		proto.Query(GET_PROFILE_ENDPOINT.url(params.username), {
-			method: GET_PROFILE_ENDPOINT.method,
-			headers: {
-				"Content-Type": GET_PROFILE_ENDPOINT.contentType,
-				Authorization: token,
-			},
-		});
+		proto.Query();
 	});
 	createEffect(() => {
 		if (proto.state.isSuccess) {
@@ -250,18 +246,24 @@ export function UserProfile() {
 						<>
 							<header>
 								<div {...stylex.attrs(styles.headerNav)}>
-									<button type="button" {...stylex.attrs(styles.navButton)} onClick={() => history.back()}>
+									<button
+										type="button"
+										{...stylex.attrs(styles.navButton)}
+										onClick={() => history.back()}
+									>
 										{/* @ts-ignore */}
 										<TbArrowLeft {...stylex.attrs(styles.navIcon)} />
 									</button>
 
 									<section {...stylex.attrs(styles.names)}>
 										<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(profile)}</h2>
-										<h3 {...stylex.attrs(styles.username)}>{formatNumber(profile.countPosts)} Posts</h3>
+										<h3 {...stylex.attrs(styles.highlight)}>
+											{formatNumber(profile.countPosts)} Posts
+										</h3>
 									</section>
 								</div>
+								<UserBanner user={profile} {...stylex.attrs(styles.banner)} />
 
-								<img src="" {...stylex.attrs(styles.banner)} alt="banner" />
 								<div {...stylex.attrs(styles.bio)}>
 									<div {...stylex.attrs(styles.buttons)}>
 										<UserAvatar user={profile} styles={styles.avatar} />
@@ -277,29 +279,38 @@ export function UserProfile() {
 										<li {...stylex.attrs(styles.names)}>
 											{/* TODO: Marcin niewolniku zrób to */}
 											<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(profile)}</h2>
-											<h3 {...stylex.attrs(styles.username)}>@{profile.username}</h3>
+											<h3 {...stylex.attrs(styles.highlight)}>@{profile.username}</h3>
 										</li>
 										<li>
 											<p>{profile.bio}</p>
 										</li>
 										<li>
-											<h3 {...stylex.attrs(styles.username)}>Joined: {formatDateNoTime(profile.joinedAt as string)}</h3>
+											<h3 {...stylex.attrs(styles.highlight)}>
+												Joined: {formatDateNoTime(profile.joinedAt as string)}
+											</h3>
 										</li>
 										<li {...stylex.attrs(styles.stats)}>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowing)}</span>
-												<span {...stylex.attrs(styles.username)}>Following</span>
+												<span {...stylex.attrs(styles.statNum)}>
+													{formatNumber(profile.countFollowing)}
+												</span>
+												<span {...stylex.attrs(styles.highlight)}>Following</span>
 											</h5>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowers)}</span>{" "}
-												<span {...stylex.attrs(styles.username)}>Followers</span>
+												<span {...stylex.attrs(styles.statNum)}>
+													{formatNumber(profile.countFollowers)}
+												</span>{" "}
+												<span {...stylex.attrs(styles.highlight)}>Followers</span>
 											</h5>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countLikes)}</span>{" "}
-												<span {...stylex.attrs(styles.username)}>Likes</span>
+												<span {...stylex.attrs(styles.statNum)}>
+													{formatNumber(profile.countLikes)}
+												</span>{" "}
+												<span {...stylex.attrs(styles.highlight)}>Likes</span>
 											</h5>
 										</li>
-										<li {...stylex.attrs(styles.followedBySomeone)}>Is Followed by someone you're following</li>
+										{/* //TODO:Implement this */}
+										{/* <li {...stylex.attrs(styles.followedBySomeone)}>Is Followed by someone you're following</li> */}
 									</ol>
 								</div>
 							</header>

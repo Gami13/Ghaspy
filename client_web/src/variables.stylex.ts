@@ -40,10 +40,10 @@ export const colors = stylex.defineVars({
 	accent700: { default: "#ce5fbf" },
 	accent800: { default: "#d87dd0" },
 });
-
+const MEDIUM_DISPLAY = "@media (max-width: 900px)";
 export const dimensions = stylex.defineVars({
-	navMaxWidth: { default: "350px", "@media (max-width: 900px)": "100px" },
-	postsMaxWidth: { default: "650px", "@media (max-width: 900px)": "800px" },
+	navMaxWidth: { default: "350px", [MEDIUM_DISPLAY]: "100px" },
+	postsMaxWidth: { default: "650px", [MEDIUM_DISPLAY]: "800px" },
 	postsMinWidth: "350px",
 	asideMaxWidth: "300px",
 });

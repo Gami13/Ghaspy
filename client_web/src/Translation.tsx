@@ -1,39 +1,38 @@
 import { createMemo } from "solid-js";
 import * as i18n from "@solid-primitives/i18n";
-import pl_PL from "../Resources/pl-PL.json";
-import en_US from "../Resources/en-US.json";
+import pl_PL from "../locales/pl-PL.json";
+import en_US from "../locales/en-US.json";
 import { useAppState } from "./AppState";
 
-export const dictionaries = {
+const dictionaries = {
 	en_US: en_US,
 	pl_PL: pl_PL,
 } as const;
 
 export type Locales = keyof typeof dictionaries;
 
-export type ErrorTransKeys = keyof (typeof dictionaries)["pl_PL"]["errors"];
-export type SuccessTransKeys = keyof (typeof dictionaries)["pl_PL"]["success"];
-//TODO: Put this thingy in a component so it can be cleaned up
-const AppState = useAppState();
+export type ErrorTransKeys = keyof (typeof dictionaries)["en_US"]["errors"];
+export type SuccessTransKeys = keyof (typeof dictionaries)["en_US"]["success"];
 
-//Remember to change to en_US when I finish translating
-const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.pl_PL), i18n.flatten(dictionaries[AppState.locale()])));
-export const t = i18n.chainedTranslator(dictionaries.pl_PL, i18n.translator(dict, i18n.resolveTemplate));
-
+export const useTrans = () => {
+	const AppState = useAppState();
+	const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.en_US), i18n.flatten(dictionaries[AppState.locale()])));
+	return i18n.chainedTranslator(dictionaries.en_US, i18n.translator(dict, i18n.resolveTemplate));
+};
 export function formatDateLong(date: string): string {
-	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
+	return Intl.DateTimeFormat(useAppState().localeJsFromat(), {
 		dateStyle: "full",
 		timeStyle: "medium",
 	}).format(new Date(date));
 }
 export function formatDateNoTime(date: string): string {
-	return Intl.DateTimeFormat(AppState.localeJsFromat(), {
+	return Intl.DateTimeFormat(useAppState().localeJsFromat(), {
 		dateStyle: "long",
 	}).format(new Date(date));
 }
 
 export function formatNumber(num: number): string {
-	return new Intl.NumberFormat(AppState.localeJsFromat(), {
+	return new Intl.NumberFormat(useAppState().localeJsFromat(), {
 		maximumSignificantDigits: 3,
 		notation: "compact",
 		unitDisplay: "short",
@@ -54,6 +53,7 @@ const YEAR = 12 * MONTH;
 const YEARS_THRESHOLD = YEAR * 1.5;
 
 export function timeSince(date: string): string {
+	const t = useTrans();
 	const difference = new Date().getTime() - new Date(date).getTime();
 	if (difference >= YEARS_THRESHOLD)
 		return t.relativeTime.past({

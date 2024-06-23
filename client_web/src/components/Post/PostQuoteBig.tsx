@@ -6,7 +6,7 @@ import { AttachmentList } from "./AttachmentList";
 import { colors } from "../../variables.stylex";
 import { A } from "@solidjs/router";
 import { getDisplayName } from "@/utils";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "../UserProfile/UserAvatar";
 //! Post is safe to be asserted as defined
 const styles = stylex.create({
 	post: {

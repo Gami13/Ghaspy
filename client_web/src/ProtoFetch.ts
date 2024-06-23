@@ -4,13 +4,11 @@ import type { ErrorTransKeys } from "./Translation";
 import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
 import { batch } from "solid-js";
+import type { Endpoint } from "./constants";
+import { getTokenFromCookie, useAppState } from "./AppState";
 //ytes
-type Coder<Type> = {
-	encode(message: Type, writer?: _m0.Writer): _m0.Writer;
-	decode(input: _m0.Reader | Uint8Array, length?: number): Type;
-	create<I extends Exact<DeepPartial<Type>, I>>(base?: I): Type;
-};
-type ProtoFetchType<ReturnType> =
+
+type ProtoFetchType<DataType> =
 	| {
 			isLoading: true;
 			isError: undefined;
@@ -30,7 +28,7 @@ type ProtoFetchType<ReturnType> =
 			isError: false;
 			isSuccess: true;
 			error: undefined;
-			data: ReturnType;
+			data: DataType;
 	  }
 	| {
 			isLoading: false;
@@ -40,16 +38,15 @@ type ProtoFetchType<ReturnType> =
 			data: undefined;
 	  };
 
-export class ProtoFetch<RequestType, ReturnType> {
-	private store: [get: Store<ProtoFetchType<ReturnType>>, set: SetStoreFunction<ProtoFetchType<ReturnType>>];
-	state: Store<ProtoFetchType<ReturnType>>;
-	encoder: Coder<RequestType> | undefined;
-	decoder: Coder<ReturnType>;
-	controller: AbortController | undefined;
-	constructor(encoder: Coder<RequestType> | undefined, decoder: Coder<ReturnType>) {
-		this.encoder = encoder;
-		this.decoder = decoder;
-		this.store = createStore<ProtoFetchType<ReturnType>>({
+export class ProtoFetch<A, B> {
+	private store;
+	state;
+
+	private endpointData;
+	private controller: AbortController | undefined;
+	constructor(endpoint: Endpoint<A, B>) {
+		this.endpointData = endpoint;
+		this.store = createStore<ProtoFetchType<B>>({
 			isLoading: false,
 			isError: false,
 			isSuccess: false,
@@ -60,15 +57,7 @@ export class ProtoFetch<RequestType, ReturnType> {
 		this.state = this.store[0];
 	}
 
-	createBody<I extends Exact<DeepPartial<RequestType>, I>>(base?: I): Uint8Array {
-		if (this.encoder !== undefined) {
-			return this.encoder.encode(this.encoder.create(base ?? ({} as Partial<RequestType> as I))).finish();
-		}
-
-		return new Uint8Array();
-	}
-
-	async Query(url: string, init: RequestInit) {
+	async Query(body: A = {} as A) {
 		this.store[1]("isLoading", true);
 		console.log("Querying");
 		if (this.controller) {
@@ -77,9 +66,18 @@ export class ProtoFetch<RequestType, ReturnType> {
 		}
 
 		this.controller = new AbortController();
-		init.signal = this.controller.signal;
-
-		const response = await fetch(url, init).catch((e) => {
+		const encodedBody = this.endpointData.encoder?.encode(body);
+		const token = getTokenFromCookie();
+		console.log("protofetch token", token);
+		const response = await fetch(this.endpointData.url, {
+			method: this.endpointData.method,
+			headers: {
+				"Content-Type": this.endpointData.contentType,
+				Authorization: token || "",
+			},
+			body: encodedBody ? new Uint8Array(encodedBody.finish()) : undefined,
+			signal: this.controller.signal,
+		}).catch((e) => {
 			if (e.name === "AbortError") return;
 		});
 		console.log("response", response);
@@ -112,7 +110,7 @@ export class ProtoFetch<RequestType, ReturnType> {
 			});
 			return this.state;
 		}
-		const success = this.decoder.decode(data);
+		const success = this.endpointData.decoder.decode(data);
 		batch(() => {
 			this.store[1]("isSuccess", true);
 			this.store[1]("data", success);

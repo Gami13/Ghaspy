@@ -1,4 +1,3 @@
-import { t } from "@/Translation";
 import { colors, dimensions } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
 
@@ -6,13 +5,17 @@ import { NavigationListLink } from "./NavigationListLink";
 
 import { TbBell, TbBookmark, TbCompass, TbDoorExit, TbHome, TbLock, TbMail, TbSettings, TbUser } from "solid-icons/tb";
 import { createSignal, Show } from "solid-js";
-import { logOut, useAppState } from "@/AppState";
+import { saveTokenToCookie, useAppState } from "@/AppState";
 import { NavigationListButton } from "./NavigationListButton";
 import { Portal } from "solid-js/web";
 import { LogInModal } from "./LogInModal";
 import { SignUpModal } from "./SignUpModal";
 import { A } from "@solidjs/router";
 import { Logo } from "../Logo";
+import { useTrans } from "@/Translation";
+import { LOG_OUT_ENDPOINT } from "@/constants";
+import { ProtoFetch } from "@/ProtoFetch";
+import { User } from "@/types/internal";
 const styles = stylex.create({
 	nav: {
 		display: "flex",
@@ -27,7 +30,8 @@ const styles = stylex.create({
 
 		flexDirection: "column",
 		justifyContent: "flex-start",
-		alignItems: "flex-start",
+		alignItems: { default: "flex-start", "@media (max-width: 900px)": "center" },
+
 		overflowY: "auto",
 	},
 	navElement: {
@@ -51,7 +55,7 @@ const styles = stylex.create({
 		// width: 0,
 	},
 	logo: {
-		paddingLeft: "0.5em",
+		paddingLeft: { default: "0.5em", "@media (max-width: 900px)": "0px" },
 		width: "100%",
 		display: "flex",
 		justifyContent: "flex-start",
@@ -74,13 +78,27 @@ const styles = stylex.create({
 	logoText: {
 		color: colors.text950,
 		fontSize: "2em",
+		display: { default: "block", "@media (max-width: 900px)": "none" },
 	},
 });
 
 export function Navigation() {
 	const AppState = useAppState();
+	const t = useTrans();
 	const [isLoggingIn, setIsLoggingIn] = createSignal(false);
 	const [isSigningUp, setIsSigningUp] = createSignal(false);
+	function logOut() {
+		const proto = new ProtoFetch(LOG_OUT_ENDPOINT);
+		console.log("logging out");
+		proto.Query().then((x) => {
+			if (x?.isSuccess) {
+				AppState.setUser(User.create({}));
+				AppState.setUserToken(undefined);
+				saveTokenToCookie("");
+			}
+		});
+	}
+
 	return (
 		<nav {...stylex.attrs(styles.nav)}>
 			<ol {...stylex.attrs(styles.list)}>

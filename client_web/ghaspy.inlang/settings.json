@@ -1,6 +1,6 @@
 {
   "$schema": "https://inlang.com/schema/project-settings",
-  "sourceLanguageTag": "pl-PL",
+  "sourceLanguageTag": "pl-US",
   "languageTags": ["pl-PL", "en-US"],
   "modules": [
     "https://cdn.jsdelivr.net/npm/@inlang/plugin-json@latest/dist/index.js",
@@ -11,7 +11,7 @@
   ],
 
   "plugin.inlang.json": {
-    "pathPattern": "./resources/{languageTag}.json",
+    "pathPattern": "./locales/{languageTag}.json",
 
     "variableReferencePattern": ["{{", "}}"]
   }

@@ -3,13 +3,7 @@ import { For, type Setter } from "solid-js";
 import { Attachment } from "./Attachment";
 import type { UploadFile } from "../Editor";
 import { colors, transitions } from "../../variables.stylex";
-import {
-	TbFile,
-	TbFileAnalytics,
-	TbFileBarcode,
-	TbFileDescription,
-	TbTrash,
-} from "solid-icons/tb";
+import { TbFileDescription, TbTrash } from "solid-icons/tb";
 
 type AttachmentListProps = {
 	attachments: UploadFile[];
@@ -23,7 +17,6 @@ const styles = stylex.create({
 		width: "100%",
 		minHeight: "6em",
 		overflow: "hidden",
-		// border: "1px solid red",
 		flexShrink: 0,
 		// flexBasis: "50%",
 		backgroundColor: "rgba(0,0,0,0.3)",
@@ -39,11 +32,10 @@ const styles = stylex.create({
 		height: "6em",
 		objectFit: "cover",
 		borderRadius: "0.5em",
-	},
-	ataczment: {
 		position: "relative",
 	},
-	ataczmentBtn: {
+
+	attachmentBtn: {
 		cursor: "pointer",
 		position: "absolute",
 		top: 0,
@@ -57,44 +49,45 @@ const styles = stylex.create({
 		backgroundColor: colors.background200,
 		zIndex: 11,
 		":hover": {
-			backgroundColor: "rgba(0,0,0,0.5)",
+			backgroundColor: colors.textError,
 		},
 	},
-	ataczmentContent: {
+	attachmentContent: {
 		position: "relative",
-		height: "5em",
+		height: "100%",
 		width: "5em",
 		padding: "0.5em",
+		borderRadius: "0.5em",
+		backgroundColor: colors.background100,
 	},
 
-	ataczmentFile: {
+	attachmentFile: {
 		cursor: "search",
 		width: "100%",
 		height: "100%",
 		padding: "0.5em",
 		display: "flex",
 		fontSize: "3em",
-		backgroundColor: colors.background100,
-		":hover": {
-			opacity: 0,
-		},
-		zIndex: 10,
+		// backgroundColor: colors.background100,
+
 		position: "absolute",
 		top: "50%",
 		left: "50%",
 		transform: "translate(-50%, -50%)",
+		borderRadius: "0.15em",
 	},
 	fileName: {
-		fontSize: "0.5em",
+		fontSize: "1.25em",
+		position: "absolute",
+		bottom: "0.25ch",
+		left: 0,
+		width: "100%",
 		textAlign: "center",
 		display: "flex",
-		flexDirection: "column",
-		justifyContent: "flex-end",
+		justifyContent: "center",
 		alignItems: "center",
-		width: "100%",
-		height: "100%",
-		overflow: "hidden",
-		whiteSpace: "wrap",
+
+		colors: colors.text500,
 	},
 });
 export function PostWriterAttachmentList(props: AttachmentListProps) {
@@ -104,15 +97,13 @@ export function PostWriterAttachmentList(props: AttachmentListProps) {
 				{(attachment) => {
 					if (typeof attachment === "string") {
 						return (
-							<li {...stylex.attrs(styles.ataczment)}>
+							<li {...stylex.attrs(styles.attachment)}>
 								<button
 									onClick={() =>
-										props.attachmentsSetter((files) =>
-											files.filter((file) => file !== attachment),
-										)
+										props.attachmentsSetter((files) => files.filter((file) => file !== attachment))
 									}
 									type="button"
-									{...stylex.attrs(styles.ataczmentBtn)}
+									{...stylex.attrs(styles.attachmentBtn)}
 								>
 									<TbTrash />
 								</button>
@@ -123,20 +114,16 @@ export function PostWriterAttachmentList(props: AttachmentListProps) {
 					if (
 						typeof attachment === "object" &&
 						attachment.blob &&
-						["image/png", "image/jpeg", "image/webp"].includes(
-							attachment.blob.type,
-						)
+						["image/png", "image/jpeg", "image/webp"].includes(attachment.blob.type)
 					) {
 						return (
-							<li {...stylex.attrs(styles.ataczment)}>
+							<li {...stylex.attrs(styles.attachment)}>
 								<button
 									onClick={() =>
-										props.attachmentsSetter((files) =>
-											files.filter((file) => file !== attachment),
-										)
+										props.attachmentsSetter((files) => files.filter((file) => file !== attachment))
 									}
 									type="button"
-									{...stylex.attrs(styles.ataczmentBtn)}
+									{...stylex.attrs(styles.attachmentBtn)}
 								>
 									<TbTrash />
 								</button>
@@ -150,23 +137,21 @@ export function PostWriterAttachmentList(props: AttachmentListProps) {
 					}
 					//TODO: MAKE PRETTY LIKE DISCORD https://user-images.githubusercontent.com/20058379/191418459-0050ba3e-ee19-4383-b0e4-0c55ee48a1dd.png
 					return (
-						<li {...stylex.attrs(styles.ataczment)}>
+						<li {...stylex.attrs(styles.attachment)}>
 							<button
 								onClick={() =>
-									props.attachmentsSetter((files) =>
-										files.filter((file) => file !== attachment),
-									)
+									props.attachmentsSetter((files) => files.filter((file) => file !== attachment))
 								}
 								type="button"
-								{...stylex.attrs(styles.ataczmentBtn)}
+								{...stylex.attrs(styles.attachmentBtn)}
 							>
 								<TbTrash />
 							</button>
-							<div {...stylex.attrs(styles.ataczmentContent)}>
-								<TbFileDescription {...stylex.attrs(styles.ataczmentFile)} />
+							<div {...stylex.attrs(styles.attachmentContent)}>
+								{/* @ts-ignore */}
+								<TbFileDescription {...stylex.attrs(styles.attachmentFile)} />
 								<span {...stylex.attrs(styles.fileName)}>
-									filedddddddddd name madafaka
-									{attachment.name.split(".").pop() && ".file"}
+									.{attachment.name.split(".").pop()?.toUpperCase() ?? ".file"}
 								</span>
 							</div>
 						</li>

@@ -6,12 +6,13 @@ import { colors } from "../../variables.stylex";
 import { PostWriterAttachmentList } from "./PostWriterAttachments";
 import { TbPhoto } from "solid-icons/tb";
 import { InteractionButton } from "./InteractionButton";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "../UserProfile/UserAvatar";
 import { getDisplayName } from "@/utils";
 import { Editor, type UploadFile } from "../Editor";
-import { POST_ENDPOINT } from "@/constants";
+import { ADD_POST_ENDPOINT } from "@/constants";
 import { useAppState } from "@/AppState";
 import { ResponseError } from "@/types/responses";
+import { useTrans } from "@/Translation";
 
 const styles = stylex.create({
 	post: {
@@ -120,6 +121,7 @@ const styles = stylex.create({
 export function PostWriter(props: { user: User; quote?: PostType }) {
 	//stupid protobuf generates as optional even tho its required and will always be
 	const AppState = useAppState();
+	const t = useTrans();
 	const [text, setText] = createSignal("");
 	const [files, setFiles] = createSignal<UploadFile[]>([]);
 	const [isDragging, setIsDragging] = createSignal(false);
@@ -137,8 +139,8 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 				}
 			}
 
-			const response = await fetch(POST_ENDPOINT, {
-				method: "POST",
+			const response = await fetch(ADD_POST_ENDPOINT.url, {
+				method: ADD_POST_ENDPOINT.method,
 				body: formData,
 				headers: {
 					Authorization: AppState.userToken() || "",
@@ -216,7 +218,7 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 					contentStyle={styles.content}
 					placeholderStyle={styles.placeholder}
 					setterText={setText}
-					placeholder="What's poppin guys? TRANSLATE"
+					placeholder={t.posts.whatsHappening()}
 					setterFiles={setFiles}
 					text={text}
 				/>
@@ -249,7 +251,7 @@ export function PostWriter(props: { user: User; quote?: PostType }) {
 					/>
 					<li>
 						<button onclick={sendPost} type="button" {...stylex.attrs(styles.sendButton)}>
-							Post
+							{t.posts.post()}
 						</button>
 					</li>
 				</ol>

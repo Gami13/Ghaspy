@@ -1,10 +1,8 @@
 import stylex from "@stylexjs/stylex";
 import { Modal } from "../Modal";
 import { colors, transitions } from "../../variables.stylex";
-import { ResponseLogInUser } from "@/types/responses";
-import { RequestLogInUser } from "@/types/requests";
 import { LOG_IN_ENDPOINT } from "@/constants";
-import { t, type ErrorTransKeys } from "@/Translation";
+import { useTrans, type ErrorTransKeys } from "@/Translation";
 import { TbBrandTwitterFilled } from "solid-icons/tb";
 import { saveTokenToCookie, useAppState } from "@/AppState";
 import { createEffect, Show } from "solid-js";
@@ -81,10 +79,8 @@ type LogInModalProps = {
 };
 export function LogInModal(props: LogInModalProps) {
 	const AppState = useAppState();
-	const proto = new ProtoFetch<RequestLogInUser, ResponseLogInUser>(
-		RequestLogInUser,
-		ResponseLogInUser,
-	);
+	const proto = new ProtoFetch(LOG_IN_ENDPOINT);
+	const t = useTrans();
 
 	function onSubmit(
 		event: Event & {
@@ -96,14 +92,7 @@ export function LogInModal(props: LogInModalProps) {
 
 		const email = formData.get("email") as string;
 		const password = formData.get("password") as string;
-		proto.Query(LOG_IN_ENDPOINT, {
-			method: "POST",
-			body: proto.createBody({
-				email: email,
-				password: password,
-				deviceName: `web${navigator.userAgent}`,
-			}),
-		});
+		proto.Query({ email: email, password: password, deviceName: `web${navigator.userAgent}` });
 	}
 	createEffect(() => {
 		if (proto.state.isSuccess && proto.state.data?.token) {
@@ -141,16 +130,10 @@ export function LogInModal(props: LogInModalProps) {
 					/>
 
 					<Show when={proto.state.isError}>
-						<span {...stylex.attrs(styles.error)}>
-							{t.errors[proto.state.error as ErrorTransKeys]()}
-						</span>
+						<span {...stylex.attrs(styles.error)}>{t.errors[proto.state.error as ErrorTransKeys]()}</span>
 					</Show>
 
-					<button
-						disabled={proto.state.isLoading}
-						type="submit"
-						{...stylex.attrs(styles.submit)}
-					>
+					<button disabled={proto.state.isLoading} type="submit" {...stylex.attrs(styles.submit)}>
 						<Show when={!proto.state.isLoading} fallback={t.loading()}>
 							{t.auth.logIn()}
 						</Show>
