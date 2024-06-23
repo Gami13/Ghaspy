@@ -10,6 +10,7 @@
     "https://cdn.jsdelivr.net/npm/@inlang/plugin-t-function-matcher@latest/dist/index.js"
   ],
   "plugin.inlang.messageFormat": {
-    "pathPattern": "./resources/{languageTag}.json"
+    "pathPattern": "./resources/{languageTag}.json",
+    "variableReferencePattern": ["{{", "}}"]
   }
 }
