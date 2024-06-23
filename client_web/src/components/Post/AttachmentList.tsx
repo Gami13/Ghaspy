@@ -2,7 +2,7 @@ import type { Post } from "@/types/internal";
 import stylex, { type StyleXStyles } from "@stylexjs/stylex";
 import { For } from "solid-js";
 import { Attachment } from "./Attachment";
-import { TbTrash, TbFileDescription } from "solid-icons/tb";
+import { TbFileDescription } from "solid-icons/tb";
 import { colors } from "../../variables.stylex";
 import { imageExtensions } from "@/imageExtensions";
 
@@ -81,7 +81,9 @@ export function AttachmentList(props: AttachmentListProps) {
 							<div {...stylex.attrs(styles.attachmentContent)}>
 								{/* @ts-ignore */}
 								<TbFileDescription {...stylex.attrs(styles.attachmentFile)} />
-								<span {...stylex.attrs(styles.fileName)}>.{attachment.split(".").pop()?.toUpperCase()}</span>
+								<span {...stylex.attrs(styles.fileName)}>
+									.{attachment.split(".").pop()?.toUpperCase()}
+								</span>
 							</div>
 						</li>
 					);

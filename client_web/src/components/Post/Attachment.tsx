@@ -1,7 +1,6 @@
 import { colors } from "../../variables.stylex";
 import stylex from "@stylexjs/stylex";
-import { createEffect, onMount } from "solid-js";
-import { CDN_URL, IMAGE_URL } from "@/constants";
+import { IMAGE_URL } from "@/constants";
 
 //! Post is safe to be asserted as defined
 const MAX_WIDTH = 510;

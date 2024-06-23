@@ -8,16 +8,7 @@ import { type ErrorTransKeys, formatDateLong, timeSince, useTrans } from "@/Tran
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
-import {
-	TbBookmark,
-	TbBookmarkFilled,
-	TbDownload,
-	TbHeart,
-	TbHeartFilled,
-	TbLink,
-	TbMessage,
-	TbRepeat,
-} from "solid-icons/tb";
+import { TbBookmark, TbBookmarkFilled, TbDownload, TbHeart, TbHeartFilled, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import { UserAvatar } from "../UserProfile/UserAvatar";
@@ -213,13 +204,7 @@ export function Post(props: {
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
 					<li {...stylex.attrs(styles.statisticsGroup)}>
-						<InteractionButton
-							onClick={toggleLike}
-							isToggled={isLiked()}
-							icon={<TbHeart />}
-							iconToggled={<TbHeartFilled />}
-							text={likeCount()}
-						/>
+						<InteractionButton onClick={toggleLike} isToggled={isLiked()} icon={<TbHeart />} iconToggled={<TbHeartFilled />} text={likeCount()} />
 						<InteractionButton icon={<TbMessage />} text={props.post.countReplies} />
 						<InteractionButton icon={<TbRepeat />} text={props.post.countQuotes} />
 					</li>
@@ -247,6 +232,7 @@ export function Post(props: {
 									document.body.appendChild(link);
 									for (let i = 0; i < props.post.attachments.length; i++) {
 										link.setAttribute("href", CDN_URL + props.post.attachments[i]);
+										link.setAttribute("target", "_blank");
 										link.click();
 									}
 									document.body.removeChild(link);

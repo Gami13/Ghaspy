@@ -55,11 +55,16 @@
 		"unfollow": "Unfollow",
 		"mutual": "Friend",
 		"followsYou": "Follows you",
-		"following": "Followers",
-		"followers": "Following",
+		"followingCount": "Followers",
+		"followersCount": "Following",
 		"posts": "Posts",
 		"likes": "Likes",
-		"you": "You"
+		"likesCount": "Likes",
+		"you": "You",
+		"media": "Media",
+		"replies": "Replies",
+		"joinedAt": "Joined: {{date}}",
+		"postsCount": "{{count}} posts"
 	},
 	"posts": {
 		"posts": "Posts",

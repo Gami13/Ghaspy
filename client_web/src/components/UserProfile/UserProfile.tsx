@@ -3,15 +3,13 @@ import { colors, dimensions, transitions } from "../../variables.stylex";
 import { useAppState } from "@/AppState";
 // import left arrow icon
 import { TbArrowLeft, TbDots, TbUserStar } from "solid-icons/tb";
-import { A, useParams } from "@solidjs/router";
-import { ResponseGetProfile } from "@/types/responses";
+import { useParams } from "@solidjs/router";
 import { createEffect, Show } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
 import { GET_PROFILE_ENDPOINT } from "@/constants";
 import { UserAvatar } from "./UserAvatar";
-import { User } from "@/types/internal";
 import { getDisplayName } from "@/utils";
-import { formatDateNoTime, formatNumber } from "@/Translation";
+import { formatDateNoTime, formatNumber, useTrans } from "@/Translation";
 import { UserBanner } from "./UserBanner";
 const styles = stylex.create({
 	main: {
@@ -217,6 +215,7 @@ const styles = stylex.create({
 export function UserProfile() {
 	const AppState = useAppState();
 	const params = useParams();
+	const t = useTrans();
 	const proto = new ProtoFetch(GET_PROFILE_ENDPOINT(params.username));
 	createEffect(() => {
 		let token = AppState.userToken();
@@ -246,20 +245,14 @@ export function UserProfile() {
 						<>
 							<header>
 								<div {...stylex.attrs(styles.headerNav)}>
-									<button
-										type="button"
-										{...stylex.attrs(styles.navButton)}
-										onClick={() => history.back()}
-									>
+									<button type="button" {...stylex.attrs(styles.navButton)} onClick={() => history.back()}>
 										{/* @ts-ignore */}
 										<TbArrowLeft {...stylex.attrs(styles.navIcon)} />
 									</button>
 
 									<section {...stylex.attrs(styles.names)}>
 										<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(profile)}</h2>
-										<h3 {...stylex.attrs(styles.highlight)}>
-											{formatNumber(profile.countPosts)} Posts
-										</h3>
+										<h3 {...stylex.attrs(styles.highlight)}>{t.profile.postsCount({ count: formatNumber(profile.countPosts) })}</h3>
 									</section>
 								</div>
 								<UserBanner user={profile} {...stylex.attrs(styles.banner)} />
@@ -272,7 +265,7 @@ export function UserProfile() {
 										{/* @ts-ignore */}
 										<TbUserStar {...stylex.attrs(styles.buttonsIcons)} />
 										<button type="button" {...stylex.attrs(styles.followBtn)}>
-											Follow
+											{t.profile.follow()}
 										</button>
 									</div>
 									<ol {...stylex.attrs(styles.description)}>
@@ -286,27 +279,21 @@ export function UserProfile() {
 										</li>
 										<li>
 											<h3 {...stylex.attrs(styles.highlight)}>
-												Joined: {formatDateNoTime(profile.joinedAt as string)}
+												{t.profile.joinedAt({ date: formatDateNoTime(profile.joinedAt as string) })}
 											</h3>
 										</li>
 										<li {...stylex.attrs(styles.stats)}>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countFollowing)}
-												</span>
-												<span {...stylex.attrs(styles.highlight)}>Following</span>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowing)}</span>
+												<span {...stylex.attrs(styles.highlight)}>{t.profile.followingCount()}</span>
 											</h5>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countFollowers)}
-												</span>{" "}
-												<span {...stylex.attrs(styles.highlight)}>Followers</span>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countFollowers)}</span>{" "}
+												<span {...stylex.attrs(styles.highlight)}>{t.profile.followersCount()}</span>
 											</h5>
 											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countLikes)}
-												</span>{" "}
-												<span {...stylex.attrs(styles.highlight)}>Likes</span>
+												<span {...stylex.attrs(styles.statNum)}>{formatNumber(profile.countLikes)}</span>{" "}
+												<span {...stylex.attrs(styles.highlight)}>{t.profile.likesCount()}</span>
 											</h5>
 										</li>
 										{/* //TODO:Implement this */}
@@ -318,23 +305,16 @@ export function UserProfile() {
 								<div {...stylex.attrs(styles.mainButtons)}>
 									{/* //TODO:TRANSLATE */}
 									<button type="button" {...stylex.attrs(styles.mainBtn, styles.currentBtn)}>
-										Posts
+										{t.profile.posts()}
 									</button>
 									<button type="button" {...stylex.attrs(styles.mainBtn)}>
-										Replies
+										{t.profile.replies()}
 									</button>
 									<button type="button" {...stylex.attrs(styles.mainBtn)}>
-										Subs
+										{t.profile.media()}
 									</button>
 									<button type="button" {...stylex.attrs(styles.mainBtn)}>
-										Highlights
-									</button>
-
-									<button type="button" {...stylex.attrs(styles.mainBtn)}>
-										Media
-									</button>
-									<button type="button" {...stylex.attrs(styles.mainBtn)}>
-										Likes
+										{t.profile.likes()}
 									</button>
 								</div>
 							</main>
