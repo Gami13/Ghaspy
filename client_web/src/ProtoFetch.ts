@@ -1,11 +1,10 @@
-import { createStore, type SetStoreFunction, type Store } from "solid-js/store";
+import { createStore } from "solid-js/store";
 import type _m0 from "protobufjs/minimal";
 import type { ErrorTransKeys } from "./Translation";
-import type { DeepPartial, Exact } from "./types/requests";
 import { ResponseError } from "./types/responses";
 import { batch } from "solid-js";
 import type { Endpoint } from "./constants";
-import { getTokenFromCookie, useAppState } from "./AppState";
+import { getTokenFromCookie } from "./AppState";
 //ytes
 
 type ProtoFetchType<DataType> =

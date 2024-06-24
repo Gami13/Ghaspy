@@ -55,11 +55,11 @@
 		"unfollow": "Odobserwuj",
 		"mutual": "Znajomy",
 		"followsYou": "Obserwuje cie",
-		"following": "Obserwujących",
-		"followers": "Obserwowanych",
 		"posts": "Posty",
 		"likes": "Polubienia",
-		"you": "Ty"
+		"you": "Ty",
+		"following": "Obserwujących",
+		"followers": "Obserwowanych"
 	},
 	"posts": {
 		"posts": "Posty",
