@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Inter:700|Inter:400|Inter:500|Poppins:400");
+@import url("https://fonts.googleapis.com/css?family=Inter:700|Inter:400|Inter:500");
 /* Box sizing rules */
 *,
 *::before,
@@ -153,7 +153,8 @@ input[type="reset"] {
 /* Set core body defaults */
 
 body {
-  font-family: "Poppins", Arial, Helvetica, sans-serif;
+  /*!TODO: put some different dope ass font here */
+  font-family: Arial, Helvetica, sans-serif;
   background-color: #0a0b10;
   display: flex;
   justify-content: center;

@@ -1,5 +1,7 @@
 {
 	"appName": "Ghaspy",
+	"locale": "Polski",
+
 	"hello": "cześć {{ name }}, jak się masz?",
 	"loading": "Ładowanie...",
 	"relativeTime": {

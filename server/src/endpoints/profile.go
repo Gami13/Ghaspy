@@ -305,6 +305,7 @@ func (ec *EndpointContext) GetProfileEndpoint(w http.ResponseWriter, r *http.Req
 			CountPosts:        uint32(user.Countposts),
 			CountFollowing:    uint32(user.Countisfollowing),
 			CountFollowers:    uint32(user.Countfollowedby),
+			IsYourProfile:     user.Isyou,
 			JoinedAt:          snowflake.Snowflake(user.ID).GetJSTime(),
 		},
 	},

@@ -8,7 +8,16 @@ import { type ErrorTransKeys, formatDateLong, timeSince, useTrans } from "@/Tran
 
 import { InteractionButton, InteractionButtonStyle } from "./InteractionButton";
 import { AttachmentList } from "./AttachmentList";
-import { TbBookmark, TbBookmarkFilled, TbDownload, TbHeart, TbHeartFilled, TbLink, TbMessage, TbRepeat } from "solid-icons/tb";
+import {
+	TbBookmark,
+	TbBookmarkFilled,
+	TbDownload,
+	TbHeart,
+	TbHeartFilled,
+	TbLink,
+	TbMessage,
+	TbRepeat,
+} from "solid-icons/tb";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import { A } from "@solidjs/router";
 import { UserAvatar } from "../UserProfile/UserAvatar";
@@ -103,7 +112,8 @@ export function Post(props: {
 	console.log("POST", props.post);
 	const t = useTrans();
 	const AppState = useAppState();
-	const quote = () => (props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null);
+	const quote = () =>
+		props.post.quoted != null ? (props.post.attachments.length === 0 ? "big" : "small") : null;
 	const [isLiked, setIsLiked] = createSignal(props.post.isLiked);
 	const [isBookmarked, setIsBookmarked] = createSignal(props.post.isBookmarked);
 	const [likeCount, setLikeCount] = createSignal(props.post.countLikes);
@@ -128,6 +138,7 @@ export function Post(props: {
 	function likeError(error: ErrorTransKeys) {
 		console.log(error);
 		alert(`Something went wrong${t.errors[error]()}`);
+		setLikeCount(props.post.countLikes);
 		setIsLiked(!isLiked());
 	}
 	function toggleLike() {
@@ -175,14 +186,22 @@ export function Post(props: {
 
 	return (
 		<article {...stylex.attrs(styles.post, props.styling)}>
-			<A href={`/${props.post.author?.username}/${props.post.ID}`} {...stylex.attrs(styles.link)}>
+			<A
+				href={`/${props.post.author?.username}/${props.post.ID}`}
+				{...stylex.attrs(styles.link)}
+			>
 				<header {...stylex.attrs(styles.header)}>
 					<UserAvatar user={props.post.author} styles={styles.avatar} />
 					<section {...stylex.attrs(styles.names)}>
-						<h2 {...stylex.attrs(styles.displayName)}>{getDisplayName(props.post.author)}</h2>
+						<h2 {...stylex.attrs(styles.displayName)}>
+							{getDisplayName(props.post.author)}
+						</h2>
 						<h3 {...stylex.attrs(styles.username)}>@{props.post.author.username}</h3>
 					</section>
-					<time title={formatDateLong(props.post.timePosted)} {...stylex.attrs(styles.time)}>
+					<time
+						title={formatDateLong(props.post.timePosted)}
+						{...stylex.attrs(styles.time)}
+					>
 						○ {timeSince(props.post.timePosted)}
 					</time>
 				</header>
@@ -204,7 +223,13 @@ export function Post(props: {
 			<footer>
 				<ol {...stylex.attrs(styles.statistics)}>
 					<li {...stylex.attrs(styles.statisticsGroup)}>
-						<InteractionButton onClick={toggleLike} isToggled={isLiked()} icon={<TbHeart />} iconToggled={<TbHeartFilled />} text={likeCount()} />
+						<InteractionButton
+							onClick={toggleLike}
+							isToggled={isLiked()}
+							icon={<TbHeart />}
+							iconToggled={<TbHeartFilled />}
+							text={likeCount()}
+						/>
 						<InteractionButton icon={<TbMessage />} text={props.post.countReplies} />
 						<InteractionButton icon={<TbRepeat />} text={props.post.countQuotes} />
 					</li>
@@ -231,7 +256,10 @@ export function Post(props: {
 									link.style.display = "none";
 									document.body.appendChild(link);
 									for (let i = 0; i < props.post.attachments.length; i++) {
-										link.setAttribute("href", CDN_URL + props.post.attachments[i]);
+										link.setAttribute(
+											"href",
+											CDN_URL + props.post.attachments[i],
+										);
 										link.setAttribute("target", "_blank");
 										link.click();
 									}

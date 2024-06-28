@@ -312,7 +312,7 @@ SELECT id,
 	isPostBookmarked,
 	threadStart
 FROM getPosts($1) as p
-LIMIT 50 OFFSET $2;
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
 
 -- name: SelectPostByID :one
 SELECT id,
@@ -372,7 +372,105 @@ SELECT id,
 FROM getPosts(@Token::text) as p
 WHERE p.username = (@Username::text)
 ORDER BY p.id DESC
-LIMIT 50 OFFSET $3;
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
+
+-- name: SelectRepliesByUserChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts(@Token::text) as p
+WHERE p.replyTo != 0
+	AND p.username = (@Username::text)
+ORDER BY p.id DESC
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
+
+-- name: SelectLikesByUserChronologically :many
+SELECT p.id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts(@Token::text) as p
+	JOIN likes l ON p.id = l.postId
+WHERE l.userId = p.authorId
+	AND l.isenabled = true
+	AND p.username = (@Username::text)
+ORDER BY l.id DESC
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
+
+-- name: SelectMediaByUserChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts(@Token::text) as p
+WHERE p.attachments IS NOT NULL
+	AND p.username = (@Username::text)
+ORDER BY p.id DESC
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;
 
 -- name: SelectThreadReplies :many
 SELECT id,
@@ -442,4 +540,4 @@ WHERE b.userId = (
 	)
 	AND b.isenabled = true
 ORDER BY b.id DESC
-LIMIT 50 OFFSET $2;
+LIMIT 50 OFFSET sqlc.arg(pageNumber)::integer;

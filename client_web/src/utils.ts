@@ -1,10 +1,22 @@
+import { formatNumber } from "./Translation";
 import type { User } from "./types/internal";
 
 export function getDisplayName(user: User) {
 	return user.displayName.length > 0 ? user.displayName : user.username;
 }
+export function getDisplayNameFallback(user: User | null | undefined) {
+	if (user) {
+		return user.displayName.length > 0 ? user.displayName : user.username;
+	}
+	return "Loading...";
+}
 
-export function getCursorPosition(parent: Node, node: Node, offset: number, stat: { pos: number; done: boolean }) {
+export function getCursorPosition(
+	parent: Node,
+	node: Node,
+	offset: number,
+	stat: { pos: number; done: boolean },
+) {
 	if (stat.done) return stat;
 	if (parent.textContent === null) return stat;
 	let currentNode = null;
@@ -25,7 +37,11 @@ export function getCursorPosition(parent: Node, node: Node, offset: number, stat
 }
 
 //find the child node and relative position and set it on range
-export function setCursorPosition(parent: Node, range: Range, stat: { pos: number; done: boolean }) {
+export function setCursorPosition(
+	parent: Node,
+	range: Range,
+	stat: { pos: number; done: boolean },
+) {
 	if (stat.done) return range;
 	if (parent.textContent === null) return stat;
 
@@ -43,4 +59,12 @@ export function setCursorPosition(parent: Node, range: Range, stat: { pos: numbe
 		}
 	}
 	return range;
+}
+
+export function textFallback(text: string | null | undefined) {
+	return text !== null && text !== undefined ? text : "Loading...";
+}
+
+export function formatNumberFallback(num: number | null | undefined) {
+	return num !== null && num !== undefined ? formatNumber(num) : "Loading...";
 }

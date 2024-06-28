@@ -4,20 +4,38 @@ import pl_PL from "../locales/pl-PL.json";
 import en_US from "../locales/en-US.json";
 import { useAppState } from "./AppState";
 
+function createDict<
+	T extends {
+		locale: string;
+	},
+>(dict: T) {
+	return {
+		name: dict.locale,
+		dictionary: dict,
+	};
+}
 const dictionaries = {
-	en_US: en_US,
-	pl_PL: pl_PL,
+	en_US: createDict(en_US),
+	pl_PL: createDict(pl_PL),
 } as const;
 
 export type Locales = keyof typeof dictionaries;
 
-export type ErrorTransKeys = keyof (typeof dictionaries)["en_US"]["errors"];
-export type SuccessTransKeys = keyof (typeof dictionaries)["en_US"]["success"];
+export type ErrorTransKeys = keyof (typeof dictionaries)["en_US"]["dictionary"]["errors"];
+export type SuccessTransKeys = keyof (typeof dictionaries)["en_US"]["dictionary"]["success"];
 
 export const useTrans = () => {
 	const AppState = useAppState();
-	const dict = createMemo(() => Object.assign(i18n.flatten(dictionaries.en_US), i18n.flatten(dictionaries[AppState.locale()])));
-	return i18n.chainedTranslator(dictionaries.en_US, i18n.translator(dict, i18n.resolveTemplate));
+	const dict = createMemo(() =>
+		Object.assign(
+			i18n.flatten(dictionaries.en_US.dictionary),
+			i18n.flatten(dictionaries[AppState.locale()].dictionary),
+		),
+	);
+	return i18n.chainedTranslator(
+		dictionaries.en_US.dictionary,
+		i18n.translator(dict, i18n.resolveTemplate),
+	);
 };
 export function formatDateLong(date: string): string {
 	return Intl.DateTimeFormat(useAppState().localeJsFromat(), {

@@ -7,16 +7,6 @@ import { PostWriter } from "./PostWriter";
 import { useAppState } from "@/AppState";
 import { For, onMount, Show } from "solid-js";
 const styles = stylex.create({
-	main: {
-		padding: "0.25em 0.5em",
-		height: "100vh",
-		maxWidth: dimensions.postsMaxWidth,
-		minWidth: dimensions.postsMinWidth,
-		backgroundColor: colors.background50,
-		flexGrow: 10000,
-		// borderRight: "2px solid #c23da9",
-		// borderLeft: "2px solid #0066ff",
-	},
 	list: {
 		height: "100%",
 		display: "flex",
@@ -29,6 +19,7 @@ const styles = stylex.create({
 });
 type PostListProps = {
 	posts: PostType[];
+	disableWriter?: boolean;
 };
 
 export function PostList(props: PostListProps) {
@@ -55,19 +46,17 @@ export function PostList(props: PostListProps) {
 		}
 	});
 	return (
-		<main {...stylex.attrs(styles.main)}>
-			<ul {...stylex.attrs(styles.list)} ref={listRef} onScroll={scrollControl}>
-				<Show when={AppState.isLoggedIn()}>
-					<PostWriter user={AppState.user} />
-				</Show>
-				<For each={props.posts}>
-					{(post) => (
-						<li>
-							<Post post={post as PostType & { author: User }} />
-						</li>
-					)}
-				</For>
-			</ul>
-		</main>
+		<ul {...stylex.attrs(styles.list)} ref={listRef} onScroll={scrollControl}>
+			<Show when={AppState.isLoggedIn() && !props.disableWriter}>
+				<PostWriter user={AppState.user} />
+			</Show>
+			<For each={props.posts}>
+				{(post) => (
+					<li>
+						<Post post={post as PostType & { author: User }} />
+					</li>
+				)}
+			</For>
+		</ul>
 	);
 }

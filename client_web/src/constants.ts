@@ -5,6 +5,7 @@ import {
 	ResponseGetBookmarksChronologically,
 	ResponseGetPost,
 	ResponseGetPostsChronologically,
+	ResponseGetPostsChronologicallyByUser,
 	ResponseGetProfile,
 	ResponseLogInUser,
 	ResponseLogOutUser,
@@ -12,7 +13,12 @@ import {
 	ResponseToggleBookmark,
 	ResponseToggleLike,
 } from "./types/responses";
-import { RequestLogInUser, RequestSignUpUser } from "./types/requests";
+import {
+	RequestLogInUser,
+	RequestSignUpUser,
+	RequestToggleBookmark,
+	RequestToggleLike,
+} from "./types/requests";
 
 export const API_URL = "http://localhost:8080";
 export const CDN_URL = "http://localhost:8080/attachment/";
@@ -80,7 +86,7 @@ export const TOGGLE_LIKE_ENDPOINT = createEndpoint(
 	`${API_URL}/like`,
 	"PATCH",
 	"application/x-protobuf",
-	undefined,
+	RequestToggleLike,
 	ResponseToggleLike,
 );
 
@@ -88,7 +94,7 @@ export const TOGGLE_BOOKMARK_ENDPOINT = createEndpoint(
 	`${API_URL}/bookmark`,
 	"PATCH",
 	"application/x-protobuf",
-	undefined,
+	RequestToggleBookmark,
 	ResponseToggleBookmark,
 );
 export const GET_BOOKMARKS_ENDPOINT = (offset: number) =>
@@ -107,6 +113,19 @@ export const GET_PROFILE_ENDPOINT = (username: string) =>
 		"application/x-protobuf",
 		undefined,
 		ResponseGetProfile,
+	);
+export type ProfilePostsType = "posts" | "likes" | "replies" | "media";
+export const GET_PROFILE_POSTS_ENDPOINT = (
+	type: ProfilePostsType,
+	username: string,
+	offset: number,
+) =>
+	createEndpoint(
+		`${API_URL}/profile-posts/${type}/${username}/${offset}`,
+		"GET",
+		"application/x-protobuf",
+		undefined,
+		ResponseGetPostsChronologicallyByUser,
 	);
 
 type Coder<Type> = {

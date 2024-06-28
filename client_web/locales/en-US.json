@@ -1,7 +1,9 @@
 {
 	"appName": "Ghaspy",
+	"locale": "English (US)",
 	"hello": "Hey {{ name }}, how are you?",
 	"loading": "Loading...",
+	"noBookmarks": "No bookmarks found",
 	"relativeTime": {
 		"future": "in {{in}}",
 		"past": "{{ago}} ago",
@@ -53,6 +55,7 @@
 		"submit": "Save",
 		"follow": "Follow",
 		"unfollow": "Unfollow",
+		"followBack": "Follow back",
 		"mutual": "Friend",
 		"followsYou": "Follows you",
 		"followingCount": "Followers",
@@ -64,7 +67,12 @@
 		"media": "Media",
 		"replies": "Replies",
 		"joinedAt": "Joined: {{date}}",
-		"postsCount": "{{count}} posts"
+		"postsCount": "{{count}} posts",
+		"message": "Message",
+		"block": "Block",
+		"unblock": "Unblock",
+		"report": "Report",
+		"copyLink": "Copy link"
 	},
 	"posts": {
 		"posts": "Posts",
@@ -108,7 +116,8 @@
 		"badRequestNotNumber": "Provided value is not a number",
 		"cantReadForm": "Cant read form data",
 		"internalError": "Internal Server Error Occured",
-		"internalErrorCrit": "We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience"
+		"internalErrorCrit": "We awe vewy sowwy but ouw sewvews have a big oopsie woopsie, pwease twy again watew, we awe sowwy fow the inconvenience",
+		"badRequestNoPostType": "Post type was not provided"
 	},
 	"success": {
 		"userSignedUp": "User registered successfully",

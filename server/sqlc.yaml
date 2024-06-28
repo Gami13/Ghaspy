@@ -14,5 +14,7 @@ sql:
         out: 'src/queries'
         sql_package: 'pgx/v5'
         emit_prepared_queries: true
+        emit_interface: false
+        emit_exact_table_names: false
     rules:
       - sqlc/db-prepare

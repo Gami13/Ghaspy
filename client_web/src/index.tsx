@@ -56,6 +56,11 @@ function App() {
 						<Route path="/bookmarks" component={BookmarksRoute} />
 						<Route path="/pallete" component={Pallete} />
 						<Route path="validate/:token" component={ValidatePage} />
+						<Route path="/:username/likes" component={UserProfile} />
+						<Route path="/:username/media" component={UserProfile} />
+						<Route path="/:username/replies" component={UserProfile} />
+						<Route path="/:username/posts" component={UserProfile} />
+
 						<Route path="/:username/:postID" component={PostDetail} />
 						<Route path="/:username" component={UserProfile} />
 					</Route>

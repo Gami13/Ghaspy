@@ -280,8 +280,8 @@ func (ec *EndpointContext) GetPostsChronologicallyEndpoint(w http.ResponseWriter
 	println("Requesting chronological posts, page number: ", pageInt)
 
 	rows, err := ec.Query.SelectPostsChronologically(ec.Ctx, queries.SelectPostsChronologicallyParams{
-		Tokenin: token,
-		Offset:  int64(pageInt) * 50,
+		Tokenin:    token,
+		Pagenumber: int32(pageInt) * 50,
 	})
 
 	if err != nil {
@@ -416,16 +416,20 @@ func (ec *EndpointContext) GetPostEndpoint(w http.ResponseWriter, r *http.Reques
 
 }
 
-func (ec *EndpointContext) GetUserPostsChronologicallyEndpoint(w http.ResponseWriter, r *http.Request) {
+func (ec *EndpointContext) GetProfilePostsEndpoint(w http.ResponseWriter, r *http.Request) {
 	token := ""
 	if len(r.Header.Get("Authorization")) > 0 {
 		token = r.Header.Get("Authorization")
 	}
 
-	pathParams := strings.TrimPrefix(r.URL.Path, "/posts-profile/")
+	pathParams := strings.TrimPrefix(r.URL.Path, "/profile-posts/")
 	splits := strings.Split(pathParams, "/")
-	username := splits[0]
-	page := splits[1]
+	postType := splits[0]
+	username := splits[1]
+	page := splits[2]
+	println("POST TYPE: ", postType)
+	println("USERNAME: ", username)
+	println("PAGE: ", page)
 
 	pageInt, err := strconv.ParseInt(page, 10, 32)
 	if err != nil {
@@ -439,53 +443,202 @@ func (ec *EndpointContext) GetUserPostsChronologicallyEndpoint(w http.ResponseWr
 		protoUtils.ProtoError(w, http.StatusBadRequest, "badRequestNoUsername")
 		return
 	}
-
-	rows, err := ec.Query.SelectPostsByUserChronologically(ec.Ctx, queries.SelectPostsByUserChronologicallyParams{
-		Token:    token,
-		Offset:   int64(pageInt) * 50,
-		Username: username,
-	})
-
-	if err != nil {
-		println("ERROR: ", err)
-		protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
-		return
+	if postType == "" {
+		protoUtils.ProtoError(w, http.StatusBadRequest, "badRequestNoPostType")
 	}
 	var posts []*types.Post
-	for _, row := range rows {
-		post := types.Post{
-			ID: row.ID.Int64,
-			Author: &types.User{
-				ID:             row.Authorid.Int64,
-				Username:       row.Username.String,
-				DisplayName:    row.Username.String,
-				Bio:            row.Bio.String,
-				Avatar:         row.Avatar.String,
-				Banner:         row.Banner.String,
-				CountLikes:     uint32(row.Countlikes.Int64),
-				CountPosts:     uint32(row.Countposts.Int64),
-				CountFollowers: uint32(row.Countfollowedby.Int64),
-				CountFollowing: uint32(row.Countisfollowing.Int64),
 
-				JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
-				IsFollowersPublic: row.Isfollowerspublic.Bool,
-				IsFollowingPublic: row.Isfollowingpublic.Bool,
-				IsPostsPublic:     row.Ispostspublic.Bool,
-				IsLikesPublic:     row.Islikespublic.Bool,
-			},
-			Content:      row.Content.String,
-			ReplyToID:    &row.Replyto.Int64,
-			QuotedID:     &row.Quoteof.Int64,
-			Attachments:  row.Attachments,
-			CountLikes:   uint32(row.Postcountlikes.Int64),
-			CountQuotes:  uint32(row.Postcountquotes.Int64),
-			CountReplies: uint32(row.Postcountreplies.Int64),
-			IsLiked:      row.Ispostliked.Bool,
-			IsBookmarked: row.Ispostbookmarked.Bool,
-			ThreadStart:  row.Threadstart.Int64,
-			TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+	switch postType {
+	case "posts":
+
+		//[]queries.SelectPostsByUserChronologicallyRow
+		rows, err := ec.Query.SelectPostsByUserChronologically(ec.Ctx, queries.SelectPostsByUserChronologicallyParams{
+			Token:      token,
+			Pagenumber: int32(pageInt) * 50,
+			Username:   username,
+		})
+		if err != nil {
+			println("ERROR: ", err)
+			protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
+			return
 		}
-		posts = append(posts, &post)
+		for _, row := range rows {
+			post := types.Post{
+				ID: row.ID.Int64,
+				Author: &types.User{
+					ID:             row.Authorid.Int64,
+					Username:       row.Username.String,
+					DisplayName:    row.Username.String,
+					Bio:            row.Bio.String,
+					Avatar:         row.Avatar.String,
+					Banner:         row.Banner.String,
+					CountLikes:     uint32(row.Countlikes.Int64),
+					CountPosts:     uint32(row.Countposts.Int64),
+					CountFollowers: uint32(row.Countfollowedby.Int64),
+					CountFollowing: uint32(row.Countisfollowing.Int64),
+
+					JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
+					IsFollowersPublic: row.Isfollowerspublic.Bool,
+					IsFollowingPublic: row.Isfollowingpublic.Bool,
+					IsPostsPublic:     row.Ispostspublic.Bool,
+					IsLikesPublic:     row.Islikespublic.Bool,
+				},
+				Content:      row.Content.String,
+				ReplyToID:    &row.Replyto.Int64,
+				QuotedID:     &row.Quoteof.Int64,
+				Attachments:  row.Attachments,
+				CountLikes:   uint32(row.Postcountlikes.Int64),
+				CountQuotes:  uint32(row.Postcountquotes.Int64),
+				CountReplies: uint32(row.Postcountreplies.Int64),
+				IsLiked:      row.Ispostliked.Bool,
+				IsBookmarked: row.Ispostbookmarked.Bool,
+				ThreadStart:  row.Threadstart.Int64,
+				TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+			}
+			posts = append(posts, &post)
+		}
+	case "replies":
+		//[]queries.SelectRepliesByUserChronologicallyRow
+		rows, err := ec.Query.SelectRepliesByUserChronologically(ec.Ctx, queries.SelectRepliesByUserChronologicallyParams{
+			Token:      token,
+			Pagenumber: int32(pageInt) * 50,
+			Username:   username,
+		})
+		if err != nil {
+			println("ERROR: ", err)
+			protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
+			return
+		}
+		for _, row := range rows {
+			post := types.Post{
+				ID: row.ID.Int64,
+				Author: &types.User{
+					ID:             row.Authorid.Int64,
+					Username:       row.Username.String,
+					DisplayName:    row.Username.String,
+					Bio:            row.Bio.String,
+					Avatar:         row.Avatar.String,
+					Banner:         row.Banner.String,
+					CountLikes:     uint32(row.Countlikes.Int64),
+					CountPosts:     uint32(row.Countposts.Int64),
+					CountFollowers: uint32(row.Countfollowedby.Int64),
+					CountFollowing: uint32(row.Countisfollowing.Int64),
+
+					JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
+					IsFollowersPublic: row.Isfollowerspublic.Bool,
+					IsFollowingPublic: row.Isfollowingpublic.Bool,
+					IsPostsPublic:     row.Ispostspublic.Bool,
+					IsLikesPublic:     row.Islikespublic.Bool,
+				},
+				Content:      row.Content.String,
+				ReplyToID:    &row.Replyto.Int64,
+				QuotedID:     &row.Quoteof.Int64,
+				Attachments:  row.Attachments,
+				CountLikes:   uint32(row.Postcountlikes.Int64),
+				CountQuotes:  uint32(row.Postcountquotes.Int64),
+				CountReplies: uint32(row.Postcountreplies.Int64),
+				IsLiked:      row.Ispostliked.Bool,
+				IsBookmarked: row.Ispostbookmarked.Bool,
+				ThreadStart:  row.Threadstart.Int64,
+				TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+			}
+			posts = append(posts, &post)
+		}
+
+	case "media":
+		//[]queries.SelectMediaByUserChronologicallyRow
+		rows, err := ec.Query.SelectMediaByUserChronologically(ec.Ctx, queries.SelectMediaByUserChronologicallyParams{
+			Token:      token,
+			Pagenumber: int32(pageInt) * 50,
+			Username:   username,
+		})
+		if err != nil {
+			println("ERROR: ", err)
+			protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
+			return
+		}
+		for _, row := range rows {
+			post := types.Post{
+				ID: row.ID.Int64,
+				Author: &types.User{
+					ID:             row.Authorid.Int64,
+					Username:       row.Username.String,
+					DisplayName:    row.Username.String,
+					Bio:            row.Bio.String,
+					Avatar:         row.Avatar.String,
+					Banner:         row.Banner.String,
+					CountLikes:     uint32(row.Countlikes.Int64),
+					CountPosts:     uint32(row.Countposts.Int64),
+					CountFollowers: uint32(row.Countfollowedby.Int64),
+					CountFollowing: uint32(row.Countisfollowing.Int64),
+
+					JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
+					IsFollowersPublic: row.Isfollowerspublic.Bool,
+					IsFollowingPublic: row.Isfollowingpublic.Bool,
+					IsPostsPublic:     row.Ispostspublic.Bool,
+					IsLikesPublic:     row.Islikespublic.Bool,
+				},
+				Content:      row.Content.String,
+				ReplyToID:    &row.Replyto.Int64,
+				QuotedID:     &row.Quoteof.Int64,
+				Attachments:  row.Attachments,
+				CountLikes:   uint32(row.Postcountlikes.Int64),
+				CountQuotes:  uint32(row.Postcountquotes.Int64),
+				CountReplies: uint32(row.Postcountreplies.Int64),
+				IsLiked:      row.Ispostliked.Bool,
+				IsBookmarked: row.Ispostbookmarked.Bool,
+				ThreadStart:  row.Threadstart.Int64,
+				TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+			}
+			posts = append(posts, &post)
+		}
+	case "likes":
+		//[]queries.SelectLikesByUserChronologicallyRow
+		rows, err := ec.Query.SelectLikesByUserChronologically(ec.Ctx, queries.SelectLikesByUserChronologicallyParams{
+			Token:      token,
+			Pagenumber: int32(pageInt) * 50,
+			Username:   username,
+		})
+		if err != nil {
+			println("ERROR: ", err)
+			protoUtils.ProtoError(w, http.StatusInternalServerError, "internalError")
+			return
+		}
+		for _, row := range rows {
+			post := types.Post{
+				ID: row.ID.Int64,
+				Author: &types.User{
+					ID:             row.Authorid.Int64,
+					Username:       row.Username.String,
+					DisplayName:    row.Username.String,
+					Bio:            row.Bio.String,
+					Avatar:         row.Avatar.String,
+					Banner:         row.Banner.String,
+					CountLikes:     uint32(row.Countlikes.Int64),
+					CountPosts:     uint32(row.Countposts.Int64),
+					CountFollowers: uint32(row.Countfollowedby.Int64),
+					CountFollowing: uint32(row.Countisfollowing.Int64),
+
+					JoinedAt:          snowflake.Snowflake(row.Authorid.Int64).GetJSTime(),
+					IsFollowersPublic: row.Isfollowerspublic.Bool,
+					IsFollowingPublic: row.Isfollowingpublic.Bool,
+					IsPostsPublic:     row.Ispostspublic.Bool,
+					IsLikesPublic:     row.Islikespublic.Bool,
+				},
+				Content:      row.Content.String,
+				ReplyToID:    &row.Replyto.Int64,
+				QuotedID:     &row.Quoteof.Int64,
+				Attachments:  row.Attachments,
+				CountLikes:   uint32(row.Postcountlikes.Int64),
+				CountQuotes:  uint32(row.Postcountquotes.Int64),
+				CountReplies: uint32(row.Postcountreplies.Int64),
+				IsLiked:      row.Ispostliked.Bool,
+				IsBookmarked: row.Ispostbookmarked.Bool,
+				ThreadStart:  row.Threadstart.Int64,
+				TimePosted:   snowflake.Snowflake(row.ID.Int64).GetJSTime(),
+			}
+			posts = append(posts, &post)
+		}
 	}
 
 	//TODO: FILL IN QUOTED and REPLYTO LATER
@@ -599,8 +752,8 @@ func (ec *EndpointContext) GetBookmarksChronologicallyEndpoint(w http.ResponseWr
 	println("Requesting chronological bookmarks, page number: ", pageInt)
 
 	rows, err := ec.Query.SelectBookmarksChronologically(ec.Ctx, queries.SelectBookmarksChronologicallyParams{
-		Tokenin: token,
-		Offset:  int64(pageInt) * 50,
+		Tokenin:    token,
+		Pagenumber: int32(pageInt) * 50,
 	})
 
 	if err != nil {

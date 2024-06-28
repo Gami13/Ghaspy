@@ -66,6 +66,9 @@ func main() {
 	mux.HandleFunc("DELETE /log-out", hctx.DeleteLogOutUserEndpoint)
 	//Takes in a username
 	mux.HandleFunc("GET /profile/", hctx.GetProfileEndpoint)
+	//takes in a post type, username, and page int
+	mux.HandleFunc("GET /profile-posts/", hctx.GetProfilePostsEndpoint)
+
 	mux.HandleFunc("PATCH /display-name", hctx.PatchDisplayNameEndpoint)
 	mux.HandleFunc("PATCH /bio", hctx.PatchBioEndpoint)
 	mux.HandleFunc("PATCH /is-following-public", hctx.PatchIsFollowingPublicEndpoint)
@@ -87,7 +90,6 @@ func main() {
 	//Takes in a post id
 	mux.HandleFunc("GET /post/", hctx.GetPostEndpoint)
 	//Takes in a username and a page int
-	mux.HandleFunc("GET /posts-profile/", hctx.GetUserPostsChronologicallyEndpoint)
 	//takes in a post id and a page int
 	mux.HandleFunc("GET /post-replies/", hctx.GetPostRepliesEndpoint)
 	//!Not sure why but only AllowAll works, even if using the same config as fiber

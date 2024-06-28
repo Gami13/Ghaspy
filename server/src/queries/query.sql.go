@@ -245,12 +245,12 @@ WHERE b.userId = (
 	)
 	AND b.isenabled = true
 ORDER BY b.id DESC
-LIMIT 50 OFFSET $2
+LIMIT 50 OFFSET $2::integer
 `
 
 type SelectBookmarksChronologicallyParams struct {
-	Tokenin string
-	Offset  int64
+	Tokenin    string
+	Pagenumber int32
 }
 
 type SelectBookmarksChronologicallyRow struct {
@@ -283,7 +283,7 @@ type SelectBookmarksChronologicallyRow struct {
 
 // ORDERED BY BOOKMARK ID
 func (q *Queries) SelectBookmarksChronologically(ctx context.Context, arg SelectBookmarksChronologicallyParams) ([]SelectBookmarksChronologicallyRow, error) {
-	rows, err := q.db.Query(ctx, selectBookmarksChronologically, arg.Tokenin, arg.Offset)
+	rows, err := q.db.Query(ctx, selectBookmarksChronologically, arg.Tokenin, arg.Pagenumber)
 	if err != nil {
 		return nil, err
 	}
@@ -354,6 +354,121 @@ func (q *Queries) SelectIsVerified(ctx context.Context, id int64) (bool, error) 
 	return isvalidated, err
 }
 
+const selectLikesByUserChronologically = `-- name: SelectLikesByUserChronologically :many
+SELECT p.id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1::text) as p
+	JOIN likes l ON p.id = l.postId
+WHERE l.userId = p.authorId
+	AND l.isenabled = true
+	AND p.username = ($2::text)
+ORDER BY l.id DESC
+LIMIT 50 OFFSET $3::integer
+`
+
+type SelectLikesByUserChronologicallyParams struct {
+	Token      string
+	Username   string
+	Pagenumber int32
+}
+
+type SelectLikesByUserChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectLikesByUserChronologically(ctx context.Context, arg SelectLikesByUserChronologicallyParams) ([]SelectLikesByUserChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectLikesByUserChronologically, arg.Token, arg.Username, arg.Pagenumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectLikesByUserChronologicallyRow
+	for rows.Next() {
+		var i SelectLikesByUserChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const selectLoggedInUserProfile = `-- name: SelectLoggedInUserProfile :one
 SELECT usersDetails.id,
 	usersDetails.username,
@@ -396,6 +511,119 @@ func (q *Queries) SelectLoggedInUserProfile(ctx context.Context, token string) (
 		&i.Prefferedlanguage,
 	)
 	return i, err
+}
+
+const selectMediaByUserChronologically = `-- name: SelectMediaByUserChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1::text) as p
+WHERE p.attachments IS NOT NULL
+	AND p.username = ($2::text)
+ORDER BY p.id DESC
+LIMIT 50 OFFSET $3::integer
+`
+
+type SelectMediaByUserChronologicallyParams struct {
+	Token      string
+	Username   string
+	Pagenumber int32
+}
+
+type SelectMediaByUserChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectMediaByUserChronologically(ctx context.Context, arg SelectMediaByUserChronologicallyParams) ([]SelectMediaByUserChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectMediaByUserChronologically, arg.Token, arg.Username, arg.Pagenumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectMediaByUserChronologicallyRow
+	for rows.Next() {
+		var i SelectMediaByUserChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const selectPostByID = `-- name: SelectPostByID :one
@@ -523,13 +751,13 @@ SELECT id,
 FROM getPosts($1::text) as p
 WHERE p.username = ($2::text)
 ORDER BY p.id DESC
-LIMIT 50 OFFSET $3
+LIMIT 50 OFFSET $3::integer
 `
 
 type SelectPostsByUserChronologicallyParams struct {
-	Token    string
-	Username string
-	Offset   int64
+	Token      string
+	Username   string
+	Pagenumber int32
 }
 
 type SelectPostsByUserChronologicallyRow struct {
@@ -561,7 +789,7 @@ type SelectPostsByUserChronologicallyRow struct {
 }
 
 func (q *Queries) SelectPostsByUserChronologically(ctx context.Context, arg SelectPostsByUserChronologicallyParams) ([]SelectPostsByUserChronologicallyRow, error) {
-	rows, err := q.db.Query(ctx, selectPostsByUserChronologically, arg.Token, arg.Username, arg.Offset)
+	rows, err := q.db.Query(ctx, selectPostsByUserChronologically, arg.Token, arg.Username, arg.Pagenumber)
 	if err != nil {
 		return nil, err
 	}
@@ -633,12 +861,12 @@ SELECT id,
 	isPostBookmarked,
 	threadStart
 FROM getPosts($1) as p
-LIMIT 50 OFFSET $2
+LIMIT 50 OFFSET $2::integer
 `
 
 type SelectPostsChronologicallyParams struct {
-	Tokenin string
-	Offset  int64
+	Tokenin    string
+	Pagenumber int32
 }
 
 type SelectPostsChronologicallyRow struct {
@@ -670,7 +898,7 @@ type SelectPostsChronologicallyRow struct {
 }
 
 func (q *Queries) SelectPostsChronologically(ctx context.Context, arg SelectPostsChronologicallyParams) ([]SelectPostsChronologicallyRow, error) {
-	rows, err := q.db.Query(ctx, selectPostsChronologically, arg.Tokenin, arg.Offset)
+	rows, err := q.db.Query(ctx, selectPostsChronologically, arg.Tokenin, arg.Pagenumber)
 	if err != nil {
 		return nil, err
 	}
@@ -678,6 +906,119 @@ func (q *Queries) SelectPostsChronologically(ctx context.Context, arg SelectPost
 	var items []SelectPostsChronologicallyRow
 	for rows.Next() {
 		var i SelectPostsChronologicallyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Authorid,
+			&i.Username,
+			&i.Displayname,
+			&i.Bio,
+			&i.Avatar,
+			&i.Banner,
+			&i.Isfollowerspublic,
+			&i.Isfollowingpublic,
+			&i.Ispostspublic,
+			&i.Islikespublic,
+			&i.Countlikes,
+			&i.Countposts,
+			&i.Countisfollowing,
+			&i.Countfollowedby,
+			&i.Content,
+			&i.Replyto,
+			&i.Quoteof,
+			&i.Attachments,
+			&i.Postcountlikes,
+			&i.Postcountquotes,
+			&i.Postcountreplies,
+			&i.Ispostliked,
+			&i.Ispostbookmarked,
+			&i.Threadstart,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectRepliesByUserChronologically = `-- name: SelectRepliesByUserChronologically :many
+SELECT id,
+	authorId,
+	username,
+	displayname,
+	bio,
+	avatar,
+	banner,
+	isfollowerspublic,
+	isfollowingpublic,
+	ispostspublic,
+	islikespublic,
+	countlikes,
+	countposts,
+	countisfollowing,
+	countfollowedby,
+	content,
+	replyTo,
+	quoteOf,
+	attachments,
+	postCountLikes,
+	postCountQuotes,
+	postCountReplies,
+	isPostLiked,
+	isPostBookmarked,
+	threadStart
+FROM getPosts($1::text) as p
+WHERE p.replyTo != 0
+	AND p.username = ($2::text)
+ORDER BY p.id DESC
+LIMIT 50 OFFSET $3::integer
+`
+
+type SelectRepliesByUserChronologicallyParams struct {
+	Token      string
+	Username   string
+	Pagenumber int32
+}
+
+type SelectRepliesByUserChronologicallyRow struct {
+	ID                pgtype.Int8
+	Authorid          pgtype.Int8
+	Username          pgtype.Text
+	Displayname       pgtype.Text
+	Bio               pgtype.Text
+	Avatar            pgtype.Text
+	Banner            pgtype.Text
+	Isfollowerspublic pgtype.Bool
+	Isfollowingpublic pgtype.Bool
+	Ispostspublic     pgtype.Bool
+	Islikespublic     pgtype.Bool
+	Countlikes        pgtype.Int8
+	Countposts        pgtype.Int8
+	Countisfollowing  pgtype.Int8
+	Countfollowedby   pgtype.Int8
+	Content           pgtype.Text
+	Replyto           pgtype.Int8
+	Quoteof           pgtype.Int8
+	Attachments       []string
+	Postcountlikes    pgtype.Int8
+	Postcountquotes   pgtype.Int8
+	Postcountreplies  pgtype.Int8
+	Ispostliked       pgtype.Bool
+	Ispostbookmarked  pgtype.Bool
+	Threadstart       pgtype.Int8
+}
+
+func (q *Queries) SelectRepliesByUserChronologically(ctx context.Context, arg SelectRepliesByUserChronologicallyParams) ([]SelectRepliesByUserChronologicallyRow, error) {
+	rows, err := q.db.Query(ctx, selectRepliesByUserChronologically, arg.Token, arg.Username, arg.Pagenumber)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SelectRepliesByUserChronologicallyRow
+	for rows.Next() {
+		var i SelectRepliesByUserChronologicallyRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Authorid,

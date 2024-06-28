@@ -8,6 +8,7 @@ import type { Post } from "@/types/internal";
 import stylex from "@stylexjs/stylex";
 
 import { Logo } from "./Logo";
+import { colors, dimensions } from "../variables.stylex";
 const styles = stylex.create({
 	loadingBox: {
 		height: "100vh",
@@ -23,6 +24,16 @@ const styles = stylex.create({
 		width: "7em",
 		height: "7em",
 		transform: "translate(0,0)",
+	},
+	main: {
+		padding: "0.25em 0.5em",
+		height: "100vh",
+		maxWidth: dimensions.postsMaxWidth,
+		minWidth: dimensions.postsMinWidth,
+		backgroundColor: colors.background50,
+		flexGrow: 10000,
+		// borderRight: "2px solid #c23da9",
+		// borderLeft: "2px solid #0066ff",
 	},
 });
 
@@ -53,15 +64,17 @@ export function Main() {
 	});
 
 	return (
-		<Show
-			when={proto.state.isSuccess}
-			fallback={
-				<div {...stylex.attrs(styles.loadingBox)}>
-					<Logo loading={true} stylex={styles.logo} />
-				</div>
-			}
-		>
-			<PostList posts={proto.state.data?.posts as Post[]} />
-		</Show>
+		<main {...stylex.attrs(styles.main)}>
+			<Show
+				when={proto.state.isSuccess}
+				fallback={
+					<div {...stylex.attrs(styles.loadingBox)}>
+						<Logo loading={true} stylex={styles.logo} />
+					</div>
+				}
+			>
+				<PostList posts={proto.state.data?.posts as Post[]} />
+			</Show>
+		</main>
 	);
 }
