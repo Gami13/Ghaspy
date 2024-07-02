@@ -48,6 +48,21 @@ export interface RequestGetPosts {
   page: number;
 }
 
+export interface RequestEditProfile {
+  displayName: string;
+  bio: string;
+  didAvatarChange: boolean;
+  avatar: Uint8Array;
+  didBannerChange: boolean;
+  banner: Uint8Array;
+  isFollowersPublic: boolean;
+  isFollowingPublic: boolean;
+  isPostsPublic: boolean;
+  isLikesPublic: boolean;
+  prefferedTheme: string;
+  prefferedLanguage: string;
+}
+
 function createBaseRequestSignUpUser(): RequestSignUpUser {
   return { username: "", password: "", email: "" };
 }
@@ -549,6 +564,185 @@ export const RequestGetPosts = {
     const message = createBaseRequestGetPosts();
     message.username = object.username ?? "";
     message.page = object.page ?? 0;
+    return message;
+  },
+};
+
+function createBaseRequestEditProfile(): RequestEditProfile {
+  return {
+    displayName: "",
+    bio: "",
+    didAvatarChange: false,
+    avatar: new Uint8Array(0),
+    didBannerChange: false,
+    banner: new Uint8Array(0),
+    isFollowersPublic: false,
+    isFollowingPublic: false,
+    isPostsPublic: false,
+    isLikesPublic: false,
+    prefferedTheme: "",
+    prefferedLanguage: "",
+  };
+}
+
+export const RequestEditProfile = {
+  encode(message: RequestEditProfile, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.displayName !== "") {
+      writer.uint32(10).string(message.displayName);
+    }
+    if (message.bio !== "") {
+      writer.uint32(18).string(message.bio);
+    }
+    if (message.didAvatarChange === true) {
+      writer.uint32(24).bool(message.didAvatarChange);
+    }
+    if (message.avatar.length !== 0) {
+      writer.uint32(34).bytes(message.avatar);
+    }
+    if (message.didBannerChange === true) {
+      writer.uint32(40).bool(message.didBannerChange);
+    }
+    if (message.banner.length !== 0) {
+      writer.uint32(50).bytes(message.banner);
+    }
+    if (message.isFollowersPublic === true) {
+      writer.uint32(56).bool(message.isFollowersPublic);
+    }
+    if (message.isFollowingPublic === true) {
+      writer.uint32(64).bool(message.isFollowingPublic);
+    }
+    if (message.isPostsPublic === true) {
+      writer.uint32(72).bool(message.isPostsPublic);
+    }
+    if (message.isLikesPublic === true) {
+      writer.uint32(80).bool(message.isLikesPublic);
+    }
+    if (message.prefferedTheme !== "") {
+      writer.uint32(90).string(message.prefferedTheme);
+    }
+    if (message.prefferedLanguage !== "") {
+      writer.uint32(98).string(message.prefferedLanguage);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestEditProfile {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRequestEditProfile();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.displayName = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.bio = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.didAvatarChange = reader.bool();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.avatar = reader.bytes();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.didBannerChange = reader.bool();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.banner = reader.bytes();
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.isFollowersPublic = reader.bool();
+          continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.isFollowingPublic = reader.bool();
+          continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.isPostsPublic = reader.bool();
+          continue;
+        case 10:
+          if (tag !== 80) {
+            break;
+          }
+
+          message.isLikesPublic = reader.bool();
+          continue;
+        case 11:
+          if (tag !== 90) {
+            break;
+          }
+
+          message.prefferedTheme = reader.string();
+          continue;
+        case 12:
+          if (tag !== 98) {
+            break;
+          }
+
+          message.prefferedLanguage = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<RequestEditProfile>, I>>(base?: I): RequestEditProfile {
+    return RequestEditProfile.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RequestEditProfile>, I>>(object: I): RequestEditProfile {
+    const message = createBaseRequestEditProfile();
+    message.displayName = object.displayName ?? "";
+    message.bio = object.bio ?? "";
+    message.didAvatarChange = object.didAvatarChange ?? false;
+    message.avatar = object.avatar ?? new Uint8Array(0);
+    message.didBannerChange = object.didBannerChange ?? false;
+    message.banner = object.banner ?? new Uint8Array(0);
+    message.isFollowersPublic = object.isFollowersPublic ?? false;
+    message.isFollowingPublic = object.isFollowingPublic ?? false;
+    message.isPostsPublic = object.isPostsPublic ?? false;
+    message.isLikesPublic = object.isLikesPublic ?? false;
+    message.prefferedTheme = object.prefferedTheme ?? "";
+    message.prefferedLanguage = object.prefferedLanguage ?? "";
     return message;
   },
 };

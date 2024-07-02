@@ -1,6 +1,10 @@
 {
+	"manifest": {
+		"symbol": "pl-PL",
+		"locale": "Polski"
+	},
+
 	"appName": "Ghaspy",
-	"locale": "Polski",
 
 	"hello": "cześć {{ name }}, jak się masz?",
 	"loading": "Ładowanie...",

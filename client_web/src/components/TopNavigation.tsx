@@ -6,6 +6,7 @@ import { textFallback } from "@/utils";
 type Props = {
 	primaryText: Readonly<string | undefined>;
 	secondaryText: Readonly<string | undefined>;
+	resetURL?: () => void;
 };
 const styles = stylex.create({
 	headerNav: {
@@ -75,7 +76,10 @@ export function TopNavigation(props: Props) {
 			<button
 				type="button"
 				{...stylex.attrs(styles.navButton)}
-				onClick={() => history.back()}
+				onClick={() => {
+					history.back();
+					props.resetURL?.();
+				}}
 			>
 				{/* @ts-ignore */}
 				<TbArrowLeft {...stylex.attrs(styles.navIcon)} />

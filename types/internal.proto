@@ -3,27 +3,6 @@ package main.internal;
 
 option go_package = "types/";
 
-message SQLUser {
-  int64 ID = 1;
-  string username = 2;
-  string displayName = 3;
-  string bio = 4;
-  string avatar = 5;
-  string banner = 6;
-  bool isFollowersPublic = 7;
-  bool isFollowingPublic = 8;
-  bool isPostsPublic = 9;
-  bool isLikesPublic = 10;
-  bool isFollowingYou = 11;
-  bool isFollowedByYou = 12;
-  uint32 countLikes = 13;
-  uint32 countPosts = 14;
-  uint32 countFollowers = 15;
-  uint32 countFollowing = 16;
-  bool isYourProfile = 17;
-  string prefferedLanguage = 18;
-}
-
 message User {
   int64 ID = 1;
   string username = 2;
@@ -44,9 +23,7 @@ message User {
   bool isLikesPublic = 17;
   bool isYourProfile = 18;
   string prefferedLanguage = 19;
-
 }
-
 
 message Post {
   int64 ID = 1;

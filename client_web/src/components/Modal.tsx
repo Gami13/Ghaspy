@@ -14,6 +14,7 @@ const styles = stylex.create({
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
+		zIndex: 1000,
 	},
 	main: {
 		backgroundColor: colors.background100,

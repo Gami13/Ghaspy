@@ -79,10 +79,18 @@ export function NavWrapper(props: any) {
 			<Navigation />
 			{c()}
 			<aside {...stylex.attrs(styles.aside)}>
-				<button {...stylex.attrs(styles.asideBtn)} type="button" onClick={() => AppState.setLocale("pl_PL")}>
+				<button
+					{...stylex.attrs(styles.asideBtn)}
+					type="button"
+					onClick={() => AppState.setLocale("pl-PL")}
+				>
 					pl_PL
 				</button>
-				<button {...stylex.attrs(styles.asideBtn)} type="button" onClick={() => AppState.setLocale("en_US")}>
+				<button
+					{...stylex.attrs(styles.asideBtn)}
+					type="button"
+					onClick={() => AppState.setLocale("en-US")}
+				>
 					en_US
 				</button>
 			</aside>

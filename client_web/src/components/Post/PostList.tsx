@@ -1,5 +1,5 @@
 import stylex from "@stylexjs/stylex";
-import { colors, dimensions } from "../../variables.stylex";
+
 // import { createVirtualizer } from "@tanstack/solid-virtual";
 import type { Post as PostType, User } from "@/types/internal";
 import { Post } from "./Post";

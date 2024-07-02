@@ -1,8 +1,7 @@
 import stylex from "@stylexjs/stylex";
 import { colors, dimensions, transitions } from "../../variables.stylex";
 import { useAppState } from "@/AppState";
-import { TbHammer, TbLink, TbMessage, TbShield } from "solid-icons/tb";
-import { useNavigate, useParams } from "@solidjs/router";
+import { useParams } from "@solidjs/router";
 import { createEffect, createSignal, Match, Show, Suspense, Switch } from "solid-js";
 import { ProtoFetch } from "@/ProtoFetch";
 import {
@@ -10,13 +9,13 @@ import {
 	GET_PROFILE_POSTS_ENDPOINT,
 	type ProfilePostsType,
 } from "@/constants";
-import { UserAvatar } from "./UserAvatar";
-import { formatNumberFallback, getDisplayName, getDisplayNameFallback } from "@/utils";
-import { formatDateNoTime, formatNumber, useTrans } from "@/Translation";
-import { UserBanner } from "./UserBanner";
+import { formatNumberFallback, getDisplayNameFallback } from "@/utils";
+import { useTrans } from "@/Translation";
 import type { Post as PostType } from "@/types/internal";
 import { PostList } from "../Post/PostList";
 import { TopNavigation } from "../TopNavigation";
+import { UserProfileHeader } from "./UserProfileHeader";
+import { UserProfileEditor } from "./UserProfileEditor";
 const styles = stylex.create({
 	main: {
 		paddingTop: "0.25em",
@@ -31,20 +30,7 @@ const styles = stylex.create({
 		padding: "1em",
 		overflowY: "auto",
 	},
-	bio: {
-		position: "relative",
-		display: "flex",
-		flexDirection: "column",
-	},
-	buttons: {
-		display: "flex",
-		flexDirection: "row",
-		gap: "0.65em",
-		padding: "0.5em",
-		justifyContent: "flex-end",
-		minHeight: "3.75em",
-		alignItems: "center",
-	},
+
 	mainButtons: {
 		display: "flex",
 		flexDirection: "row",
@@ -87,97 +73,10 @@ const styles = stylex.create({
 		},
 	},
 
-	banner: {
-		width: "100%",
-		height: "200px",
-		objectFit: "cover",
-		backgroundColor: colors.secondary500,
-	},
-	avatar: {
-		width: "8em",
-		height: "8em",
-		borderRadius: "50%",
-		position: "absolute",
-		left: "1em",
-		transform: "translateY(-25%)",
-		positoin: "relative",
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: colors.primary500,
-
-		borderColor: colors.background50,
-		borderWidth: "0.3em",
-		borderStyle: "solid",
-	},
-	buttonsIcons: {
-		cursor: "pointer",
-		height: "2.5em",
-		width: "2.5em",
-		fontWeight: "bold",
-		borderRadius: "50%",
-		borderColor: colors.accent500,
-		borderWidth: "0.1em",
-		borderStyle: "solid",
-		padding: "0.5em",
-		color: colors.accent500,
-	},
-	followBtn: {
-		cursor: "pointer",
-		backgroundColor: colors.primary500,
-		color: colors.text950,
-		borderRadius: "1em",
-		letterSpacing: "0.1em",
-		padding: "0.5em 1.25em",
-		fontWeight: "bold",
-		transitionDuration: transitions.duration,
-		transitionTimingFunction: transitions.timing,
-		userSelect: "none",
-		":hover": {
-			backgroundColor: colors.primary600,
-		},
-	},
-	names: {
-		display: "flex",
-		gap: "0.1em",
-		flexDirection: "column",
-		justifyContent: "center",
-	},
 	highlight: {
 		fontSize: "1em",
 		color: "#71767b",
 		fontWeight: 300,
-	},
-	displayName: {
-		fontSize: "1.3em",
-		fontWeight: 700,
-	},
-	description: {
-		display: "flex",
-		flexDirection: "column",
-		gap: "0.5em",
-		padding: "0.5em",
-		backgroundColor: colors.background50,
-		borderRadius: "1em",
-		overflow: "hidden",
-	},
-	stats: {
-		display: "flex",
-		gap: "1em",
-		flexDirection: "row",
-	},
-	statNum: {
-		backgroundColor: colors.background100,
-		borderRadius: "0.5em",
-		padding: "0.25em 0.5em",
-		fontSize: "0.9em",
-	},
-	followedBySomeone: {
-		borderRadius: "0.5em",
-		padding: "0.25em 0.5em",
-		fontSize: "0.9em",
-		textAlign: "center",
-		color: colors.text300,
 	},
 });
 
@@ -190,7 +89,7 @@ export function UserProfile() {
 	const [type, setType] = createSignal<ProfilePostsType>(
 		(pathParams.get("t") as ProfilePostsType) || "posts",
 	);
-	const protoPosts = new ProtoFetch(GET_PROFILE_POSTS_ENDPOINT(type(), params.username, 0));
+
 	createEffect(() => {
 		let token = AppState.userToken();
 		if (!token) {
@@ -198,7 +97,6 @@ export function UserProfile() {
 			token = "";
 		}
 		protoProfile.Query();
-		protoPosts.Query();
 	});
 	createEffect(() => {
 		if (protoProfile.state.isSuccess) {
@@ -213,231 +111,143 @@ export function UserProfile() {
 		console.log("PROTO", protoProfile);
 	});
 
-	createEffect(() => {
-		if (protoPosts.state.isSuccess) {
-			console.log(protoPosts.state.data.posts);
-		}
-		if (protoPosts.state.isError) {
-			console.log(protoPosts.state.error);
-		}
-		if (protoPosts.state.isLoading) {
-			console.log("Loading...");
-		}
-		console.log("PROTO", protoProfile);
-	});
-
 	return (
 		<div {...stylex.attrs(styles.main)}>
 			<header>
 				<TopNavigation
 					primaryText={getDisplayNameFallback(protoProfile.state.data?.profile)}
-					secondaryText={t.profile.postsCount({
-						count: formatNumberFallback(protoProfile.state.data?.profile?.countPosts),
-					})}
+					secondaryText={
+						type() === "editing"
+							? t.profile.gettingEdited()
+							: t.profile.postsCount({
+									count: formatNumberFallback(
+										protoProfile.state.data?.profile?.countPosts,
+									),
+								})
+					}
+					resetURL={() => {
+						setType((pathParams.get("t") as ProfilePostsType) || "posts");
+					}}
 				/>
+			</header>
+			<main>
 				<Show when={protoProfile.state.data?.profile} keyed>
 					{(profile) => {
 						return (
-							<>
-								<UserBanner user={profile} {...stylex.attrs(styles.banner)} />
-
-								<div {...stylex.attrs(styles.bio)}>
-									<div {...stylex.attrs(styles.buttons)}>
-										<UserAvatar user={profile} styles={styles.avatar} />
+							<Show
+								when={type() !== "editing"}
+								fallback={<UserProfileEditor profile={profile} />}
+							>
+								<UserProfileHeader
+									startEditing={() => {
+										setType("editing");
+									}}
+									profile={profile}
+									params={params}
+								/>
+								<section>
+									<nav {...stylex.attrs(styles.mainButtons)}>
 										<button
 											type="button"
-											title={t.profile.copyLink()}
+											{...stylex.attrs(
+												styles.mainBtn,
+												type() === "posts" ? styles.currentBtn : null,
+											)}
 											onclick={() => {
-												navigator.clipboard.writeText(window.location.href);
-												//TODO: Add a toast to show that the link has been copied
+												window.history.replaceState(
+													{},
+													"",
+													`/${params.username}?t=posts`,
+												);
+												setType("posts");
 											}}
 										>
-											{/* @ts-ignore */}
-											<TbLink {...stylex.attrs(styles.buttonsIcons)} />
+											{t.profile.posts()}
 										</button>
-										{/*NOT IMPLEMENTED YET*/}
-
-										{/*<button type="button" title={t.profile.report()}>
-											@ts-ignore
-											<TbHammer {...stylex.attrs(styles.buttonsIcons)} />
-										</button> */}
-										{/* <button type="button" title={t.profile.block()}>
-										
-											<TbShield {...stylex.attrs(styles.buttonsIcons)} />
-										</button> */}
-										{/* <button type="button" title={t.profile.message()}>
-											
-											<TbMessage {...stylex.attrs(styles.buttonsIcons)} />
-										</button> */}
-										<Show
-											when={!profile.isYourProfile}
+										<button
+											type="button"
+											{...stylex.attrs(
+												styles.mainBtn,
+												type() === "replies" ? styles.currentBtn : null,
+											)}
+											onclick={() => {
+												window.history.replaceState(
+													{},
+													"",
+													`/${params.username}?t=replies`,
+												);
+												setType("replies");
+											}}
+										>
+											{t.profile.replies()}
+										</button>
+										<button
+											type="button"
+											{...stylex.attrs(
+												styles.mainBtn,
+												type() === "media" ? styles.currentBtn : null,
+											)}
+											onclick={() => {
+												window.history.replaceState(
+													{},
+													"",
+													`/${params.username}?t=media`,
+												);
+												setType("media");
+											}}
+										>
+											{t.profile.media()}
+										</button>
+										<button
+											type="button"
+											{...stylex.attrs(
+												styles.mainBtn,
+												type() === "likes" ? styles.currentBtn : null,
+											)}
+											onclick={() => {
+												window.history.replaceState(
+													{},
+													"",
+													`/${params.username}?t=likes`,
+												);
+												setType("likes");
+											}}
+										>
+											{t.profile.likes()}
+										</button>
+									</nav>
+									<ol>
+										<Suspense
 											fallback={
-												<button
-													type="button"
-													{...stylex.attrs(styles.followBtn)}
-												>
-													{t.profile.edit()}
-												</button>
+												<p>
+													Loading posts placeholder (put a spinner
+													here)...
+												</p>
 											}
 										>
-											<Show
-												when={
-													profile.isFollowingYou &&
-													!profile.isFollowedByYou
-												}
-											>
-												<button
-													type="button"
-													{...stylex.attrs(styles.followBtn)}
-												>
-													{t.profile.followBack()}
-												</button>
-											</Show>
-											<Show when={profile.isFollowedByYou}>
-												<button
-													type="button"
-													{...stylex.attrs(styles.followBtn)}
-												>
-													{t.profile.unfollow()}
-												</button>
-											</Show>
-											<button
-												type="button"
-												{...stylex.attrs(styles.followBtn)}
-											>
-												{t.profile.follow()}
-											</button>
-										</Show>
-									</div>
-									<ol {...stylex.attrs(styles.description)}>
-										<li {...stylex.attrs(styles.names)}>
-											<h2 {...stylex.attrs(styles.displayName)}>
-												{getDisplayName(profile)}
-											</h2>
-											<h3 {...stylex.attrs(styles.highlight)}>
-												@{profile.username}
-											</h3>
-										</li>
-										<li>
-											<p>{profile.bio}</p>
-										</li>
-										<li>
-											<h3 {...stylex.attrs(styles.highlight)}>
-												{t.profile.joinedAt({
-													date: formatDateNoTime(
-														profile.joinedAt as string,
-													),
-												})}
-											</h3>
-										</li>
-										<li {...stylex.attrs(styles.stats)}>
-											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countFollowing)}
-												</span>
-												<span {...stylex.attrs(styles.highlight)}>
-													{t.profile.followingCount()}
-												</span>
-											</h5>
-											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countFollowers)}
-												</span>
-												<span {...stylex.attrs(styles.highlight)}>
-													{t.profile.followersCount()}
-												</span>
-											</h5>
-											<h5>
-												<span {...stylex.attrs(styles.statNum)}>
-													{formatNumber(profile.countLikes)}
-												</span>
-												<span {...stylex.attrs(styles.highlight)}>
-													{t.profile.likesCount()}
-												</span>
-											</h5>
-										</li>
-										{/* //TODO:Implement this */}
-										{/* <li {...stylex.attrs(styles.followedBySomeone)}>Is Followed by someone you're following</li> */}
+											<Switch>
+												<Match when={type() === "posts"}>
+													<UserProfilePosts username={params.username} />
+												</Match>
+												<Match when={type() === "likes"}>
+													<UserProfileLikes username={params.username} />
+												</Match>
+												<Match when={type() === "media"}>
+													<UserProfileMedia username={params.username} />
+												</Match>
+												<Match when={type() === "replies"}>
+													<UserProfileReplies
+														username={params.username}
+													/>
+												</Match>
+											</Switch>
+										</Suspense>
 									</ol>
-								</div>
-							</>
+								</section>
+							</Show>
 						);
 					}}
 				</Show>
-			</header>
-			<main>
-				<nav {...stylex.attrs(styles.mainButtons)}>
-					<button
-						type="button"
-						{...stylex.attrs(
-							styles.mainBtn,
-							type() === "posts" ? styles.currentBtn : null,
-						)}
-						onclick={() => {
-							window.history.pushState({}, "", `/${params.username}?t=posts`);
-							setType("posts");
-						}}
-					>
-						{t.profile.posts()}
-					</button>
-					<button
-						type="button"
-						{...stylex.attrs(
-							styles.mainBtn,
-							type() === "replies" ? styles.currentBtn : null,
-						)}
-						onclick={() => {
-							window.history.pushState({}, "", `/${params.username}?t=replies`);
-							setType("replies");
-						}}
-					>
-						{t.profile.replies()}
-					</button>
-					<button
-						type="button"
-						{...stylex.attrs(
-							styles.mainBtn,
-							type() === "media" ? styles.currentBtn : null,
-						)}
-						onclick={() => {
-							window.history.pushState({}, "", `/${params.username}?t=media`);
-							setType("media");
-						}}
-					>
-						{t.profile.media()}
-					</button>
-					<button
-						type="button"
-						{...stylex.attrs(
-							styles.mainBtn,
-							type() === "likes" ? styles.currentBtn : null,
-						)}
-						onclick={() => {
-							window.history.pushState({}, "", `/${params.username}?t=likes`);
-							setType("likes");
-						}}
-					>
-						{t.profile.likes()}
-					</button>
-				</nav>
-				<ol>
-					<Suspense fallback={<p>Loading posts placeholder (put a spinner here)...</p>}>
-						<Switch>
-							<Match when={type() === "posts"}>
-								<UserProfilePosts username={params.username} />
-							</Match>
-							<Match when={type() === "likes"}>
-								<UserProfileLikes username={params.username} />
-							</Match>
-							<Match when={type() === "media"}>
-								<UserProfileMedia username={params.username} />
-							</Match>
-							<Match when={type() === "replies"}>
-								<UserProfileReplies username={params.username} />
-							</Match>
-						</Switch>
-					</Suspense>
-				</ol>
 			</main>
 		</div>
 	);

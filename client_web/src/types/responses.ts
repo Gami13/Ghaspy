@@ -130,6 +130,11 @@ export interface ResponseGetBookmarksChronologically {
   pageNumber: number;
 }
 
+export interface ResponseEditProfile {
+  message: string;
+  profile: User | undefined;
+}
+
 function createBaseResponseError(): ResponseError {
   return { message: "" };
 }
@@ -1542,6 +1547,64 @@ export const ResponseGetBookmarksChronologically = {
     message.posts = object.posts?.map((e) => Post.fromPartial(e)) || [];
     message.message = object.message ?? "";
     message.pageNumber = object.pageNumber ?? 0;
+    return message;
+  },
+};
+
+function createBaseResponseEditProfile(): ResponseEditProfile {
+  return { message: "", profile: undefined };
+}
+
+export const ResponseEditProfile = {
+  encode(message: ResponseEditProfile, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.profile !== undefined) {
+      User.encode(message.profile, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ResponseEditProfile {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResponseEditProfile();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.profile = User.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ResponseEditProfile>, I>>(base?: I): ResponseEditProfile {
+    return ResponseEditProfile.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ResponseEditProfile>, I>>(object: I): ResponseEditProfile {
+    const message = createBaseResponseEditProfile();
+    message.message = object.message ?? "";
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? User.fromPartial(object.profile)
+      : undefined;
     return message;
   },
 };

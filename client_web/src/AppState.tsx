@@ -1,14 +1,18 @@
-import { type Accessor, type JSXElement, type Setter, createContext, createSignal, useContext } from "solid-js";
+import {
+	type Accessor,
+	type JSXElement,
+	type Setter,
+	createContext,
+	createSignal,
+	useContext,
+} from "solid-js";
 import type { Locales } from "./Translation";
 import { User } from "./types/internal";
-import { ProtoFetch } from "./ProtoFetch";
-import { LOG_OUT_ENDPOINT } from "./constants";
 import { createStore, type SetStoreFunction } from "solid-js/store";
 type AppStateType = {
 	isLoggedIn: () => boolean;
 	locale: Accessor<Locales>;
 	setLocale: Setter<Locales>;
-	localeJsFromat: () => string;
 	userToken: Accessor<string | undefined>;
 	setUserToken: Setter<string | undefined>;
 	user: User;
@@ -21,20 +25,15 @@ const AppState = createContext<AppStateType>();
 export function AppStateProvider(props: {
 	children: JSXElement[] | JSXElement;
 }) {
-	const [locale, setLocale] = createSignal<Locales>("en_US");
+	const [locale, setLocale] = createSignal<Locales>("pl-PL");
 	const [userToken, setUserToken] = createSignal<string | undefined>(undefined);
 	const [user, setUser] = createStore<User>(User.create({}));
 	const [scrollPostition, setScrollPosition] = createSignal(0);
-
-	const localeJsFromat = () => {
-		return locale().replace("_", "-");
-	};
 
 	const ContextValue = {
 		isLoggedIn: () => user.username.length > 0,
 		locale,
 		setLocale,
-		localeJsFromat,
 		userToken,
 		setUserToken,
 		user,

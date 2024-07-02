@@ -1,6 +1,9 @@
 {
+	"manifest": {
+		"symbol": "en-US",
+		"locale": "English (US)"
+	},
 	"appName": "Ghaspy",
-	"locale": "English (US)",
 	"hello": "Hey {{ name }}, how are you?",
 	"loading": "Loading...",
 	"noBookmarks": "No bookmarks found",
@@ -72,7 +75,8 @@
 		"block": "Block",
 		"unblock": "Unblock",
 		"report": "Report",
-		"copyLink": "Copy link"
+		"copyLink": "Copy link",
+		"gettingEdited": "Getting edited"
 	},
 	"posts": {
 		"posts": "Posts",

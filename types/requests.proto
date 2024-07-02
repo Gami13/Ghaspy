@@ -33,3 +33,18 @@ message RequestGetPosts {
   string username = 1;
   uint32 page = 2;
 }
+
+message RequestEditProfile {
+  string displayName = 1;
+  string bio = 2;
+  bool didAvatarChange = 3;
+  bytes avatar = 4;
+  bool didBannerChange = 5;
+  bytes banner = 6;
+  bool isFollowersPublic = 7;
+  bool isFollowingPublic = 8;
+  bool isPostsPublic = 9;
+  bool isLikesPublic = 10;
+  string prefferedTheme = 11;
+  string prefferedLanguage = 12;
+}

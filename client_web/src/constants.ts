@@ -114,7 +114,7 @@ export const GET_PROFILE_ENDPOINT = (username: string) =>
 		undefined,
 		ResponseGetProfile,
 	);
-export type ProfilePostsType = "posts" | "likes" | "replies" | "media";
+export type ProfilePostsType = "posts" | "likes" | "replies" | "media" | "editing";
 export const GET_PROFILE_POSTS_ENDPOINT = (
 	type: ProfilePostsType,
 	username: string,
