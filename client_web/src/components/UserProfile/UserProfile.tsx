@@ -136,7 +136,14 @@ export function UserProfile() {
 						return (
 							<Show
 								when={type() !== "editing"}
-								fallback={<UserProfileEditor profile={profile} />}
+								fallback={
+									<UserProfileEditor
+										profile={profile}
+										onEdited={() => {
+											protoProfile.Query();
+										}}
+									/>
+								}
 							>
 								<UserProfileHeader
 									startEditing={() => {

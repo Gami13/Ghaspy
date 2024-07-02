@@ -4,8 +4,10 @@ import stylex from "@stylexjs/stylex";
 import type { RequestEditProfile } from "@/types/requests";
 import { createStore } from "solid-js/store";
 import { allLocales } from "@/Translation";
-import { For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { TbArrowBack, TbCircleArrowLeft, TbRotate, TbRotate2 } from "solid-icons/tb";
+import { UnlimitedModal } from "../Modal";
+import { UserAvatarHandler } from "./UserAvatarHandler";
 const style = stylex.create({
 	form: {
 		color: colors.text950,
@@ -36,6 +38,7 @@ const style = stylex.create({
 
 type UserProfileEditorProps = {
 	profile: User;
+	onEdited: () => void;
 };
 //edits: display name, bio, avatar,  banner, following public/private, followers public/private, posts public/private, likes public/private,  preffered language, theme
 //currently  unavailable: vitals like username, email, password
@@ -56,6 +59,8 @@ export function UserProfileEditor(props: UserProfileEditorProps) {
 		prefferedTheme: "dark",
 		prefferedLanguage: props.profile.prefferedLanguage,
 	});
+	const [isChangingAvatar, setIsChangingAvatar] = createSignal(false);
+	const [isChangingBanner, setIsChangingBanner] = createSignal(false);
 	return (
 		<form {...stylex.attrs(style.form)}>
 			<fieldset {...stylex.attrs(style.fieldset)}>
@@ -100,12 +105,46 @@ export function UserProfileEditor(props: UserProfileEditorProps) {
 				</label>
 				<label {...stylex.attrs(style.label)}>
 					Avatar
-					<input type="file" />
+					<button
+						type="button"
+						onclick={() => {
+							setIsChangingAvatar(true);
+						}}
+					>
+						Change
+					</button>
 				</label>
+				<Show when={isChangingAvatar()}>
+					<UnlimitedModal onOutsideClick={() => setIsChangingAvatar(false)}>
+						<UserAvatarHandler />
+					</UnlimitedModal>
+				</Show>
 				<label {...stylex.attrs(style.label)}>
 					Banner
-					<input type="file" />
+					<button
+						type="button"
+						onclick={() => {
+							setIsChangingBanner(true);
+						}}
+					>
+						Change
+					</button>
 				</label>
+
+				{/* <Show when={isChangingBanner()}>
+					<UnlimitedModal onOutsideClick={() => setIsChangingBanner(false)}>
+						<h1>Change Banner</h1>
+						<button
+							type="button"
+							{...stylex.attrs(style.undoBtn)}
+							onClick={() => {
+								setIsChangingBanner(false);
+							}}
+						>
+							<TbCircleArrowLeft />
+						</button>
+					</UnlimitedModal>
+				</Show> */}
 			</fieldset>
 			<fieldset>
 				<legend>Privacy</legend>

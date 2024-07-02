@@ -27,6 +27,13 @@ const styles = stylex.create({
 		boxShadow: "0px 0px 12px 0px rgba(0,0,0,0.5)",
 		borderRadius: "1em",
 	},
+	mainUnlimited: {
+		backgroundColor: colors.background100,
+		width: "fit-content",
+		height: "fit-content",
+		boxShadow: "0px 0px 12px 0px rgba(0,0,0,0.5)",
+		borderRadius: "1em",
+	},
 });
 
 type ModalProps = {
@@ -51,6 +58,30 @@ export function Modal(props: ModalProps) {
 	return (
 		<dialog open {...stylex.attrs(styles.modal)}>
 			<div ref={dialogRef} {...stylex.attrs(styles.main)}>
+				{props.children}
+			</div>
+		</dialog>
+	);
+}
+
+export function UnlimitedModal(props: ModalProps) {
+	let dialogRef: HTMLDivElement | undefined;
+	function clickOutside(event: MouseEvent) {
+		console.log("click");
+		if (!dialogRef?.contains(event.target as Node)) {
+			console.log("outside");
+			props.onOutsideClick();
+		}
+	}
+	// onMount(() => {
+	// 	document.addEventListener("click", clickOutside);
+	// });
+	// onCleanup(() => {
+	// 	document.removeEventListener("click", clickOutside);
+	// });
+	return (
+		<dialog open {...stylex.attrs(styles.modal)}>
+			<div ref={dialogRef} {...stylex.attrs(styles.mainUnlimited)}>
 				{props.children}
 			</div>
 		</dialog>
